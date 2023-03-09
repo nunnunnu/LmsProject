@@ -1,19 +1,24 @@
 package com.project.lms.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import lombok.RequiredArgsConstructor;
-
 @Configuration
-@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-    
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedOrigins("*")
-            .allowedMethods("*"); // 화이트리스트 설정
-    }
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/**")
+            .allowedOrigins("*") //cors에러나면 주소로 변경해야함
+            .allowedMethods(
+                HttpMethod.GET.name(),
+                HttpMethod.HEAD.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.DELETE.name()
+            )
+            .allowedHeaders("*")
+            .allowCredentials(true);
+        }
 }
