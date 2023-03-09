@@ -1,6 +1,7 @@
 package com.project.lms.entity;
 
 import com.project.lms.entity.member.MemberInfoEntity;
+import com.project.lms.entity.member.TeacherInfo;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,7 +10,7 @@ public class ClassTeacherEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ct_seq") private Long ctSeq;
     @OneToOne
-    @Column(name = "ct_ci_seq") private ClassStudentEntity classStudentEntity;
+    @JoinColumn(name = "ct_ci_seq") private ClassStudentEntity classStudentEntity;
     @OneToOne
-    @Column(name = "ct_mi_seq") private MemberInfoEntity memberInfoEntity;
+    @JoinColumn(name = "ct_mi_seq") private TeacherInfo teacher;
 }
