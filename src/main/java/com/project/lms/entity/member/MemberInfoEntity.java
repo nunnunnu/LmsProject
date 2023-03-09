@@ -1,8 +1,13 @@
 package com.project.lms.entity.member;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.project.lms.entity.member.enumfile.Role;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -30,18 +35,53 @@ import lombok.experimental.SuperBuilder;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="mi_dtype")//기본값이 DTYPE
 @SuperBuilder
-public class MemberInfoEntity {
+public class MemberInfoEntity implements UserDetails{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="mi_seq") private Long miSeq;
     @Column(name="mi_id") private String miId;
     @Column(name="mi_pwd") private String miPwd;
-    @Enumerated(value = EnumType.STRING)
-    @Column(name="mi_role") private Role miRole;
+    // @Enumerated(value = EnumType.STRING)
+    @Column(name="mi_role") private String miRole;
     @Column(name="mi_name") private String miName;
     @Column(name="mi_birth") private LocalDate miBirth;
     @Column(name="mi_email") private String miEmail;
     @Column(name="mi_reg_dt") private LocalDate miRegDt;
     @Column(name="mi_status") private Boolean miStatus;
     // @Column(name="mi_dtype") private String miDtype;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> roles = new HashSet<>();
+        roles.add(new SimpleGrantedAuthority(this.miRole));
+        return roles;
+    }
+    @Override
+    public String getPassword() {
+        return miPwd; 
+    }
+    @Override
+    public String getUsername() {
+        return miId;
+    }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return miStatus==true;
+    }
+
 
 }
