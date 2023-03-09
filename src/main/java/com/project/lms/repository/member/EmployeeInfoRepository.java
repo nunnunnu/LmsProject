@@ -1,4 +1,4 @@
-package com.project.lms.repository;
+package com.project.lms.repository.member;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
