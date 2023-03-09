@@ -1,4 +1,4 @@
-package com.project.lms.config.entity;
+package com.project.lms.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
