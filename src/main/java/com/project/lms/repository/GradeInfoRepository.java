@@ -1,6 +1,6 @@
-package com.project.lms.config.repository;
+package com.project.lms.repository;
 
-import com.project.lms.config.entity.GradeInfoEntity;
+import com.project.lms.entity.GradeInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long> {

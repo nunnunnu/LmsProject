@@ -1,4 +1,4 @@
-package com.project.lms.config.entity;
+package com.project.lms.entity;
 
 import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
