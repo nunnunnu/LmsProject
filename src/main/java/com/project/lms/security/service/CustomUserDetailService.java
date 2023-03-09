@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.member.MemberInfoEntity;
-import com.project.lms.repository.MemberInfoRepository;
+import com.project.lms.repository.member.MemberInfoRepository;
 
 import lombok.RequiredArgsConstructor;
 
