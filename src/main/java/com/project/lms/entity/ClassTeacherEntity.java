@@ -1,6 +1,5 @@
 package com.project.lms.entity;
 
-import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.TeacherInfo;
 
 import jakarta.persistence.Column;
@@ -11,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.*;
 
 @Entity
 @Table(name="class_teacher")

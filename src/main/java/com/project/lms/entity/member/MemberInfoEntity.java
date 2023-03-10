@@ -9,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.project.lms.entity.member.enumfile.Role;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -23,11 +25,10 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-@Setter
+// @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -40,8 +41,8 @@ public class MemberInfoEntity implements UserDetails{
     @Column(name="mi_seq") private Long miSeq;
     @Column(name="mi_id") private String miId;
     @Column(name="mi_pwd") private String miPwd;
-    // @Enumerated(value = EnumType.STRING)
-    @Column(name="mi_role") private String miRole;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name="mi_role") private Role miRole;
     @Column(name="mi_name") private String miName;
     @Column(name="mi_birth") private LocalDate miBirth;
     @Column(name="mi_email") private String miEmail;
@@ -52,7 +53,7 @@ public class MemberInfoEntity implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> roles = new HashSet<>();
-        roles.add(new SimpleGrantedAuthority(this.miRole));
+        roles.add(new SimpleGrantedAuthority(this.miRole.toString()));
         return roles;
     }
     @Override

@@ -17,5 +17,4 @@ public class ClassStudentEntity {
     @Column(name = "cs_mi_seq", nullable = false)
     private Long csMiSeq;
 
-    // 생성자, getter, setter 등 생략
 }
