@@ -1,5 +1,7 @@
 package com.project.lms.entity.feedback;
 
+import java.time.LocalDate;
+
 import com.project.lms.entity.share.BaseTimeEntity;
 
 import jakarta.persistence.Column;
@@ -18,12 +20,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="teacher_feedback")
+@Table(name="feedback_info")
 // @SuperBuilder
-public class TeacherFeedback extends BaseTimeEntity {
+public class FeedbackInfo extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="tf_seq") private Long tfSeq;
-    @Column(name="tf_mi_seq") private Long tfMiSeq;
-    @Column(name="tf_mi2_seq") private Long tfMi2Seq;
-    @Column(name="tf_content") private String tfContent;
+    @Column(name="fi_seq") private Long fiSeq;
+    @Column(name="fi_mi_seq") private Long fiMiSeq;
+    @Column(name="fi_mi2_seq") private Long fiMi2Seq;
+    @Column(name="fi_content") private String fiContent;
+    @Column(name="create_dt") private LocalDate createDt;
+    @Column(name="modify_dt") private LocalDate modifyDt;
+    @Column(name="fi_cate") private Integer fiCate;
 }
