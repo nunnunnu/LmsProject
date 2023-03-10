@@ -2,8 +2,8 @@ package com.project.lms.repository.feedback;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.project.lms.entity.feedback.TeacherFeedback;
+import com.project.lms.entity.feedback.FeedbackInfo;
 
-public interface FeedbackInfoRepository extends JpaRepository<TeacherFeedback, Long> {
+public interface FeedbackInfoRepository extends JpaRepository<FeedbackInfo, Long> {
     
 }
