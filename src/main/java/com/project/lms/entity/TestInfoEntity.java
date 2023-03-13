@@ -1,6 +1,6 @@
 package com.project.lms.entity;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +27,5 @@ public class TestInfoEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "test_seq") private Long testSeq;
     @Column(name = "test_name") private String testName;
-    @Column(name = "test_start_time") private LocalTime testStartTime;
-    @Column(name = "test_end_time") private LocalTime testEndTime;
+    @Column(name = "test_date") private LocalDate testDate;
 }
