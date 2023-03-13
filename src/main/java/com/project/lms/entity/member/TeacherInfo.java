@@ -1,6 +1,8 @@
 package com.project.lms.entity.member;
 
 import com.project.lms.entity.SubjectInfoEntity;
+import com.project.lms.entity.member.enumfile.Role;
+import com.project.lms.vo.member.MemberJoinVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -26,4 +28,10 @@ import lombok.experimental.SuperBuilder;
 public class TeacherInfo extends MemberInfoEntity {
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name="ti_sub_seq") private SubjectInfoEntity subject;
     @Column(name="ti_exp") private String tiExp;
+
+    public TeacherInfo(MemberJoinVO data, SubjectInfoEntity sub){
+        super(data, Role.ROLE_TEACHER);
+        this.tiExp = data.getExp();
+        this.subject = sub;
+    }
 }

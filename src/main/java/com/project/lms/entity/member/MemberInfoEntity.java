@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.project.lms.entity.member.enumfile.Role;
+import com.project.lms.vo.member.MemberJoinVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
@@ -84,5 +85,14 @@ public class MemberInfoEntity implements UserDetails{
         return miStatus==true;
     }
 
-
+    public MemberInfoEntity(MemberJoinVO data, Role role){
+        this.miId = data.getId();
+        this.miBirth = data.getBirth();
+        this.miEmail = data.getEmail();
+        this.miName = data.getName();
+        this.miPwd = data.getPwd();
+        this.miRegDt = data.getRegDt();
+        this.miStatus = true;
+        this.miRole = role;
+    }
 }
