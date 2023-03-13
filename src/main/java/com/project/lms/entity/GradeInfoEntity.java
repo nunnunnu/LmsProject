@@ -1,7 +1,4 @@
 package com.project.lms.entity;
-
-import com.project.lms.entity.SubjectInfoEntity;
-import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 
@@ -36,5 +33,6 @@ public class GradeInfoEntity {
     @JoinColumn(name = "gi_mi_seq2", nullable = false) private TeacherInfo teacher;
     @Column(name = "gi_grade")              private Integer grade;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gi_test_seq", nullable = false) private TestInfoEntity test;
+    @JoinColumn(name = "gi_test_seq", nullable = false)
+    private TestInfoEntity test;
 }
