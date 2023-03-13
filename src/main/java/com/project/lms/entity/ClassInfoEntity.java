@@ -20,5 +20,4 @@ public class ClassInfoEntity {
     @Column(name = "ci_mi_seq", nullable = false)
     private Long ciMiSeq;
 
-    // 생성자, getter, setter 등 생략
 }
