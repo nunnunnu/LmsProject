@@ -45,21 +45,22 @@ public class MemberJoinVO {
     private LocalDate regDt;
     
     //학생
-    @Schema(description = "학생의 학년. null가능")
+    @Schema(description = "학생의 학년. null가능(학생전용)")
     private Integer grade;
-    @Schema(description = "학생의 학교. null가능")
+    @Schema(description = "학생의 학교. null가능(학생전용)")
     private String shcool;
-    @Schema(description = "학생의 학원 반 번호. null불가")
-    private Long classroom;
     //선생
-    @Schema(description = "선생님의 담당 과목. Long타입")
+    @Schema(description = "담당 과목 번호(선생전용)")
     private Long subject;
     //직원
-    @Schema(description = "직급. 공백 불가")
+    @Schema(description = "직급. 공백 불가(직원전용)")
     private Position position;
-    @Schema(description = "부서. 공백 불가")
+    @Schema(description = "부서. 공백 불가(직원전용)")
     private Department department;
     //선생/직원
-    @Schema(description = "선생님/직원 전용, 공백가능")
+    @Schema(description = "경력(선생님/직원 전용), 공백가능. 단순하게 텍스트로 나열하면됩니다. ex.5년차, ㅇㅇ학원근무경력")
     private String exp;
+
+    @Schema(description = "소속 학원 반 번호(선생님/학생전용). null불가")
+    private Long classroom;
 }

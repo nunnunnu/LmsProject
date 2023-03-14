@@ -12,6 +12,7 @@ import com.project.lms.error.ErrorResponse;
 import com.project.lms.error.NotValidExceptionResponse;
 import com.project.lms.error.custom.JoinException;
 import com.project.lms.error.custom.NotFoundClassException;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.error.custom.NotFoundSubject;
 import com.project.lms.error.custom.TypeDiscodeException;
 
@@ -47,6 +48,16 @@ public class ControllerSupport {
                         .timestamp(LocalDateTime.now())
                         .message(ex.getMessage())
                         .code(ErrorCode.CLASS_NOT_FOUND)
+                        .status(false)
+                        .build(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = NotFoundMemberException.class)
+    public ResponseEntity<ErrorResponse> notFoundMemberException(NotFoundMemberException ex) {
+        return new ResponseEntity<>(
+            ErrorResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .message(ex.getMessage())
+                        .code(ErrorCode.MEMBER_NOT_FOUND)
                         .status(false)
                         .build(), HttpStatus.BAD_REQUEST);
     }
