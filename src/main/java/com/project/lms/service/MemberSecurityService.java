@@ -4,17 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.security.provider.JwtTokenProvider;
-import com.project.lms.security.vo.TokenVO;
 import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -33,7 +32,7 @@ public class MemberSecurityService {
     	return false;
     }
 }
-
+    @Transactional
     public MemberLoginResponseVO securityLogin(LoginVO login) {
         System.out.println(login);
         //        login.setPwd(AESAlgorithm.Encrypt(login.getPwd()));
@@ -49,17 +48,15 @@ public class MemberSecurityService {
             return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.FORBIDDEN).build();
         }
       
-        UsernamePasswordAuthenticationToken authenticationToken
-        = new UsernamePasswordAuthenticationToken(loginUser.getMiId(),loginUser.getMiPwd());
+        UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(loginUser.getMiId(), loginUser.getMiPwd());
+        System.out.println(authenticationToken);
         
-        // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        // TokenVO jwt = tokenProvider.generateToken(authenticationToken);
+        Authentication authentication =
+        authBulider.getObject().authenticate(authenticationToken);
 
-        // Authentication authentication = authBulider.getObject().authenticate(authenticationToken);
-
-       
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
-                        generateToken(authenticationToken)).cod(HttpStatus.OK).build();
+                        generateToken(authentication)).cod(HttpStatus.OK).build();
         return response;
         
     }

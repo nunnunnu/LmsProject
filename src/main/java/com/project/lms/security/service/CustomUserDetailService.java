@@ -1,4 +1,4 @@
-package com.project.lms.service;
+package com.project.lms.security.service;
 
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,8 +24,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails createUserDetails(MemberInfoEntity member) {
         return User.builder().username(member.getMiId())
                 .password(passwordEncoder.encode(member.getMiPwd()))
-                .roles(member.getMiRole().toString())
+                .roles(member.getMiRole())
                 .build(); //저장
     }
 }
-

@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.project.lms.vo.TokenVO;
+import com.project.lms.security.vo.TokenVO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -40,9 +40,7 @@ public class JwtTokenProvider {
     public TokenVO generateToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         Date expires = new Date((new Date()).getTime()+tokenExpireMinutes*60*1000);
-        System.out.println(expires);
         Date refreshExpires = new Date((new Date()).getTime()+refreshExpireMinutes*60*1000);
-        System.out.println(refreshExpires);
         String accessToken = Jwts.builder().setSubject(authentication.getName()).claim("auth", authorities).setExpiration(expires)
                 .signWith(key, SignatureAlgorithm.HS256).compact();
         String refreshToken = Jwts.builder().setExpiration(refreshExpires)
