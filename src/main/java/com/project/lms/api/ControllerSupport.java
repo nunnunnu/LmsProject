@@ -12,6 +12,7 @@ import com.project.lms.error.ErrorResponse;
 import com.project.lms.error.NotValidExceptionResponse;
 import com.project.lms.error.custom.JoinException;
 import com.project.lms.error.custom.NotFoundSubject;
+import com.project.lms.error.custom.TypeDiscodeException;
 
 @RestControllerAdvice
 public class ControllerSupport {
@@ -26,6 +27,16 @@ public class ControllerSupport {
                         .code(ErrorCode.JOIN_FAILED)
                         .status(false)
                         .err(ex.getErr())
+                        .build(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = TypeDiscodeException.class)
+    public ResponseEntity<Object> typeDiscodeException(TypeDiscodeException ex) {
+        return new ResponseEntity<>(
+                NotValidExceptionResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .message("타입을 잘못입력하셨습니다.")
+                        .code(ErrorCode.TYPE_DISCODE)
+                        .status(false)
                         .build(), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = NotFoundSubject.class)

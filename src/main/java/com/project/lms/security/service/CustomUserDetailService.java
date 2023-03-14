@@ -24,7 +24,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails createUserDetails(MemberInfoEntity member) {
         return User.builder().username(member.getMiId())
                 .password(passwordEncoder.encode(member.getMiPwd()))
-                .roles(member.getMiRole())
+                .roles(member.getMiRole().toString())
                 .build(); //저장
     }
 }

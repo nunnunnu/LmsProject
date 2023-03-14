@@ -6,8 +6,10 @@ import org.springframework.validation.BindingResult;
 
 import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.member.EmployeeInfo;
+import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.error.custom.NotFoundSubject;
 import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.member.EmployeeInfoRepository;
@@ -45,6 +47,11 @@ public class MemberService {
         }else if(type.equalsIgnoreCase("employee")){
             EmployeeInfo entity = new EmployeeInfo(data);
             eRepo.save(entity);
+        }else if(type.equalsIgnoreCase("master")){
+            MemberInfoEntity entity = new MemberInfoEntity(data, Role.MASTER);
+            mRepo.save(entity);
+        }else{
+            
         }
         return MapVO.builder().message("회원가입 성공").code(HttpStatus.OK).status(true).build();
     }
