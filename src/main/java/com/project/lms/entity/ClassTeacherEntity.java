@@ -17,7 +17,7 @@ public class ClassTeacherEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ct_seq") private Long ctSeq;
     @OneToOne
-    @JoinColumn(name = "ct_ci_seq") private ClassStudentEntity classStudentEntity;
+    @JoinColumn(name = "ct_ci_seq") private ClassInfoEntity classInfo;
     @OneToOne
     @JoinColumn(name = "ct_mi_seq") private TeacherInfo teacher;
 }
