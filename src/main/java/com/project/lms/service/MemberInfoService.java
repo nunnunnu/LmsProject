@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberInfoService {
     @Autowired MemberInfoRepository mRepo;
-
+    
     public MemberResponseVO updateMember(UpdateMemberVO data, Long seq) {
         Optional<MemberInfoEntity> member = mRepo.findById(seq);
         String passwordPattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";

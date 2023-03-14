@@ -1,8 +1,11 @@
 package com.project.lms.service;
 
+import java.util.regex.Pattern;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,11 +15,11 @@ import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MemberLoginResponseVO;
+import com.project.lms.vo.MemberResponseVO;
+import com.project.lms.vo.member.UpdateMemberVO;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
- // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        // TokenVO jwt = tokenProvider.generateToken(authenticationToken);
 @Service
 @RequiredArgsConstructor
 public class MemberSecurityService {
@@ -25,12 +28,12 @@ public class MemberSecurityService {
     private final JwtTokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public Boolean login(String id, String rawPw){ 
-	MemberInfoEntity member = memberInfoRepository.findByMiId(id);
-    if(passwordEncoder.matches(rawPw, member.getMiPwd())){
-    	return true;
-    } else{
-    	return false;
+    public Boolean pwdCheck(String id, String rawPw){ 
+        MemberInfoEntity member = memberInfoRepository.findByMiId(id);
+        if(passwordEncoder.matches(rawPw, member.getMiPwd())){
+            return true;
+        } else{
+            return false;
     }
 }
     @Transactional
@@ -55,6 +58,65 @@ public class MemberSecurityService {
                         generateToken(authentication)).cod(HttpStatus.OK).build();
         return response;
         
+    }
+
+    public MemberResponseVO updateMember(UpdateMemberVO data, UserDetails userDetails) {
+        MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
+        String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
+        if(entity==null) {
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(false)
+            .message("해당 회원이 존재하지 않습니다.")
+            .code(HttpStatus.BAD_REQUEST)
+            .build();
+            return m;
+        }
+        if(!pwdCheck(data.getMiPwd(), entity.getMiPwd())){
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(false)
+            .message("비밀번호가 일치하지않습니다.")
+            .code(HttpStatus.BAD_REQUEST)
+            .build();
+            return m;
+        }
+        if(data.getMiPwd().length() <8 ) {
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(false)
+            .message("비밀번호는 8자리 이상 가능합니다")
+            .code(HttpStatus.BAD_REQUEST)
+            .build();
+            return m;
+        }
+        else if (
+            data.getMiPwd().replaceAll(" ", "").length() == 0 ||
+            !Pattern.matches(pattern, data.getMiPwd())
+            ) {
+                MemberResponseVO m = MemberResponseVO.builder()
+                .status(false)
+                .message("비밀번호에 공백문자를 사용할 수 없습니다.")
+                .code(HttpStatus.BAD_REQUEST)
+                .build();
+                return m;  
+            }
+        else if(data.getMiPwd() == null || data.getMiPwd().equals("")) {
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(false)
+            .message("비밀번호를 입력해주세요")
+            .code(HttpStatus.BAD_REQUEST)
+            .build();
+            return m;
+        } 
+        else{
+            
+            entity.updatePwd(passwordEncoder.encode(data.getChangeMiPwd()));
+            memberInfoRepository.save(entity);
+
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(true).message("회원 수정이 완료되었습니다.")
+            .code(HttpStatus.ACCEPTED)
+            .build();
+            return m;
+        }
     }
     
 }
