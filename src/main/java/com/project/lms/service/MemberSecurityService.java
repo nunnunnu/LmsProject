@@ -15,7 +15,8 @@ import com.project.lms.vo.MemberLoginResponseVO;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
+ // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // TokenVO jwt = tokenProvider.generateToken(authenticationToken);
 @Service
 @RequiredArgsConstructor
 public class MemberSecurityService {
@@ -34,13 +35,8 @@ public class MemberSecurityService {
 }
     @Transactional
     public MemberLoginResponseVO securityLogin(LoginVO login) {
-        System.out.println(login);
-        //        login.setPwd(AESAlgorithm.Encrypt(login.getPwd()));
         MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
-        // MemberInfoEntity member = memberInfoRepository.findByMiIdAndMiPwd(login.getId(),login.getPwd());
-        // if(member == null) {
-        //     return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
-        // }
+
         if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
             return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
         }
@@ -62,3 +58,4 @@ public class MemberSecurityService {
     }
     
 }
+ 
