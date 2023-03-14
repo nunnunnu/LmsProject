@@ -8,13 +8,13 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.vo.member.MemberJoinVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,14 +38,15 @@ import lombok.experimental.SuperBuilder;
 @Table(name="member_info")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="mi_dtype")//기본값이 DTYPE
+@DiscriminatorValue("mas")
 @SuperBuilder
 public class MemberInfoEntity implements UserDetails{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="mi_seq") private Long miSeq;
     @Column(name="mi_id") private String miId;
     @Column(name="mi_pwd") private String miPwd;
-    // @Enumerated(value = EnumType.STRING)
-    @Column(name="mi_role") private String miRole;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name="mi_role") private Role miRole;
     @Column(name="mi_name") private String miName;
     @Column(name="mi_birth") private LocalDate miBirth;
     @Column(name="mi_email") private String miEmail;
@@ -56,7 +57,7 @@ public class MemberInfoEntity implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> roles = new HashSet<>();
-        roles.add(new SimpleGrantedAuthority(this.miRole));
+        roles.add(new SimpleGrantedAuthority(this.miRole.toString()));
         return roles;
     }
     @Override
@@ -87,7 +88,7 @@ public class MemberInfoEntity implements UserDetails{
         return miStatus==true;
     }
 
-    public MemberInfoEntity(MemberJoinVO data, String role){
+    public MemberInfoEntity(MemberJoinVO data, Role role){
         this.miId = data.getId();
         this.miBirth = data.getBirth();
         this.miEmail = data.getEmail();

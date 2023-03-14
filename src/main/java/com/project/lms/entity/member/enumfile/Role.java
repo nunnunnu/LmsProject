@@ -3,10 +3,10 @@ package com.project.lms.entity.member.enumfile;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum Role {
-    ROLE_STUDENT,
-    ROLE_TEACHER,
-    ROLE_MASTER,
-    ROLE_EMPLOYEE;
+    STUDENT,
+    TEACHER,
+    MASTER,
+    EMPLOYEE;
 
     @JsonCreator
     public static Role from(String name) {

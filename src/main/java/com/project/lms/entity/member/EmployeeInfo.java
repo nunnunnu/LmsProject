@@ -32,7 +32,7 @@ public class EmployeeInfo extends MemberInfoEntity{
     @Column(name="ei_exp") private String eiExp;
 
     public EmployeeInfo(MemberJoinVO data){
-        super(data, "ROLE_EMPLOYEE");
+        super(data, Role.EMPLOYEE);
         this.eiDepartment=data.getDepartment();
         this.eiExp = data.getExp();
         this.eiPosition = data.getPosition();

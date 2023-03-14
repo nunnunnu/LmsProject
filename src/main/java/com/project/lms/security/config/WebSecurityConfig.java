@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated() //requestMatchers~authenticated까지 중요 허용링크만 적는것이아니라 불가능한 링크만 적는거도 가능함. 순서바꾸면됨
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
