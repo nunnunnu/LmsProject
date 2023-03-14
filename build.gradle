@@ -56,7 +56,7 @@ dependencies {
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
 	//토큰 재발급
-	implementation 'org.springframework.security:spring-security-oauth2-client:5.5.1'
+		implementation 'org.springframework.security:spring-security-oauth2-client:5.5.1'
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
