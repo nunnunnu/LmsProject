@@ -61,7 +61,6 @@ public class MemberSecurityService {
     }
 
     public MemberResponseVO updateMember(UpdateMemberVO data, UserDetails userDetails) {
-        System.out.println(userDetails);
         MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
         String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
         if(entity==null) {
@@ -80,10 +79,10 @@ public class MemberSecurityService {
             .build();
             return m;
         }
-        if(data.getMiPwd().length() <8 ) {
+        if(data.getMiPwd().length() > 16 || data.getMiPwd().length() > 8) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
-            .message("비밀번호는 8자리 이상 가능합니다")
+            .message("비밀번호는 8~16자로 입력해주세요.")
             .code(HttpStatus.BAD_REQUEST)
             .build();
             return m;
@@ -108,7 +107,6 @@ public class MemberSecurityService {
             return m;
         } 
         else{
-            
             entity.updatePwd(passwordEncoder.encode(data.getChangeMiPwd()));
             memberInfoRepository.save(entity);
 

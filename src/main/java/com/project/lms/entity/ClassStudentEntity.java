@@ -1,6 +1,7 @@
 package com.project.lms.entity;
 
 import com.project.lms.entity.member.StudentInfo;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,4 +28,8 @@ public class ClassStudentEntity {
     @JoinColumn(name = "cs_ci_seq", nullable = false) private ClassInfoEntity classInfo;
     @OneToOne
     @JoinColumn(name = "cs_mi_seq", nullable = false) private StudentInfo student;
+
+    public void changeClass(ClassInfoEntity classInfo){
+        this.classInfo = classInfo;
+    }
 }

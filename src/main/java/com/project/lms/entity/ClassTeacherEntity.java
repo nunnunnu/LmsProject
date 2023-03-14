@@ -10,7 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Setter;
 
+@Setter
 @Entity
 @Table(name="class_teacher")
 public class ClassTeacherEntity {
