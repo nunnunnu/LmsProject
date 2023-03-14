@@ -49,6 +49,8 @@ public class MemberJoinVO {
     private Integer grade;
     @Schema(description = "학생의 학교. null가능")
     private String shcool;
+    @Schema(description = "학생의 학원 반 번호. null불가")
+    private Long classroom;
     //선생
     @Schema(description = "선생님의 담당 과목. Long타입")
     private Long subject;
