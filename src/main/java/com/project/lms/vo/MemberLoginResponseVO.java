@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberLoginResponseVO {
      private Boolean status;
-    private  String message;
+    private String message;
     private HttpStatus cod;
     private TokenVO token;
     

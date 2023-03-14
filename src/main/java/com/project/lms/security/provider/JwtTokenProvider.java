@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,10 +16,11 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.project.lms.vo.TokenVO;
+import com.project.lms.security.vo.TokenVO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,7 +33,7 @@ public class JwtTokenProvider {
     private final Key key;
     private final Integer tokenExpireMinutes = 60 ; //토근 만료시간 (현재 일주일)
     private final Integer refreshExpireMinutes = 60*24*24; //리프레쉬 토큰 만료시간(현재 한달) 자동로그인도 풀리는경우
-    @Value("${jwt.secretKey}") String secretKey;
+    // @Value("${jwt.secretKey}") String secretKey;
 
     public JwtTokenProvider(@Value("${jwt.secretKey}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -40,9 +42,7 @@ public class JwtTokenProvider {
     public TokenVO generateToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         Date expires = new Date((new Date()).getTime()+tokenExpireMinutes*60*1000);
-        System.out.println(expires);
         Date refreshExpires = new Date((new Date()).getTime()+refreshExpireMinutes*60*1000);
-        System.out.println(refreshExpires);
         String accessToken = Jwts.builder().setSubject(authentication.getName()).claim("auth", authorities).setExpiration(expires)
                 .signWith(key, SignatureAlgorithm.HS256).compact();
         String refreshToken = Jwts.builder().setExpiration(refreshExpires)
@@ -96,7 +96,7 @@ public class JwtTokenProvider {
     //         //     .parseClaimsJws(refreshToken)
     //         //     .getBody();
     //         System.out.println("Aaa");
-    //         String storedRefreshToken = (String)redisTemplate.opsForValue().get("RT:" + username);
+    //         String storedRefreshToken = (String)RedisTemplate.opsForValue().get("RT:" + username);
     //         System.out.println("bbb");
             
     //         return refreshToken.equals(storedRefreshToken);

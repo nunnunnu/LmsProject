@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,8 @@ import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.MemberResponseVO;
 import com.project.lms.vo.member.UpdateMemberVO;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class MemberSecurityService {
@@ -35,15 +36,10 @@ public class MemberSecurityService {
             return false;
     }
 }
-
+    @Transactional
     public MemberLoginResponseVO securityLogin(LoginVO login) {
-        System.out.println(login);
-        //        login.setPwd(AESAlgorithm.Encrypt(login.getPwd()));
         MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
-        // MemberInfoEntity member = memberInfoRepository.findByMiIdAndMiPwd(login.getId(),login.getPwd());
-        // if(member == null) {
-        //     return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
-        // }
+
         if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
             return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
         }
@@ -51,17 +47,15 @@ public class MemberSecurityService {
             return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.FORBIDDEN).build();
         }
       
-        UsernamePasswordAuthenticationToken authenticationToken
-        = new UsernamePasswordAuthenticationToken(loginUser.getMiId(),loginUser.getMiPwd());
+        UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(loginUser.getMiId(), loginUser.getMiPwd());
+        System.out.println(authenticationToken);
         
-        // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        // TokenVO jwt = tokenProvider.generateToken(authenticationToken);
+        Authentication authentication =
+        authBulider.getObject().authenticate(authenticationToken);
 
-        // Authentication authentication = authBulider.getObject().authenticate(authenticationToken);
-
-       
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
-                        generateToken(authenticationToken)).cod(HttpStatus.OK).build();
+                        generateToken(authentication)).cod(HttpStatus.OK).build();
         return response;
         
     }
@@ -126,3 +120,4 @@ public class MemberSecurityService {
     }
     
 }
+ 

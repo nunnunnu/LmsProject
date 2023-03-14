@@ -44,8 +44,8 @@ public class MemberInfoEntity implements UserDetails{
     @Column(name="mi_seq") private Long miSeq;
     @Column(name="mi_id") private String miId;
     @Column(name="mi_pwd") private String miPwd;
-    @Enumerated(value = EnumType.STRING)
-    @Column(name="mi_role") private Role miRole;
+    // @Enumerated(value = EnumType.STRING)
+    @Column(name="mi_role") private String miRole;
     @Column(name="mi_name") private String miName;
     @Column(name="mi_birth") private LocalDate miBirth;
     @Column(name="mi_email") private String miEmail;
@@ -56,7 +56,7 @@ public class MemberInfoEntity implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> roles = new HashSet<>();
-        roles.add(new SimpleGrantedAuthority(this.miRole.toString()));
+        roles.add(new SimpleGrantedAuthority(this.miRole));
         return roles;
     }
     @Override
@@ -87,7 +87,7 @@ public class MemberInfoEntity implements UserDetails{
         return miStatus==true;
     }
 
-    public MemberInfoEntity(MemberJoinVO data, Role role){
+    public MemberInfoEntity(MemberJoinVO data, String role){
         this.miId = data.getId();
         this.miBirth = data.getBirth();
         this.miEmail = data.getEmail();

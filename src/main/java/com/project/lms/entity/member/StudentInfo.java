@@ -25,7 +25,7 @@ public class StudentInfo extends MemberInfoEntity {
     @Column(name="si_shcool") private String siShcool; //학교
 
     public StudentInfo(MemberJoinVO data){
-        super(data, Role.ROLE_STUDENT);
+        super(data, "ROLE_STUDENT");
         this.siGrade = data.getGrade();
         this.siShcool = data.getShcool();
     }

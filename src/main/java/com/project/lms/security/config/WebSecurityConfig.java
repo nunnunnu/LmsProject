@@ -17,7 +17,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.project.lms.security.filter.JwtAuthenticationFilter;
 import com.project.lms.security.provider.JwtTokenProvider;
-import com.project.lms.vo.PermitSettings;
+import com.project.lms.security.vo.PermitSettings;
 
 import lombok.RequiredArgsConstructor;
 
