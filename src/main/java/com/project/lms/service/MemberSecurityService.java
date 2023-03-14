@@ -15,6 +15,7 @@ import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.MemberResponseVO;
+import com.project.lms.vo.UpdateClassVO;
 import com.project.lms.vo.member.UpdateMemberVO;
 
 import lombok.RequiredArgsConstructor;
@@ -124,5 +125,4 @@ public class MemberSecurityService {
             return m;
         }
     }
-    
 }
