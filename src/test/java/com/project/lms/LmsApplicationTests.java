@@ -7,9 +7,12 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
+import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.repository.GradeInfoRepository;
@@ -17,7 +20,9 @@ import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
+import com.project.lms.service.ScoreBySubjectService;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
+import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
 
 import jakarta.transaction.Transactional;
 
@@ -37,6 +42,8 @@ class LmsApplicationTests {
 	@Autowired
 	TestInfoRepository testInfoRepository;
 
+	@Autowired
+	ScoreBySubjectService scoreBySubjectService;
 	@Test
 	void contextLoads() {
 		TeacherInfo t = new TeacherInfo();
@@ -79,14 +86,22 @@ class LmsApplicationTests {
 		Long student = 2L;
 		StudentInfo memEntity = studentInfoRepository.findById(student).get();
 		List<GradeInfoEntity> stuList = gradeInfoRepository.findByStudent(memEntity);
-		
+
 		for (GradeInfoEntity grade : stuList) {
-		
-		ScoreListBySubjectVO gradeBySubjectList = ScoreListBySubjectVO.builder()
-        .grade(grade.getGrade())
-        .subjectName(grade.getSubject().getSubName())
-        .build();
+
+			ScoreListBySubjectVO gradeBySubjectList = ScoreListBySubjectVO.builder()
+					.grade(grade.getGrade())
+					.subjectName(grade.getSubject().getSubName())
+					.build();
 		}
-		
+
+	}
+
+	@Test
+	void getId() {
+		String id = "hyuk1";
+		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id);
+		System.out.println(memEntity.getMiId());
+
 	}
 }
