@@ -1,4 +1,6 @@
-package com.project.lms.security.vo.request;
+package com.project.lms.vo.request;
+
+import com.project.lms.entity.SubjectInfoEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ScoreListBySubjectVO {
-    private String subject;
+    private SubjectInfoEntity subject;
     private Integer grade;
-}
+
+
+}   

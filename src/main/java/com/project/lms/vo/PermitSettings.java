@@ -1,4 +1,4 @@
-package com.project.lms.security.vo;
+package com.project.lms.vo;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
