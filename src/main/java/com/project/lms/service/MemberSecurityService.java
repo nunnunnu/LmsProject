@@ -16,7 +16,8 @@ import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 
 import lombok.RequiredArgsConstructor;
-
+ // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // TokenVO jwt = tokenProvider.generateToken(authenticationToken);
 @Service
 @RequiredArgsConstructor
 public class MemberSecurityService {
@@ -35,13 +36,8 @@ public class MemberSecurityService {
 }
 
     public MemberLoginResponseVO securityLogin(LoginVO login) {
-        System.out.println(login);
-        //        login.setPwd(AESAlgorithm.Encrypt(login.getPwd()));
         MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
-        // MemberInfoEntity member = memberInfoRepository.findByMiIdAndMiPwd(login.getId(),login.getPwd());
-        // if(member == null) {
-        //     return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
-        // }
+
         if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
             return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
         }
@@ -49,19 +45,19 @@ public class MemberSecurityService {
             return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.FORBIDDEN).build();
         }
       
+        System.out.println("vvvvvv");
         UsernamePasswordAuthenticationToken authenticationToken
         = new UsernamePasswordAuthenticationToken(loginUser.getMiId(),loginUser.getMiPwd());
         
-        // SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        // TokenVO jwt = tokenProvider.generateToken(authenticationToken);
+        System.out.println("aaaaa");
+        Authentication authentication = authBulider.getObject().authenticate(authenticationToken);
+        System.out.println(authentication);
 
-        // Authentication authentication = authBulider.getObject().authenticate(authenticationToken);
-
-       
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
-                        generateToken(authenticationToken)).cod(HttpStatus.OK).build();
+                        generateToken(authentication)).cod(HttpStatus.OK).build();
         return response;
         
     }
     
 }
+ 

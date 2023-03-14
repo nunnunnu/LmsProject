@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +20,7 @@ import com.project.lms.security.vo.TokenVO;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,7 +33,7 @@ public class JwtTokenProvider {
     private final Key key;
     private final Integer tokenExpireMinutes = 60 ; //토근 만료시간 (현재 일주일)
     private final Integer refreshExpireMinutes = 60*24*24; //리프레쉬 토큰 만료시간(현재 한달) 자동로그인도 풀리는경우
-    @Value("${jwt.secretKey}") String secretKey;
+    // @Value("${jwt.secretKey}") String secretKey;
 
     public JwtTokenProvider(@Value("${jwt.secretKey}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -96,7 +98,7 @@ public class JwtTokenProvider {
     //         //     .parseClaimsJws(refreshToken)
     //         //     .getBody();
     //         System.out.println("Aaa");
-    //         String storedRefreshToken = (String)redisTemplate.opsForValue().get("RT:" + username);
+    //         String storedRefreshToken = (String)RedisTemplate.opsForValue().get("RT:" + username);
     //         System.out.println("bbb");
             
     //         return refreshToken.equals(storedRefreshToken);
