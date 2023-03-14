@@ -82,11 +82,11 @@ class LmsApplicationTests {
 		
 		for (GradeInfoEntity grade : stuList) {
 		
-			ScoreListBySubjectVO gradeBySubjectList = ScoreListBySubjectVO.builder()
-					.grade(grade.getGrade())
-					.subject(grade.getSubject())
-					.build();
+		ScoreListBySubjectVO gradeBySubjectList = ScoreListBySubjectVO.builder()
+        .grade(grade.getGrade())
+        .subjectName(grade.getSubject().getSubName())
+        .build();
 		}
-
+		
 	}
 }

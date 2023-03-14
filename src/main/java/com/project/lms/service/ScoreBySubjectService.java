@@ -1,5 +1,4 @@
 package com.project.lms.service;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,14 +25,15 @@ public class ScoreBySubjectService {
 		List<GradeInfoEntity> stuList = gradeInfoRepository.findByStudent(memEntity);
 
 
-		ScoreListBySubjectVO vo = null;
+		List<ScoreListBySubjectVO> voList = new LinkedList<>();
 		for (GradeInfoEntity grade : stuList) {
-			vo = ScoreListBySubjectVO.builder()
-					.subject(grade.getSubject())
+			ScoreListBySubjectVO vo = ScoreListBySubjectVO.builder()
+					.subjectName(grade.getSubject().getSubName())
 					.grade(grade.getGrade()).build();
+			voList.add(vo);
 		}
 		ScoreListBySubjectResponseVO result = ScoreListBySubjectResponseVO.builder().message("성공").status(true)
-				.scoreList(vo).build();
+				.scoreList(voList).build();
 		return result;
 	}
 }

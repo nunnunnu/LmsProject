@@ -16,5 +16,5 @@ import java.util.List;
 public class ScoreListBySubjectResponseVO {
     private String message;
     private Boolean status;
-    private ScoreListBySubjectVO scoreList;
+    private List<ScoreListBySubjectVO> scoreList;
 }
