@@ -2,6 +2,8 @@ package com.project.lms.vo;
 
 import org.springframework.http.HttpStatus;
 
+import com.project.lms.security.vo.TokenVO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
