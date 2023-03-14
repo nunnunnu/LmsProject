@@ -28,9 +28,8 @@ public class MemberSecurityService {
     private final JwtTokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
 
-    public Boolean pwdCheck(String id, String rawPw){ 
-        MemberInfoEntity member = memberInfoRepository.findByMiId(id);
-        if(passwordEncoder.matches(rawPw, member.getMiPwd())){
+    public Boolean pwdCheck(String rawPwd, String encodePwd){ 
+        if(passwordEncoder.matches(rawPwd, encodePwd)){
             return true;
         } else{
             return false;
@@ -61,6 +60,7 @@ public class MemberSecurityService {
     }
 
     public MemberResponseVO updateMember(UpdateMemberVO data, UserDetails userDetails) {
+        System.out.println(userDetails);
         MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
         String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
         if(entity==null) {
