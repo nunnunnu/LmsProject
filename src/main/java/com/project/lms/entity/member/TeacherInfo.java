@@ -30,7 +30,7 @@ public class TeacherInfo extends MemberInfoEntity {
     @Column(name="ti_exp") private String tiExp;
 
     public TeacherInfo(MemberJoinVO data, SubjectInfoEntity sub){
-        super(data, Role.ROLE_TEACHER);
+        super(data, "ROLE_TEACHER");
         this.tiExp = data.getExp();
         this.subject = sub;
     }

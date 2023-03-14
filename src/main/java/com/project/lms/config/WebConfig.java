@@ -10,7 +10,8 @@ public class WebConfig implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
             registry.addMapping("/**")
-            .allowedOrigins("*") //cors에러나면 주소로 변경해야함
+            // .allowedOrigins("*") //cors에러나면 주소로 변경해야함
+            .allowedOriginPatterns("*")
             .allowedMethods(
                 HttpMethod.GET.name(),
                 HttpMethod.HEAD.name(),
@@ -18,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
                 HttpMethod.PUT.name(),
                 HttpMethod.DELETE.name()
             )
-            .allowedHeaders("*");
-            // .allowCredentials(true);
+            .allowedHeaders("*")
+            .allowCredentials(true);
         }
 }

@@ -1,4 +1,4 @@
-package com.project.lms.vo;
+package com.project.lms.security.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
