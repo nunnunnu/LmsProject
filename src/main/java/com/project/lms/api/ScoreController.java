@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ScoreController {
     private final ScoreBySubjectService scoreBySubjectService;
-    // 현재 월의 시험 결과 조회
+    // 이번 달 시험 결과 조회
     @GetMapping("/now")
     public ScoreListBySubjectResponseVO getScoreList(@AuthenticationPrincipal UserDetails userDetails) {
         // System.out.println(userDetails.getUsername());  // 해당 id 값을 불러올 수 있는 test  

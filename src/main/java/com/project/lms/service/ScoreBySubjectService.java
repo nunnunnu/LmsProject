@@ -10,7 +10,9 @@ import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
+import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
+import com.project.lms.vo.response.ScoreListBySubjectYearResponseVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +23,7 @@ public class ScoreBySubjectService {
     private final GradeInfoRepository gradeInfoRepository;
 	private final MemberInfoRepository memberInfoRepository;
 	
-	// 현재 월의 시험 정보(과목 명, 점수) 출력
+	// 이번 달 시험 정보(과목 명, 점수) 출력
 	public ScoreListBySubjectResponseVO getSubjectList(String id) {
 		LocalDate now = LocalDate.now(); // 현재 날짜 
 		String localDateTimeFormat1 = now.format(DateTimeFormatter.ofPattern("yyyy-MM")); // 현재 날짜를 "yyyy-MM"으로 형식으로 바꾼다.
@@ -29,9 +31,9 @@ public class ScoreBySubjectService {
 		List<GradeInfoEntity> stuList = gradeInfoRepository.findByStudent(memEntity); // 해당 회원의 성적 정보를 찾는다. (과목별로 있기 떄문에 List로 받는다.)
 		List<ScoreListBySubjectVO> voList = new LinkedList<>(); // 정보를 담을 list를 생성한다.
 		for (GradeInfoEntity grade : stuList) { // 회원의 성적 정보를 for문으로 찾는다.
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM"); 
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 			String strDate = grade.getTest().getTestDate().format(formatter); // 해당 회원이 친 테스트의 날짜를 "yyyy-MM" 형식으로 바꾼다.
-			if (localDateTimeFormat1.equals(strDate)) { //  현재 월의 시험 정보만 voList에 담을 수 있도록 한다.
+			if (localDateTimeFormat1.equals(strDate)) { //  이번달 시험 정보만 voList에 담을 수 있도록 한다.
 				// vo에 과목 명, 과목 점수를 담는다. 
 				ScoreListBySubjectVO vo = ScoreListBySubjectVO.builder()
 						.subjectName(grade.getSubject().getSubName())
@@ -50,6 +52,18 @@ public class ScoreBySubjectService {
 				.scoreList(voList).build(); // responseVO에 담는다.
 		return result; // 출력한다.
 	}
+
+	
+
+	//올해 시험 정보(과목 명, 점수) 출력
+	
+	// public ScoreListBySubjectYearResponseVO getSubjectList2(Long student) {
+	// 	List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(student);
+	// 	List<ScoreListBySubjectYearVO> testList = new LinkedList<>();
+	// 	for (ScoreListBySubjectYearVO vo : voList) {
+	// 		// if(vo.getTestName())
+	// 	}
+	// }
 	
 	
 }

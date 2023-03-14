@@ -2,6 +2,7 @@ package com.project.lms;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.service.ScoreBySubjectService;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
+import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
 
 import jakarta.transaction.Transactional;
@@ -103,5 +105,28 @@ class LmsApplicationTests {
 		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id);
 		System.out.println(memEntity.getMiId());
 
+	}
+
+	@Test
+	void Year() {
+		LocalDate now = LocalDate.now();
+		System.out.println(now.getYear());
+		List<TestInfoEntity> testList = testInfoRepository.findAll();
+		for (TestInfoEntity monthScoreList : testList) {
+			if (now.getYear() == monthScoreList.getTestDate().getYear()) {
+				System.out.println("ok");
+			}
+
+		}
+	}
+
+	@Test
+	void Query() {
+		Long student = 2L;
+		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(student);
+		// List<ScoreListBySubjectYearVO> list = new LinkedList<>();
+		for (ScoreListBySubjectYearVO vo : voList) {
+			System.out.println(vo.getTestName());
+		}
 	}
 }
