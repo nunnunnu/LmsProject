@@ -20,4 +20,7 @@ public class ClassInfoEntity {
     @Column(name = "ci_mi_seq", nullable = false)
     private Long ciMiSeq;
 
+    public Long getCiSeq(){
+        return ciSeq;
+    }
 }

@@ -27,6 +27,7 @@ public class FeedbackInfo extends BaseTimeEntity {
     @Column(name="fi_seq") private Long fiSeq;
     @Column(name="fi_mi_seq") private Long fiMiSeq;
     @Column(name="fi_mi2_seq") private Long fiMi2Seq;
+    @Column(name="fi_title") private String fiTitle;
     @Column(name="fi_content") private String fiContent;
     @Column(name="create_dt") private LocalDate createDt;
     @Column(name="modify_dt") private LocalDate modifyDt;

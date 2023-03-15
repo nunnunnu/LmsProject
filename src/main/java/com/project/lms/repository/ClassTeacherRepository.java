@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface ClassTeacherRepository extends JpaRepository<ClassTeacherEntity, Long> {
     @EntityGraph( attributePaths = {"classInfo"})
-    ClassTeacherEntity findByTeacher(TeacherInfo entity);   
+    ClassTeacherEntity findByTeacher(TeacherInfo entity);
+
 }
