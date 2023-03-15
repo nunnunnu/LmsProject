@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
+import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.vo.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
 public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long> {
@@ -45,4 +47,7 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     "WHERE gi.student.miSeq =:seq AND FUNCTION('date_format',ti.testDate ,'%Y' ) = FUNCTION('date_format', now(),'%Y') GROUP BY ti.testSeq")
     List<ScoreListBySubjectYearVO> findByYearScoreList(@Param("seq") Long seq);
 
+
+    @Query("select avg(g.grade)as avg from GradeInfoEntity g where g.teacher = :teacher group by g.subject")
+    ScoreAvgBySubjectVO avgBySubject(@Param("teacher") TeacherInfo teacher);
 }
