@@ -1,17 +1,16 @@
 package com.project.lms.service;
 
-import java.util.regex.Pattern;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +21,9 @@ import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MailVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.MemberResponseVO;
-import com.project.lms.vo.UpdateClassVO;
-import com.project.lms.vo.member.UpdateMemberVO;
 import com.project.lms.vo.member.MemberSearchIdVO;
 import com.project.lms.vo.member.MemberSearchPwdVO;
+import com.project.lms.vo.member.UpdateMemberVO;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
