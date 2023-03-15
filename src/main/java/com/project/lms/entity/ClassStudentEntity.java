@@ -31,4 +31,7 @@ public class ClassStudentEntity {
     @OneToOne
     @JoinColumn(name = "cs_mi_seq", nullable = false) private StudentInfo student;
 
+    public void changeClass(ClassInfoEntity classInfo){
+        this.classInfo = classInfo;
+    }
 }

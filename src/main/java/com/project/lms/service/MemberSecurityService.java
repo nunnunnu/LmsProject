@@ -22,6 +22,7 @@ import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MailVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.MemberResponseVO;
+import com.project.lms.vo.UpdateClassVO;
 import com.project.lms.vo.member.UpdateMemberVO;
 import com.project.lms.vo.member.MemberSearchIdVO;
 import com.project.lms.vo.member.MemberSearchPwdVO;
@@ -39,9 +40,8 @@ public class MemberSecurityService {
     private static final String FROM_ADDRESS = "rudwns0401@gmail.com";
     
 
-    public Boolean pwdCheck(String id, String rawPw){ 
-        MemberInfoEntity member = memberInfoRepository.findByMiId(id);
-        if(passwordEncoder.matches(rawPw, member.getMiPwd())){
+    public Boolean pwdCheck(String rawPwd, String encodePwd){ 
+        if(passwordEncoder.matches(rawPwd, encodePwd)){
             return true;
         } else{
             return false;
@@ -95,10 +95,10 @@ public class MemberSecurityService {
             .build();
             return m;
         }
-        if(data.getMiPwd().length() <8 ) {
+        if(data.getMiPwd().length() > 16 || data.getMiPwd().length() > 8) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
-            .message("비밀번호는 8자리 이상 가능합니다")
+            .message("비밀번호는 8~16자로 입력해주세요.")
             .code(HttpStatus.BAD_REQUEST)
             .build();
             return m;
@@ -123,7 +123,6 @@ public class MemberSecurityService {
             return m;
         } 
         else{
-            
             entity.updatePwd(passwordEncoder.encode(data.getChangeMiPwd()));
             memberInfoRepository.save(entity);
 
@@ -134,6 +133,7 @@ public class MemberSecurityService {
             return m;
         }
     }
+
     public Map<String, Object> searchMemberId(MemberSearchIdVO data) { //아이디찾기
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
     // 사용자 이름, 생일 , 이메일 받아서 리스트에 있는 것과 비교하여 해당 전화번호에 맞는 아이디 찾기
@@ -211,6 +211,5 @@ public class MemberSecurityService {
         }
         return str;
       }
-    
 }
  
