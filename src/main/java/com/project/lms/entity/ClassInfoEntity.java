@@ -1,9 +1,15 @@
 package com.project.lms.entity;
 
+import com.project.lms.entity.member.EmployeeInfo;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Entity
 @Table(name = "class_info")
+@AllArgsConstructor
+@Getter
 public class ClassInfoEntity {
 
     @Id
@@ -17,7 +23,7 @@ public class ClassInfoEntity {
     @Column(name = "ci_limit", nullable = false)
     private Integer ciLimit;
 
-    @Column(name = "ci_mi_seq", nullable = false)
-    private Long ciMiSeq;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "ci_mi_seq", nullable = false)
+    private EmployeeInfo employee;
 
 }
