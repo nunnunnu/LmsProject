@@ -11,10 +11,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="class_teacher")
+@Getter
 public class ClassTeacherEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ct_seq") private Long ctSeq;

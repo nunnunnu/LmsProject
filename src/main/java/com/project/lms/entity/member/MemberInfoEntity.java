@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Getter
-// @Setter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
