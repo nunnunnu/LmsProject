@@ -1,15 +1,20 @@
 package com.project.lms;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
@@ -21,7 +26,9 @@ import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
+import com.project.lms.service.MemberSecurityService;
 import com.project.lms.service.ScoreBySubjectService;
+import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
@@ -30,6 +37,7 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 class LmsApplicationTests {
+	
 	@Autowired
 	GradeInfoRepository gradeInfoRepository;
 
@@ -46,6 +54,10 @@ class LmsApplicationTests {
 
 	@Autowired
 	ScoreBySubjectService scoreBySubjectService;
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	@Autowired
+	MemberSecurityService memberSecurityService;
 	@Test
 	void contextLoads() {
 		TeacherInfo t = new TeacherInfo();
@@ -128,4 +140,46 @@ class LmsApplicationTests {
 			System.out.println(vo.getComprehension());
 		}
 	}
-}
+
+
+	@Test
+	void testLogin() {
+		String id = "hyuk1";
+		String pwd  = "asdf123!";
+		
+		MemberInfoEntity loginUser = memberInfoRepository.findByMiId(id);
+
+		Boolean login = null;
+		if(loginUser == null ||!passwordEncoder.matches(pwd, loginUser.getMiPwd())) {
+			login = false;
+		}
+		else{
+			login = true;	
+		}
+
+			Assertions.assertEquals(login, true, "login은 false가 아닙니다.");
+			
+		}
+		@Test
+		void findid() {
+			String name = "차경준";
+			LocalDate birth = LocalDate.of(1995, 1, 1);
+			String email = "say052@naver.com";
+
+			MemberInfoEntity member = memberInfoRepository.findByMiNameAndMiBirthAndMiEmail(name, birth, email);
+
+			Assertions.assertNotEquals(member, null);
+	
+		}
+		@Test
+		void findpwd() {
+			String id = "user012";
+			String name = "차경준";
+			String email = "say052@naver.com";
+
+			MemberInfoEntity member = memberInfoRepository.findByMiIdAndMiNameAndMiEmail(id, name, email);
+
+			Assertions.assertNotEquals(member, null);
+	
+		}
+	}
