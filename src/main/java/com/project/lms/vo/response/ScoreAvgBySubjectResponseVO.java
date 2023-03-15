@@ -2,7 +2,7 @@ package com.project.lms.vo.response;
 
 import java.util.List;
 
-import com.project.lms.vo.request.ScoreListBySubjectYearVO;
+import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ScoreListBySubjectYearResponseVO {
+public class ScoreAvgBySubjectResponseVO {
     private String message;
-    private Boolean status;
-    private List<ScoreListBySubjectYearVO> scoreList;
-    private List<Object> ExplanationList;
+    private Boolean code;
+    private List<ScoreAvgBySubjectVO> subjectAvgList; 
 }

@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
+import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
 import com.project.lms.vo.response.ScoreListBySubjectYearResponseVO;
+import com.project.lms.vo.response.ScoreMessageVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -55,15 +57,52 @@ public class ScoreBySubjectService {
 
 	
 
-	// 올해 시험 정보(과목 명, 점수) 출력
+	// 올해 시험 정보(과목 명, 점수) & 성적 통계 메세지 출력
 	
 	public ScoreListBySubjectYearResponseVO getSubjectList2(String id) {
-		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id);
-		Long seq = memEntity.getMiSeq();
-		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(seq);
-		ScoreListBySubjectYearResponseVO vo = new ScoreListBySubjectYearResponseVO("이번 년 과목 별 성적 조회 성공", true, voList);
-		return vo;
+		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id); // 토큰을 가진 학생의 정보를 가져온다.
+		Long seq = memEntity.getMiSeq(); // 학생의 고유번호를 변수 seq로 받는다.
+		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(seq); // 이번년 과목별 성적을 list로 받는다.
+		List<Object> ExplantionList  = new LinkedList<>(); // 성적 통계 설명을 넣을 list를 생성한다.
+			Integer score_difference1 = voList.get(voList.size() - 1).getComprehension() // 전 월달의 독해 과목의 점수차이
+					- voList.get(voList.size() - 2).getComprehension();
+			ExplantionList.add("전 월달에 비해 독해과목이 " + score_difference1 + "점 "
+					+ (score_difference1 > 0 ? "올랐습" : score_difference1 < 0 ? "내려갔습" : "동일합") + "니다.");
+			
+			Integer score_difference2 = voList.get(voList.size() - 1).getGrammer() // 전 월달의 문법 과목의 점수차이
+			- voList.get(voList.size() - 2).getGrammer();
+			ExplantionList.add("전 월달에 비해 문법과목이 " + score_difference2 + "점 "
+					+ (score_difference2 > 0 ? "올랐습" : score_difference2 < 0 ? "내려갔습" : "동일합") + "니다.");
+
+		Integer score_difference3 = voList.get(voList.size() - 1).getListening() // 전 월달의 듣기 과목의 점수차이
+			- voList.get(voList.size() - 2).getListening();
+			ExplantionList.add("전 월달에 비해 듣기과목이 " + score_difference3 + "점 "
+					+ (score_difference3 > 0 ? "올랐습" : score_difference3 < 0 ? "내려갔습" : "동일합") + "니다.");
+
+		Integer score_difference4 = voList.get(voList.size() - 1).getVocabulary() // 전 월달의 어휘 과목의 점수차이
+			- voList.get(voList.size() - 2).getVocabulary();
+		ExplantionList.add("전 월달에 비해 어휘과목이 " + score_difference4 + "점 "
+					+ (score_difference4 > 0 ? "올랐습" : score_difference4 < 0 ? "내려갔습" : "동일합") + "니다.");		
+		// ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("올해 시험 과목 별 점수 조회 성공", true, voList);
+		ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("올해 시험 과목 별 점수 조회 성공", true,
+				voList, ExplantionList);
+		return result;
+
 	}
 	
+	// // 이번 년 과목 별 평균 구해서 취약 과목 알아내기
+	// public ScoreListBySubjectYearResponseVO getSubjectAvgList(String id) {
+	// 	MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id); // 토큰을 가진 학생의 정보를 가져온다.
+	// 	Long seq = memEntity.getMiSeq(); // 학생의 고유번호를 변수 seq로 받는다.
+	// 	List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(seq); // 이번년 과목별 성적을 list로 받는다.
+	// 	List<ScoreAvgBySubjectVO> avgList = new LinkedList<>();
+		
+	// 	for (ScoreListBySubjectYearVO vo : voList) {
+
+	// 	}
+
+
+	// 	return null;
+	// }
 	
 }
