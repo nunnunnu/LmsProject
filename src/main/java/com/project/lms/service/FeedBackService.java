@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class FeedBackService {
-    private final ClassInfoRepository cRepo;
     private final ClassTeacherRepository ctRepo;
     private final ClassStudentRepository csRepo;
     private final TeacherInfoRepository tRepo;
@@ -39,7 +38,8 @@ public class FeedBackService {
         ClassTeacherEntity ctInfo = ctRepo.findByTeacher(tInfo); // 그 정보를 가지고 classTeach 정보를 찾는다.
         Long ctSeq = ctInfo.getClassInfo().getCiSeq(); // 선생님의 반 고유번호를 변수 seq에 담는다.
 
-        StudentInfo sInfo = sRepo.findByMiId(id);
+        StudentInfo sInfo = sRepo.findById(stuSeq).orElse(null);
+
         ClassStudentEntity csInfo = csRepo.findByStudent(sInfo);
         Long csSeq = csInfo.getClassInfo().getCiSeq();
 
@@ -52,10 +52,12 @@ public class FeedBackService {
             return f;
         }
         else{
-            // FeedbackInfo entity = new FeedbackInfo(, ctSeq, csSeq, data.getFiTitle(), data.getFiContent());
-
+            FeedbackInfo entity = new FeedbackInfo(null, data.getFiTitle(), sInfo, tInfo, data.getFiContent(), 1);
+            fRepo.save(entity);
+            FeedBackResponseVO f = FeedBackResponseVO.builder()
+            .status(true).message("피드백 작성을 완료하였습니다.").code(HttpStatus.ACCEPTED)
+            .build();
+            return f;
         }
-
-        return null;
     }
 }
