@@ -28,6 +28,7 @@ import lombok.Setter;
 public class FeedbackInfo extends BaseTimeEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="fi_seq") private Long fiSeq;
+    @Column(name="fi_title") private String fiTitle;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name="fi_mi_seq") private StudentInfo student;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name="fi_mi2_seq") private TeacherInfo teacher;
     @Column(name="fi_content") private String fiContent;
