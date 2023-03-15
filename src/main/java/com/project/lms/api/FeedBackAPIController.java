@@ -2,6 +2,7 @@ package com.project.lms.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,8 @@ public class FeedBackAPIController {
     private final FeedBackService fService;
     @Operation(summary = "피드백 작성")
     @PutMapping("/{stuSeq}")
+    @Secured("ROLE_TEACHER") //선생님만 조회가능하도록 권한 설정. 선생님이 아니라면 접속 차단(403에러)
     public ResponseEntity<FeedBackResponseVO> putFeedBack(@PathVariable Long stuSeq, @RequestBody FeedBackVO data, @AuthenticationPrincipal UserDetails userDetails) {
-        return new ResponseEntity<>(/* fService.putFeedBack(stuSeq, data, userDetails) */null, HttpStatus.OK);
+        return new ResponseEntity<>(fService.putFeedBack(userDetails.getUsername(), stuSeq, data), HttpStatus.OK);
     }
 }
