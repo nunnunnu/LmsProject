@@ -11,6 +11,6 @@ public interface MemberInfoRepository extends JpaRepository<MemberInfoEntity, Lo
     MemberInfoEntity findByMiId(String username);
     MemberInfoEntity findByMiNameAndMiBirthAndMiEmail (String name,LocalDate birth, String email);
     MemberInfoEntity findByMiIdAndMiNameAndMiEmail (String id,String name, String email);
-    Boolean existsByMiId(String userId);
+    Boolean existsByMiId(String userId); //DB에 아이디가 있는지 검사. count보다 성능이좋음
     MemberInfoEntity findByMiSeq(Long miSeq);
 }

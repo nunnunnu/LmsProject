@@ -1,6 +1,7 @@
 package com.project.lms.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import com.project.lms.vo.MapVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.member.MemberJoinVO;
+import com.project.lms.vo.member.RefreshTokenVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,15 +69,15 @@ public class MemberController {
         return new ResponseEntity<>(response,response.getCod());
     }
     
+    @GetMapping("/refresh")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "403", description = "토큰이 들어오지 않았거나, 회원의 등급이 선생님이 아닐때 접근이 차단됩니다. 토큰을 넣었는데 403에러가뜨면 로그인한 회원의 분류를 확인해주세요", content = @Content(schema = @Schema(implementation = MapVO.class))),
-        @ApiResponse(responseCode = "200", description = "조회성공", content = @Content(array=@ArraySchema(schema = @Schema(implementation = ClassStudentListVO.class))))})
-    @Operation(summary = "선생님의 소속 학생 조회", description ="일단 회원번호와 이름만 표기되게했습니다. 추가로 필요한정보가 있으면 말씀해주세요")
-    @GetMapping("/class")
-    @Secured("ROLE_TEACHER")
-    public ResponseEntity<List<ClassStudentListVO>> getClassMember(@AuthenticationPrincipal UserDetails userDetails){
-        List<ClassStudentListVO> result = mService.classMemberFind(userDetails);
+        @ApiResponse(responseCode = "400", description = "로그인 후 급받은 리프레쉬토큰이 아니거나 만료된 리프레쉬 토큰입니다. 에러나면 로그아웃시키고 로그인페이지로 이동시켜주세요 ", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "200", description = "발급 성공", content = @Content(schema = @Schema(implementation = MapVO.class)))})
+    @Operation(summary = "토큰 재발급", description ="로그인할때 받은 리프레쉬 토큰으로 엑세스 토큰을 재발급 받는 기능입니다. 엑세스 토큰이 만료되었을때 재발급받아주세요. 만약 여기서도 에러가 뜬다면 로그아웃처리해주시면 됩니다")
+    public ResponseEntity<Object> accessToken(@RequestBody RefreshTokenVO refresh){
+        Map<String, Object> map = mService.accessToken(refresh.getRefresh());
         
-        return new ResponseEntity<List<ClassStudentListVO>>(result, HttpStatus.OK);
+        return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
+        
     }
 }

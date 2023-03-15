@@ -9,15 +9,15 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class RedisService {
+public class RedisService { //레디스에 토큰을 저장/조회/삭제하기 위한 서비스
 
     private final RedisTemplate redisTemplate;
 
     // 키-벨류 설정
-    public void setValues(String token, String email){
+    public void setValues(String token, String id){
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         //values.set(name, age);
-        values.set(token, email, Duration.ofMinutes(60*24*24));  //3분뒤 메모리에서 삭제
+        values.set(token, id, Duration.ofMinutes(60*24*24));  //3분뒤 메모리에서 삭제
     }
 
     // 키값으로 벨류 가져오기

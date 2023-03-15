@@ -3,6 +3,7 @@ package com.project.lms.service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.Random;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
@@ -36,6 +37,7 @@ public class MemberSecurityService {
     private final JwtTokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private static final String FROM_ADDRESS = "rudwns0401@gmail.com";
+    private final RedisService redisService;
     
 
     public Boolean pwdCheck(String rawPwd, String encodePwd){ 
@@ -65,9 +67,11 @@ public class MemberSecurityService {
         Authentication authentication =
         authBulider.getObject().authenticate(authenticationToken);
         // 토큰 발급
-        String accessToken = tokenProvider.generateToken(authentication).getAccessToken();
-        String refreshToken = tokenProvider.generateToken(authentication).getRefreshToken();
-        // redisService.setValues(refreshToken, loginUser.getMiId());
+
+        String refreshToken = tokenProvider.generateToken(authentication).getRefreshToken(); //리프레쉬토큰 변수 저장
+
+        redisService.setValues(refreshToken, loginUser.getMiId()); //redis에 refresh토큰 저장
+
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
                         generateToken(authentication)).cod(HttpStatus.OK).build();
         return response;
@@ -196,18 +200,16 @@ public class MemberSecurityService {
         mailSender.send(message);
     }
     public String getTempPassword(){// 랜덤 비밀번호 생성
-        char[] charSet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-
-        String str = "";
-
-        // 문자 배열 길이의 값을 랜덤으로 10개를 뽑아 구문을 작성함
-        int idx = 0;
-        for (int i = 0; i < 10; i++) {
-            idx = (int) (charSet.length * Math.random());
-            str += charSet[idx];
-        }
-        return str;
+     int leftLimit = 48; // numeral '0'
+    int rightLimit = 122; // letter 'z'
+    int targetStringLength = 10;
+    Random random = new Random();
+    String generatedString = random.ints(leftLimit, rightLimit + 1)
+                                   .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                                   .limit(targetStringLength)
+                                   .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                                   .toString();
+                                   return generatedString;
       }
 }
  
