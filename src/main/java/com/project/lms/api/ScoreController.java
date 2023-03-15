@@ -30,7 +30,9 @@ public class ScoreController {
     }
 
     // 이번 년 시험 결과 및 성적 통계 메세지 조회
-     @GetMapping("/year")
+    @GetMapping("/year")
+    @Operation(summary = "", description ="", security = @SecurityRequirement(name = "bearerAuth"))
+    @Secured("ROLE_STUDENT")
     public ScoreListBySubjectYearResponseVO getScoreList2(@AuthenticationPrincipal UserDetails userDetails) {
         ScoreListBySubjectYearResponseVO result = scoreBySubjectService.getSubjectList2(userDetails.getUsername());
         return result;
