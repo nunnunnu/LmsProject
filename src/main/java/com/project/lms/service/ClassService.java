@@ -2,6 +2,8 @@ package com.project.lms.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -49,7 +51,7 @@ public class ClassService {
         return ClassResponseVO.builder().code(HttpStatus.OK).message("반변경이 완료되었습니다.").status(true).build();
     }
 
-    public List<ClassStudentListVO> classMemberFind(UserDetails userDetails){
+    public Page<ClassStudentListVO> classMemberFind(UserDetails userDetails, Pageable page){
         TeacherInfo teacher = tRepo.findByMiId(userDetails.getUsername()); //토큰정보로 회원을 찾음
         
         if(teacher==null){
@@ -57,10 +59,10 @@ public class ClassService {
         }
         ClassTeacherEntity classTeacher = ctRepo.findByTeacher(teacher); //찾은 선생님으로 연결 테이블 조회
 
-        List<ClassStudentEntity> students = csRepo.findByClassInfo(classTeacher.getClassInfo()); //연결테이블에서 가져온 반으로 학생-반 연결테이블 조회. 모든 연결 테이블 조회(fetch join)
+        Page<ClassStudentEntity> students = csRepo.findByClassInfo(classTeacher.getClassInfo(), page); //연결테이블에서 가져온 반으로 학생-반 연결테이블 조회. 모든 연결 테이블 조회(fetch join)
 
-        List<ClassStudentListVO> result = //가져온 연결 테이블에서 학생 entity를 가져와서 VO로 변환
-                students.stream().map((s)->new ClassStudentListVO(s.getStudent())).toList(); //for문을 사용해서 변환하는 것과 같음. 람다식으로 표현
+        Page<ClassStudentListVO> result = //가져온 연결 테이블에서 학생 entity를 가져와서 VO로 변환
+                students.map(s->new ClassStudentListVO(s.getStudent())); //for문을 사용해서 변환하는 것과 같음. 람다식으로 표현
 
         return result; //결과 반환
     }

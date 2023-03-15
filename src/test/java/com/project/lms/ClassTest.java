@@ -1,14 +1,15 @@
 package com.project.lms;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDate;
-import java.util.List;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lms.entity.ClassInfoEntity;
@@ -109,9 +110,10 @@ public class ClassTest {
     public void 선생님이소속된반의학생조회(){
         ClassTeacherEntity classTeacher = ctRepo.findByTeacher(teacher);
         ClassInfoEntity classEntity = classTeacher.getClassInfo();
+        PageRequest pageRequest = PageRequest.of(0, 10);
 
-        List<ClassStudentEntity> result = csRepo.findByClassInfo(classEntity);
+        Page<ClassStudentEntity> result = csRepo.findByClassInfo(classEntity, pageRequest);
 
-        assertThat(result.size()).isNotEqualTo(0);
+        assertThat(result.getContent().size()).isNotEqualTo(0);
     }
 }

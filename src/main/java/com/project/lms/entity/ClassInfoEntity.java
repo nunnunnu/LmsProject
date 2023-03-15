@@ -5,11 +5,13 @@ import com.project.lms.entity.member.EmployeeInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "class_info")
 @AllArgsConstructor
 @Getter
+@NoArgsConstructor
 public class ClassInfoEntity {
 
     @Id
