@@ -36,6 +36,7 @@ public class MemberSecurityService {
     private final JwtTokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private static final String FROM_ADDRESS = "rudwns0401@gmail.com";
+    private final RedisService redisService;
     
 
     public Boolean pwdCheck(String rawPwd, String encodePwd){ 
@@ -65,9 +66,11 @@ public class MemberSecurityService {
         Authentication authentication =
         authBulider.getObject().authenticate(authenticationToken);
         // 토큰 발급
-        String accessToken = tokenProvider.generateToken(authentication).getAccessToken();
-        String refreshToken = tokenProvider.generateToken(authentication).getRefreshToken();
-        // redisService.setValues(refreshToken, loginUser.getMiId());
+
+        String refreshToken = tokenProvider.generateToken(authentication).getRefreshToken(); //리프레쉬토큰 변수 저장
+
+        redisService.setValues(refreshToken, loginUser.getMiId()); //redis에 refresh토큰 저장
+
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
                         generateToken(authentication)).cod(HttpStatus.OK).build();
         return response;

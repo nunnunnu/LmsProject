@@ -36,16 +36,16 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name="member_info")
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name="mi_dtype")//기본값이 DTYPE
-@DiscriminatorValue("mas")
+@Inheritance(strategy = InheritanceType.JOINED) //매핑 전략을 Join으로 설정
+@DiscriminatorColumn(name="mi_dtype") //구분정보를 mi_dtype칼럼에 저장하겠다는 의미
+@DiscriminatorValue("mas") //MemberInfoEntity를 memberInfoRepository에 save하면 자동으로 mi_dtype에 mas로 저장됨
 @SuperBuilder
 public class MemberInfoEntity implements UserDetails{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="mi_seq") private Long miSeq;
     @Column(name="mi_id") private String miId;
     @Column(name="mi_pwd") private String miPwd;
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(value = EnumType.STRING) //설정안하면 enum이 저장된 위치로 DB에 저장됨. enum순서가 틀어지면 DB가 꼬일 가능성이 있어서 순서로 저장하는것은 권장하는 방법이 아님
     @Column(name="mi_role") private Role miRole;
     @Column(name="mi_name") private String miName;
     @Column(name="mi_birth") private LocalDate miBirth;
@@ -57,7 +57,7 @@ public class MemberInfoEntity implements UserDetails{
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> roles = new HashSet<>();
-        roles.add(new SimpleGrantedAuthority(this.miRole.toString()));
+        roles.add(new SimpleGrantedAuthority(this.miRole.toString())); //Enum타입을 String으로 바꾸기 위해 toString사용함
         return roles;
     }
     @Override
@@ -88,7 +88,7 @@ public class MemberInfoEntity implements UserDetails{
         return miStatus==true;
     }
 
-    public MemberInfoEntity(MemberJoinVO data, Role role){
+    public MemberInfoEntity(MemberJoinVO data, Role role){ //entity안에 dto를 파라미터를 받는것은 권장되는 방법은 아니나 사용함(같은 패키지면 사용해도됨)
         this.miId = data.getId();
         this.miBirth = data.getBirth();
         this.miEmail = data.getEmail();
