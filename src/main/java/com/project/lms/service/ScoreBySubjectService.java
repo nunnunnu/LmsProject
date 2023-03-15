@@ -5,16 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.project.lms.entity.member.MemberInfoEntity;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
-import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
 import com.project.lms.vo.response.ScoreListBySubjectYearResponseVO;
-import com.project.lms.vo.response.ScoreMessageVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -46,12 +46,12 @@ public class ScoreBySubjectService {
 		if (voList.isEmpty()) { // 만약에 volist에 아무것도 없다면
 			ScoreListBySubjectResponseVO result = ScoreListBySubjectResponseVO.builder().message("이번달의 시험 정보가 없습니다.")
 					.status(true)
-					.scoreList(voList).build(); // responseVO에 담는다.
+					.scoreList(voList).code(HttpStatus.OK).build(); // responseVO에 담는다.
 			return result; // 출력한다.
 		}
 		// 그게 아니라면 
 		ScoreListBySubjectResponseVO result = ScoreListBySubjectResponseVO.builder().message("성공").status(true)
-				.scoreList(voList).build(); // responseVO에 담는다.
+				.scoreList(voList).code(HttpStatus.OK).build(); // responseVO에 담는다.
 		return result; // 출력한다.
 	}
 
@@ -83,9 +83,10 @@ public class ScoreBySubjectService {
 			- voList.get(voList.size() - 2).getVocabulary();
 		ExplantionList.add("전 월달에 비해 어휘과목이 " + score_difference4 + "점 "
 					+ (score_difference4 > 0 ? "올랐습" : score_difference4 < 0 ? "내려갔습" : "동일합") + "니다.");		
-		// ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("올해 시험 과목 별 점수 조회 성공", true, voList);
-		ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("올해 시험 과목 별 점수 조회 성공", true,
+		ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("올해 시험 과목 별 점수 조회 성공", true, HttpStatus.OK,
 				voList, ExplantionList);
+				
+
 		return result;
 
 	}
