@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ScoreListBySubjectVO {
-    private SubjectInfoEntity subject;
+    //  private SubjectInfoEntity subject;
+    private String subjectName;
     private Integer grade;
 
 
