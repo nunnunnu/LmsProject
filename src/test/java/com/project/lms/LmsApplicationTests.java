@@ -124,9 +124,8 @@ class LmsApplicationTests {
 	void Query() {
 		Long student = 2L;
 		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(student);
-		// List<ScoreListBySubjectYearVO> list = new LinkedList<>();
 		for (ScoreListBySubjectYearVO vo : voList) {
-			System.out.println(vo.getTestName());
+			System.out.println(vo.getComprehension());
 		}
 	}
 }

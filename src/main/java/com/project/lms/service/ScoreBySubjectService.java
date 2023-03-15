@@ -55,15 +55,15 @@ public class ScoreBySubjectService {
 
 	
 
-	//올해 시험 정보(과목 명, 점수) 출력
+	// 올해 시험 정보(과목 명, 점수) 출력
 	
-	// public ScoreListBySubjectYearResponseVO getSubjectList2(Long student) {
-	// 	List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(student);
-	// 	List<ScoreListBySubjectYearVO> testList = new LinkedList<>();
-	// 	for (ScoreListBySubjectYearVO vo : voList) {
-	// 		// if(vo.getTestName())
-	// 	}
-	// }
+	public ScoreListBySubjectYearResponseVO getSubjectList2(String id) {
+		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id);
+		Long seq = memEntity.getMiSeq();
+		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(seq);
+		ScoreListBySubjectYearResponseVO vo = new ScoreListBySubjectYearResponseVO("이번 년 과목 별 성적 조회 성공", true, voList);
+		return vo;
+	}
 	
 	
 }
