@@ -24,13 +24,13 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name="teacher_info")
 @SuperBuilder
-@DiscriminatorValue("tea")
+@DiscriminatorValue("tea") //TeacherInfo DB에 저장하면 자동으로 상위테이블인 member_info의 mi_dtype칼럼에 tea로 저장됨
 public class TeacherInfo extends MemberInfoEntity {
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name="ti_sub_seq") private SubjectInfoEntity subject;
     @Column(name="ti_exp") private String tiExp;
 
     public TeacherInfo(MemberJoinVO data, SubjectInfoEntity sub){
-        super(data, Role.TEACHER);
+        super(data, Role.TEACHER); //상속받은 MemberInfoEntity의 생성자를 사용한다는 의미
         this.tiExp = data.getExp();
         this.subject = sub;
     }

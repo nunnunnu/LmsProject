@@ -13,13 +13,14 @@ import lombok.Getter;
 
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-@MappedSuperclass
-public class BaseTimeEntity {
+@MappedSuperclass 
+public class BaseTimeEntity { //모든 entity에서 공통적으로 자주사용되는 작성일, 수정일을 상속할 entity
 
     @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime created_at;
-
+    @Column(updatable = false, name="create_dt")
+    private LocalDateTime createdDate;
+    
     @LastModifiedDate
-    private LocalDateTime updated_at;
+    @Column(updatable = false, name="modify_dt")
+    private LocalDateTime updatedDate;
 }

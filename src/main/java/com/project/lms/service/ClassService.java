@@ -1,12 +1,16 @@
 package com.project.lms.service;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.ClassInfoEntity;
 import com.project.lms.entity.ClassStudentEntity;
 import com.project.lms.entity.ClassTeacherEntity;
 import com.project.lms.entity.member.StudentInfo;
+import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.error.custom.NotFoundClassException;
 import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.ClassInfoRepository;
@@ -14,6 +18,7 @@ import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
+import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.response.ClassResponseVO;
 
 import lombok.RequiredArgsConstructor;
@@ -42,5 +47,21 @@ public class ClassService {
         csRepo.save(studentClass);
 
         return ClassResponseVO.builder().code(HttpStatus.OK).message("반변경이 완료되었습니다.").status(true).build();
+    }
+
+    public List<ClassStudentListVO> classMemberFind(UserDetails userDetails){
+        TeacherInfo teacher = tRepo.findByMiId(userDetails.getUsername()); //토큰정보로 회원을 찾음
+        
+        if(teacher==null){
+            throw new NotFoundMemberException(); //회원이 없다면 MemberNotFoundException 발생, ControllerSupport에서 처리됨
+        }
+        ClassTeacherEntity classTeacher = ctRepo.findByTeacher(teacher); //찾은 선생님으로 연결 테이블 조회
+
+        List<ClassStudentEntity> students = csRepo.findByClassInfo(classTeacher.getClassInfo()); //연결테이블에서 가져온 반으로 학생-반 연결테이블 조회. 모든 연결 테이블 조회(fetch join)
+
+        List<ClassStudentListVO> result = //가져온 연결 테이블에서 학생 entity를 가져와서 VO로 변환
+                students.stream().map((s)->new ClassStudentListVO(s.getStudent())).toList(); //for문을 사용해서 변환하는 것과 같음. 람다식으로 표현
+
+        return result; //결과 반환
     }
 }
