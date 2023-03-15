@@ -1,20 +1,20 @@
 package com.project.lms.vo.response;
 
-import com.project.lms.vo.request.ScoreListBySubjectVO;
+import java.util.List;
+
+import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ScoreListBySubjectResponseVO {
+public class ScoreListBySubjectYearResponseVO {
     private String message;
     private Boolean status;
-    private List<ScoreListBySubjectVO> scoreList;
+    private List<ScoreListBySubjectYearVO> scoreList;
 }
