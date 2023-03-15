@@ -1,5 +1,7 @@
 package com.project.lms.vo;
 
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -17,5 +19,6 @@ public class MailVO {
     @JsonIgnore
     private String message;
     private String msg;
+    private HttpStatus code;
     
 }

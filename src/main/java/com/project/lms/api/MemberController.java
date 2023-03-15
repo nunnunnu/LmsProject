@@ -22,10 +22,13 @@ import com.project.lms.error.NotValidExceptionResponse;
 import com.project.lms.service.MemberSecurityService;
 import com.project.lms.service.MemberService;
 import com.project.lms.vo.LoginVO;
+import com.project.lms.vo.MailVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.member.MemberJoinVO;
+import com.project.lms.vo.member.MemberSearchIdVO;
+import com.project.lms.vo.member.MemberSearchPwdVO;
 import com.project.lms.vo.member.RefreshTokenVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +65,7 @@ public class MemberController {
 
         return new ResponseEntity<>(mService.joinMember(data, type, bindingResult), HttpStatus.OK);
     }
-
+    @Operation(summary = "로그인", description ="아이디,비밀번호(id,pwd)을 입력 받아 DB와 일치하는 유저가 있을때 로그인 성공")
     @PostMapping("/login")
     public ResponseEntity<MemberLoginResponseVO> postMemberLogin(@RequestBody LoginVO login) {
         MemberLoginResponseVO response = memberSecurityService.securityLogin(login);
@@ -80,4 +83,19 @@ public class MemberController {
         return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
         
     }
+    @Operation(summary = "아이디 찾기", description ="이름,생년월일,이메일(name,birth,email)을 입력 받아 일치하는 정보의 아이디 출력")
+    @PostMapping("/id")
+    public ResponseEntity<Object> searchMemberId(MemberSearchIdVO data){
+        Map<String, Object> map = memberSecurityService.searchMemberId(data);
+        return new ResponseEntity<Object>(map, (HttpStatus)map.get("code"));
+    }
+    @Operation(summary = "비밀번호 찾기", description ="아이디,이름,이메일(id,name,email)을 입력 받아 일치하는 유저의 등록된 메일로 임시 비밀번호 발급")
+    @PostMapping("/pwd")
+        public ResponseEntity<MailVO> searchMemberPwd(MemberSearchPwdVO data){
+        MailVO mail = memberSecurityService.searchMemberPwd(data);
+        // System.out.println(mail);
+        memberSecurityService.mailSend(mail);
+        return new ResponseEntity<MailVO>(mail, mail.getCode());
+    }
+    
 }

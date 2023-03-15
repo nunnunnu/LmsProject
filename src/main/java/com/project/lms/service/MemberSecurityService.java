@@ -165,6 +165,7 @@ public class MemberSecurityService {
     if(User == null) {
       // 찾는 유저정보가 없으면 메시지 출력
      mail.setMsg("등록된 계정이 없습니다.");
+     mail.setCode(HttpStatus.NOT_FOUND);
      return mail;
     }
     else {
@@ -178,6 +179,7 @@ public class MemberSecurityService {
         // 완료되었다는 메시지 출력하고
         mail.setMsg("임시 비밀번호가 등록된 메일로 발송되었습니다.");
         // 임시 비밀번호를 암호화하여 위에서 찾은 유저의 비밀번호를 임시 비밀번호로 변경해준다
+        mail.setCode(HttpStatus.OK);
       User.setMiPwd(passwordEncoder.encode(str));
       // 변경 후에 저장
       memberInfoRepository.save(User);
