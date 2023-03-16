@@ -198,6 +198,17 @@ public class MemberTest {
 			Assertions.assertNotEquals(member, null);
 	
 		}
+        @Test
+		void 오류아이디() {
+			String name = "차경준";
+			LocalDate birth = LocalDate.of(1995, 1, 2);
+			String email = "say052@naver.com";
+
+			MemberInfoEntity member = mRepo.findByMiNameAndMiBirthAndMiEmail(name, birth, email);
+
+			Assertions.assertEquals(member, null);
+	
+		}
 		@Test
 		void findpwd() {
 			String id = "user012";
