@@ -88,27 +88,6 @@ public class JwtTokenProvider {
         return false;
     }
 
-    // public boolean validateRefreshToken(String refreshToken, String username) {
-    //     try {
-    //         // Claims claims = Jwts.parserBuilder()
-    //         //     .setSigningKey(key)
-    //         //     .build()
-    //         //     .parseClaimsJws(refreshToken)
-    //         //     .getBody();
-    //         System.out.println("Aaa");
-    //         String storedRefreshToken = (String)RedisTemplate.opsForValue().get("RT:" + username);
-    //         System.out.println("bbb");
-            
-    //         return refreshToken.equals(storedRefreshToken);
-    //     } catch (JwtException | IllegalArgumentException e) {
-    //         e.printStackTrace();
-    //         return false;
-    //     }
-    // }
-    // public TokenVO reissueAtk(AccountResponse accountResponse) throws JsonProcessingException {
-
-    // }
-
     public boolean isRefreshTokenExpired(String refreshToken) {
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken).getBody();
     

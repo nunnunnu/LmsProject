@@ -47,7 +47,7 @@ public class ClassAPIController {
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "403", description = "토큰이 들어오지 않았거나, 회원의 등급이 선생님이 아닐때 접근이 차단됩니다. 토큰을 넣었는데 403에러가뜨면 로그인한 회원의 분류를 확인해주세요", content = @Content(schema = @Schema(implementation = MapVO.class))),
-        @ApiResponse(responseCode = "400", description = "해당 토큰에서 회원을 찾을 수 없습니다. 엑세스토큰을 확인해주세요", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "400", description = "해당 토큰에서 회원을 찾을 수 없습니다. 엑세스토큰을 확인해주세요 or 담당된 반이 없는 선생님의 계정이거나 조회할 컨텐츠가 없습니다.(반에 소속된 학생 데이터가 아직 없음)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
         @ApiResponse(responseCode = "200", description = "조회성공", content = @Content(array=@ArraySchema(schema = @Schema(implementation = ClassStudentListVO.class))))})
     @Operation(summary = "선생님의 반 소속 학생 조회", description ="일단 회원번호와 이름만 표기되게했습니다. 추가로 필요한정보가 있으면 말씀해주세요", security = @SecurityRequirement(name = "bearerAuth"),
         parameters = {
