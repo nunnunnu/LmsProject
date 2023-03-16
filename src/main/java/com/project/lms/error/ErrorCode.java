@@ -7,6 +7,7 @@ public enum ErrorCode {
     TYPE_DISCODE(400, "T001", "타입을 잘못 입력하셨습니다."),
     CLASS_NOT_FOUND(400, "C001", "반정보를 찾을 수 없습니다.(반 번호 오류)"),
     JOIN_FAILED(400, "M001", "회원가입오류");
+    
 
     private final String code;
     private final String message;

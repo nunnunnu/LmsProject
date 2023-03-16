@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.member.MemberInfoEntity;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.vo.LoginVO;
@@ -53,11 +54,11 @@ public class MemberSecurityService {
         MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
         // 찾은 아이디가 없거나(null) 입력한 비밀번호가 일치하지 않을 때 오류 메시지 출력
         if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
-            return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
+            return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.NOT_FOUND).build();
         }
         // 일치하는 아이디가 있더라도 사용 불가능한 상태이면 오류 메시지 출력
         else if (!loginUser.isEnabled()) {
-            return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.FORBIDDEN).build();
+            return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.BAD_REQUEST).build();
         }
         // 입력한 아이디와 비밀번호를 통해서 인증 과정을 거쳐서
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -165,7 +166,7 @@ public class MemberSecurityService {
     if(User == null) {
       // 찾는 유저정보가 없으면 메시지 출력
      mail.setMsg("등록된 계정이 없습니다.");
-     mail.setCode(HttpStatus.NOT_FOUND);
+     mail.setCode(HttpStatus.BAD_REQUEST);
      return mail;
     }
     else {
