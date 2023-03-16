@@ -20,6 +20,7 @@ import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.response.ClassResponseVO;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,7 +38,8 @@ public class ClassAPIController {
     private final ClassService cService;
     @Operation(summary = "반 변경")
     @PostMapping(value = "/{stuSeq}/{classSeq}")
-    public ResponseEntity<ClassResponseVO> updateClass(@PathVariable Long stuSeq, @PathVariable Long classSeq) {
+    public ResponseEntity<ClassResponseVO> updateClass(@Parameter(name = "stuSeq", description = "학생 번호")@PathVariable Long stuSeq, 
+    @Parameter(name = "classSeq", description = "변경할 반 번호") @PathVariable Long classSeq) {
         return new ResponseEntity<>(cService.updateClass(stuSeq,classSeq), HttpStatus.OK);
     }
 

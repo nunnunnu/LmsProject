@@ -14,6 +14,7 @@ import com.project.lms.vo.MemberResponseVO;
 import com.project.lms.vo.member.UpdateMemberVO;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberInfoAPIController {
     private final MemberSecurityService memberInfoService;
-    @Operation(summary = "회원정보 수정")
+    @Operation(summary = "회원정보 수정", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/update")
     public ResponseEntity<MemberResponseVO> updateMember(
             @AuthenticationPrincipal UserDetails userDetails,
