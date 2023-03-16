@@ -12,8 +12,10 @@ import com.project.lms.vo.response.ScoreListBySubjectYearResponseVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "과목 별 점수 정보 관리", description = "과목 별 점수 조회 API")
 @RestController
 @RequestMapping("/api/score/list")
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class ScoreController {
     private final ScoreBySubjectService scoreBySubjectService;
     // 이번 달 시험 결과 조회
     @GetMapping("/now")
-    @Operation(summary = "", description ="", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "이번 달 과목 별 시험 결과 조회", description ="", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured("ROLE_STUDENT")
     public ScoreListBySubjectResponseVO getScoreList(@AuthenticationPrincipal UserDetails userDetails) {
         // System.out.println(userDetails.getUsername());  // 해당 id 값을 불러올 수 있는 test  
@@ -31,7 +33,7 @@ public class ScoreController {
 
     // 이번 년 시험 결과 및 성적 통계 메세지 조회
     @GetMapping("/year")
-    @Operation(summary = "", description ="", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "이번 년 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description ="", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured("ROLE_STUDENT")
     public ScoreListBySubjectYearResponseVO getScoreList2(@AuthenticationPrincipal UserDetails userDetails) {
         ScoreListBySubjectYearResponseVO result = scoreBySubjectService.getSubjectList2(userDetails.getUsername());
