@@ -12,7 +12,7 @@ import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
-import com.project.lms.vo.ScoreAvgBySubjectVO;
+import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
@@ -52,7 +52,7 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
 
 
     @Query("select avg(g.grade)as avg from GradeInfoEntity g where g.teacher = :teacher group by g.subject")
-    ScoreAvgBySubjectVO avgBySubject(@Param("teacher") TeacherInfo teacher);
+    ScoreAvgListBySubjectVO avgBySubject(@Param("teacher") TeacherInfo teacher);
 
     @Query("select (select sum(g.grade) from GradeInfoEntity g where g.test = :test and g.student = g2.student) as totalSum, Group_concat(Distinct g2.student) as student "
         +"from GradeInfoEntity g2 group by totalSum "
@@ -61,4 +61,17 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     List<SameGrade> sameGrade(@Param("test") TestInfoEntity test);
     @EntityGraph(attributePaths = {"subject"})
     List<GradeInfoEntity> findByTestAndStudent(TestInfoEntity test, StudentInfo student);
+
+
+    @Query("SELECT si.miSeq FROM ClassStudentEntity cst join cst.classInfo ci join cst.student si WHERE ci.ciSeq = :classSeq")
+    List<Long> findByCsSeq(@Param("classSeq") Long classSeq); // 조회하려는 반의 학생 시퀀스를 모두 리스트에 담는다.
+
+    @Query("SELECT sub.subName AS subject, AVG(grd.grade) as avg FROM GradeInfoEntity grd "
+            + "JOIN SubjectInfoEntity sub ON grd.subject.subSeq = sub.subSeq "
+            + "JOIN TestInfoEntity tt ON tt.testSeq = grd.test.testSeq "
+            + "WHERE DATE_FORMAT(tt.testDate, '%Y%m') = :yearMonth AND grd.student.miSeq IN :seqs " 
+            + "GROUP by grd.subject.subSeq")
+    List<ScoreAvgListBySubjectVO> avgBySubject(@Param("seqs")List<Long> list, @Param("yearMonth") Integer yearMonth); // 과목별 평균을 찾아 리스트에 담는다.
+
+
 }

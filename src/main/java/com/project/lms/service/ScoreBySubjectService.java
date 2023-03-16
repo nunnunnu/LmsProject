@@ -51,15 +51,11 @@ public class ScoreBySubjectService {
     private final GradeInfoRepository gradeInfoRepository;
 	private final MemberInfoRepository memberInfoRepository;
 	private final TestInfoRepository testInfoRepository;
-	
-    private final GradeInfoRepository gradeInfoRepository;
-	private final MemberInfoRepository memberInfoRepository;
-	private final StudentInfoRepository studentInfoRepository;
 	private final ClassStudentRepository classStudentRepository;
 	private final ClassInfoRepository classInfoRepository;
 	private final TeacherInfoRepository teacherInfoRepository;
 	private final ClassTeacherRepository classTeacherRepository;
-	 
+	
 
 	// 선생님 or 직원의 담당 반 학생 이번 달 시험정보(과목명, 점수) 출력
 	public ScoreListBySubjectResponseVO getStuSubjectList(UserDetails userDetails, Long student) {
