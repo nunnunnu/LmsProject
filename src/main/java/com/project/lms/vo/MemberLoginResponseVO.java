@@ -19,7 +19,7 @@ public class MemberLoginResponseVO {
     private String message;
     private HttpStatus cod;
     private TokenVO token;
-    private String id;
+    private String name;
     private Role role;
     
 }
