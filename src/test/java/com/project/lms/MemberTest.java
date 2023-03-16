@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lms.entity.ClassInfoEntity;
@@ -34,6 +36,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class MemberTest {
+    
+	@Autowired PasswordEncoder passwordEncoder;
     @Autowired MemberInfoRepository mRepo;
     @Autowired StudentInfoRepository sRepo;
     @Autowired EmployeeInfoRepository eRepo;
@@ -164,4 +168,56 @@ public class MemberTest {
             fail();
         }
     }
+
+    	@Test
+	void testLogin() {
+		String id = "hyuk1";
+		String pwd  = "asdf123!";
+		
+		MemberInfoEntity loginUser = mRepo.findByMiId(id);
+
+		Boolean login = null;
+		if(loginUser == null ||!passwordEncoder.matches(pwd, loginUser.getMiPwd())) {
+			login = false;
+		}
+		else{
+			login = true;	
+		}
+
+			Assertions.assertEquals(login, true, "login은 false가 아닙니다.");
+			
+		}
+		@Test
+		void findid() {
+			String name = "차경준";
+			LocalDate birth = LocalDate.of(1995, 1, 1);
+			String email = "say052@naver.com";
+
+			MemberInfoEntity member = mRepo.findByMiNameAndMiBirthAndMiEmail(name, birth, email);
+
+			Assertions.assertNotEquals(member, null);
+	
+		}
+        @Test
+		void 오류아이디() {
+			String name = "차경준";
+			LocalDate birth = LocalDate.of(1995, 1, 2);
+			String email = "say052@naver.com";
+
+			MemberInfoEntity member = mRepo.findByMiNameAndMiBirthAndMiEmail(name, birth, email);
+
+			Assertions.assertEquals(member, null);
+	
+		}
+		@Test
+		void findpwd() {
+			String id = "user012";
+			String name = "차경준";
+			String email = "say052@naver.com";
+
+			MemberInfoEntity member = mRepo.findByMiIdAndMiNameAndMiEmail(id, name, email);
+
+			Assertions.assertNotEquals(member, null);
+	
+		}
 }

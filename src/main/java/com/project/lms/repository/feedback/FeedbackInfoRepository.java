@@ -6,5 +6,5 @@ import com.project.lms.entity.feedback.FeedbackInfo;
 import com.project.lms.entity.member.TeacherInfo;
 
 public interface FeedbackInfoRepository extends JpaRepository<FeedbackInfo, Long> {
-    FeedbackInfo findByTeacher(TeacherInfo entity);
+  FeedbackInfo findByTeacher(TeacherInfo entity);
 }

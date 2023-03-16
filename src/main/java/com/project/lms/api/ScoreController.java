@@ -16,34 +16,39 @@ import com.project.lms.vo.MapVO;
 import com.project.lms.vo.grade.SameGraderesponse;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
 import com.project.lms.vo.response.ScoreListBySubjectYearResponseVO;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "과목 별 점수 정보 관리", description = "과목 별 점수 조회 API")
 @RestController
 @RequestMapping("/api/score/list")
 @RequiredArgsConstructor
 public class ScoreController {
     private final ScoreBySubjectService scoreBySubjectService;
+   
+   
     // 이번 달 시험 결과 조회
     @GetMapping("/now")
-    @Operation(summary = "", description ="", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "이번 달 과목 별 시험 결과 조회", description = "", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured("ROLE_STUDENT")
-    public ScoreListBySubjectResponseVO getScoreList(@AuthenticationPrincipal UserDetails userDetails) {
-        // System.out.println(userDetails.getUsername());  // 해당 id 값을 불러올 수 있는 test  
+    public ScoreListBySubjectResponseVO getMonthScoreList(@AuthenticationPrincipal UserDetails userDetails) {
         ScoreListBySubjectResponseVO result = scoreBySubjectService.getSubjectList(userDetails.getUsername());
         return result;
     }
 
     // 이번 년 시험 결과 및 성적 통계 메세지 조회
-     @GetMapping("/year")
-    public ScoreListBySubjectYearResponseVO getScoreList2(@AuthenticationPrincipal UserDetails userDetails) {
+    @GetMapping("/year")
+    @Operation(summary = "이번 년 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
+    @Secured("ROLE_STUDENT")
+    public ScoreListBySubjectYearResponseVO getYearScoreList(@AuthenticationPrincipal UserDetails userDetails) {
         ScoreListBySubjectYearResponseVO result = scoreBySubjectService.getSubjectList2(userDetails.getUsername());
         return result;
     }
@@ -58,5 +63,23 @@ public class ScoreController {
     @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
     public ResponseEntity<List<SameGraderesponse>> sameGradeStudent(@PathVariable Long test){
         return new ResponseEntity<>(scoreBySubjectService.sameGradeStudent(test), HttpStatus.OK);
+
+    // 선생님 또는 직원 권한으로 해당 학생 이번 달 과목별 성적 조회 
+    @GetMapping("/now/{student}")
+    @Operation(summary = "선생님 권한으로 해당 학생 이번 달 과목 별 시험 결과 조회", description = "", security = @SecurityRequirement(name = "bearerAuth"))
+    @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
+    public ScoreListBySubjectResponseVO getStudentScoreList1(@AuthenticationPrincipal UserDetails userDetails,
+            @Parameter(description ="조회할 학생의 고유번호") @PathVariable Long student) {
+        ScoreListBySubjectResponseVO result = scoreBySubjectService.getStuSubjectList(userDetails, student);
+        return result;
+    }
+    // 선생님 또는 직원 권한으로 해당 학생 이번 년 시험 결과 및 성적 통계 메세지 조회 
+    @GetMapping("/year/{student}")
+    @Operation(summary = "이번 년 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
+    @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
+    public ScoreListBySubjectYearResponseVO getYearScoreList2(@AuthenticationPrincipal UserDetails userDetails,
+     @Parameter(description ="조회할 학생의 고유번호") @PathVariable Long student) {
+        ScoreListBySubjectYearResponseVO result = scoreBySubjectService.getStuSubjectList2(userDetails, student);
+        return result;
     }
 }
