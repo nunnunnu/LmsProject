@@ -1,7 +1,7 @@
 buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
+   ext {
+      queryDslVersion = "5.0.0"
+   }
 }
 plugins {
 	id 'java'
@@ -79,6 +79,7 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
 

@@ -82,6 +82,7 @@ public class MemberSecurityService {
     public MemberResponseVO updateMember(UpdateMemberVO data, UserDetails userDetails) {
         MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
         String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
+        System.out.println(data);
         if(entity==null) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)

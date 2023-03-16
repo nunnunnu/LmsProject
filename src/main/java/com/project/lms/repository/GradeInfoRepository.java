@@ -2,6 +2,7 @@ package com.project.lms.repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,8 +10,10 @@ import org.springframework.data.repository.query.Param;
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
+import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.vo.ScoreAvgBySubjectVO;
+import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
 public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long> {
@@ -50,4 +53,12 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
 
     @Query("select avg(g.grade)as avg from GradeInfoEntity g where g.teacher = :teacher group by g.subject")
     ScoreAvgBySubjectVO avgBySubject(@Param("teacher") TeacherInfo teacher);
+
+    @Query("select (select sum(g.grade) from GradeInfoEntity g where g.test = :test and g.student = g2.student) as totalSum, Group_concat(Distinct g2.student) as student "
+        +"from GradeInfoEntity g2 group by totalSum "
+        +"having count(DISTINCT g2.student) >=2"
+    )
+    List<SameGrade> sameGrade(@Param("test") TestInfoEntity test);
+    @EntityGraph(attributePaths = {"subject"})
+    List<GradeInfoEntity> findByTestAndStudent(TestInfoEntity test, StudentInfo student);
 }
