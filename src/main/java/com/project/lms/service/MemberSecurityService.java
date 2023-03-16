@@ -73,7 +73,7 @@ public class MemberSecurityService {
         redisService.setValues(refreshToken, loginUser.getMiId()); //redis에 refresh토큰 저장
 
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
-                        generateToken(authentication)).cod(HttpStatus.OK).id(loginUser.getMiId()).role(loginUser.getMiRole()).build();
+                        generateToken(authentication)).cod(HttpStatus.OK).name(loginUser.getMiName()).role(loginUser.getMiRole()).build();
         return response;
         
     }
