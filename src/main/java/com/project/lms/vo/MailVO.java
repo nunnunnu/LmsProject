@@ -20,5 +20,6 @@ public class MailVO {
     private String message;
     private String msg;
     private HttpStatus code;
+
     
 }

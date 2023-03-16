@@ -2,6 +2,7 @@ package com.project.lms.vo;
 
 import org.springframework.http.HttpStatus;
 
+import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.security.vo.TokenVO;
 
 import lombok.AllArgsConstructor;
@@ -18,5 +19,7 @@ public class MemberLoginResponseVO {
     private String message;
     private HttpStatus cod;
     private TokenVO token;
+    private String id;
+    private Role role;
     
 }
