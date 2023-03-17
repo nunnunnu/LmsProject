@@ -2,8 +2,8 @@ package com.project.lms.service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.member.MemberInfoEntity;
-import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.vo.LoginVO;
@@ -46,8 +45,8 @@ public class MemberSecurityService {
             return true;
         } else{
             return false;
+        }
     }
-}
     @Transactional
     public MemberLoginResponseVO securityLogin(LoginVO login) {
         // 로그인 시 입력한 아이디 값으로 DB에 저장된 아이디를 찾고
@@ -83,8 +82,6 @@ public class MemberSecurityService {
         MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
         String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
         if(entity==null) { // 멤버 정보가 없을 시 (null)
-        System.out.println(data);
-        if(entity==null) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("해당 회원이 존재하지 않습니다.")
@@ -117,20 +114,19 @@ public class MemberSecurityService {
                 .message("비밀번호에 공백문자를 사용할 수 없습니다.")
                 .code(HttpStatus.BAD_REQUEST)
                 .build();
-                return m;  
+                return m;
             }
-        else if(data.getMiPwd() == null || data.getMiPwd().equals("")) { 
+        else if(data.getMiPwd() == null || data.getMiPwd().equals("")) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("비밀번호를 입력해주세요")
             .code(HttpStatus.BAD_REQUEST)
             .build();
             return m;
-        } 
+        }
         else{
             entity.updatePwd(passwordEncoder.encode(data.getChangeMiPwd()));
             memberInfoRepository.save(entity);
-
             MemberResponseVO m = MemberResponseVO.builder()
             .status(true).message("회원 수정이 완료되었습니다.")
             .code(HttpStatus.ACCEPTED)
@@ -138,6 +134,8 @@ public class MemberSecurityService {
             return m;
         }
     }
+
+    
 
     public Map<String, Object> searchMemberId(MemberSearchIdVO data) { //아이디찾기
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
@@ -189,6 +187,7 @@ public class MemberSecurityService {
     return mail; 
     }
   }
+
     public void mailSend(MailVO mailDto){
         System.out.println("이메일 전송 완료!");
         SimpleMailMessage message = new SimpleMailMessage();
@@ -217,4 +216,3 @@ public class MemberSecurityService {
                                    return generatedString;
       }
 }
- 

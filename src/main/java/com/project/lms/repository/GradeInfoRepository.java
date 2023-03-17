@@ -19,7 +19,7 @@ import com.project.lms.vo.request.ScoreAvgBySubject2VO;
 import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
-public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long>, GradeInfoRepositoryCustom {
+public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long>, GradeInfoRepositoryCustom { //querydsl로 만든 쿼리문을 사영하기 위해 상속받음.
     List<GradeInfoEntity> findByStudent(MemberInfoEntity student);
 
     GradeInfoEntity findByTest(TestInfoEntity test);
