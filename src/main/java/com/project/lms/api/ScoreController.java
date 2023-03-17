@@ -30,7 +30,7 @@ public class ScoreController {
     }
     // 이번 년 시험 결과 및 성적 통계 메세지 조회
     @GetMapping("/year")
-    @Operation(summary = "이번 년 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "올해 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured("ROLE_STUDENT")
     public ScoreListBySubjectYearResponseVO getYearScoreList(@AuthenticationPrincipal UserDetails userDetails) {
         ScoreListBySubjectYearResponseVO result = scoreBySubjectService.getSubjectList2(userDetails.getUsername());
@@ -38,7 +38,7 @@ public class ScoreController {
     }
     // 선생님 또는 직원 권한으로 해당 학생 이번 달 과목별 성적 조회
     @GetMapping("/now/{student}")
-    @Operation(summary = "선생님 권한으로 해당 학생 이번 달 과목 별 시험 결과 조회", description = "", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "선생님/ 직원 권한으로 해당 학생 이번 달 과목 별 시험 결과 조회", description = "", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
     public ScoreListBySubjectResponseVO getStudentScoreList1(@AuthenticationPrincipal UserDetails userDetails,
             @Parameter(description ="조회할 학생의 고유번호") @PathVariable Long student) {
@@ -47,7 +47,7 @@ public class ScoreController {
     }
     // 선생님 또는 직원 권한으로 해당 학생 이번 년 시험 결과 및 성적 통계 메세지 조회
     @GetMapping("/year/{student}")
-    @Operation(summary = "이번 년 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "선생님/ 직원 권한으로 올해 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
     public ScoreListBySubjectYearResponseVO getYearScoreList2(@AuthenticationPrincipal UserDetails userDetails,
             @Parameter(description = "조회할 학생의 고유번호") @PathVariable Long student) {
