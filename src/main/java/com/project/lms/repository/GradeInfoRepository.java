@@ -14,6 +14,8 @@ import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
+import com.project.lms.vo.request.ScoreAvgBySubject2VO;
+import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
 public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long> {
@@ -39,7 +41,7 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     +
     "GROUP_CONCAT(DISTINCT CASE WHEN si.subName = '어휘' THEN gi.grade END) as vocabulary, "
     +
-    "GROUP_CONCAT(DISTINCT CASE WHEN si.subName = '문법' THEN gi.grade END) as grammer, "
+    "GROUP_CONCAT(DISTINCT CASE WHEN si.subName = '문법' THEN gi.grade END) as grammar, "
     +
     "GROUP_CONCAT(DISTINCT CASE WHEN si.subName = '듣기' THEN gi.grade END) as listening "
     +
@@ -47,7 +49,7 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     +
     "JOIN SubjectInfoEntity si ON gi.subject.subSeq = si.subSeq "
     +
-    "WHERE gi.student.miSeq =:seq AND FUNCTION('date_format',ti.testDate ,'%Y' ) = FUNCTION('date_format', now(),'%Y') GROUP BY ti.testSeq")
+    "WHERE gi.student.miSeq =:seq AND YEAR(ti.testDate) = YEAR(CURRENT_DATE) GROUP BY ti.testSeq")
     List<ScoreListBySubjectYearVO> findByYearScoreList(@Param("seq") Long seq);
 
 
@@ -71,7 +73,30 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
             + "JOIN TestInfoEntity tt ON tt.testSeq = grd.test.testSeq "
             + "WHERE DATE_FORMAT(tt.testDate, '%Y%m') = :yearMonth AND grd.student.miSeq IN :seqs " 
             + "GROUP by grd.subject.subSeq")
-    List<ScoreAvgListBySubjectVO> avgBySubject(@Param("seqs")List<Long> list, @Param("yearMonth") Integer yearMonth); // 과목별 평균을 찾아 리스트에 담는다.
+    List<ScoreAvgListBySubjectVO> avgBySubject(@Param("seqs") List<Long> list, @Param("yearMonth") Integer yearMonth); // 과목별 평균을 찾아 리스트에 담는다.
 
+    //  이건 사용안함.
+   @Query(
+        "SELECT AVG(CASE WHEN si.subName = '독해' THEN gi.grade END) AS avgComprehension, " +
+        "AVG(CASE WHEN si.subName = '어휘' THEN gi.grade END) AS avgVocabulary, " +
+        "AVG(CASE WHEN si.subName = '문법' THEN gi.grade END) AS avgGrammar, " +
+        "AVG(CASE WHEN si.subName = '듣기' THEN gi.grade END) AS avgListening " +
+        "FROM GradeInfoEntity gi " + 
+        "JOIN TestInfoEntity ti ON gi.test.testSeq = ti.testSeq " +
+        "JOIN SubjectInfoEntity si ON gi.subject.subSeq = si.subSeq " +
+        "WHERE gi.student.miSeq = :seq AND YEAR(ti.testDate) = YEAR(CURRENT_DATE)")
+        ScoreAvgBySubjectVO findByAvgBySubject(@Param("seq") Long seq);
+
+
+    @Query(
+        "select si.subName as subject, avg(gi.grade) as avg from GradeInfoEntity gi "
+        + 
+        "join TestInfoEntity ti on gi.test.testSeq = ti.testSeq "
+        + 
+        "join SubjectInfoEntity si on gi.subject.subSeq = si.subSeq "
+        +
+        "where gi.student.miSeq = :seq AND YEAR(ti.testDate) = YEAR(CURRENT_DATE) group by si.subName"
+        )
+        List<ScoreAvgBySubject2VO> findByAvgBySubject2(@Param("seq") Long seq);
 
 }
