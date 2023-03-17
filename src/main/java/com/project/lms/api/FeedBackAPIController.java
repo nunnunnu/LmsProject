@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.FeedBackService;
+import com.project.lms.vo.MapVO;
+import com.project.lms.vo.feedback.CommentInsertVO;
 import com.project.lms.vo.feedback.FeedBackResponseVO;
 import com.project.lms.vo.feedback.FeedBackVO;
 import com.project.lms.vo.feedback.ShowFeedBackVO;
@@ -40,5 +42,10 @@ public class FeedBackAPIController {
     public ResponseEntity<FeedBackResponseVO> putFeedBack(@Parameter(name = "stuSeq", description = "담당한 반의 학생 번호")@PathVariable Long stuSeq, @RequestBody FeedBackVO data,
      @AuthenticationPrincipal UserDetails userDetails) {
         return new ResponseEntity<>(fService.putFeedBack(userDetails.getUsername(), stuSeq, data), HttpStatus.OK);
+    }
+    @PutMapping("/commet/{seq}")
+    public ResponseEntity<MapVO> putComment (@AuthenticationPrincipal UserDetails user,@PathVariable Long seq, CommentInsertVO data) {
+        MapVO map = fService.addComment(seq, data, user);
+        return new ResponseEntity<>(map,map.getCode());
     }
 }
