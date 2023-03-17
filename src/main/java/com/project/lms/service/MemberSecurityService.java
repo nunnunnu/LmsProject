@@ -135,6 +135,8 @@ public class MemberSecurityService {
         }
     }
 
+    
+
     public Map<String, Object> searchMemberId(MemberSearchIdVO data) { //아이디찾기
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
     // 사용자 이름, 생일 , 이메일 받아서 리스트에 있는 것과 비교하여 해당 전화번호에 맞는 아이디 찾기
@@ -185,6 +187,7 @@ public class MemberSecurityService {
     return mail; 
     }
   }
+
     public void mailSend(MailVO mailDto){
         System.out.println("이메일 전송 완료!");
         SimpleMailMessage message = new SimpleMailMessage();
@@ -213,4 +216,3 @@ public class MemberSecurityService {
                                    return generatedString;
       }
 }
- 
