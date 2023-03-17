@@ -2,8 +2,8 @@ package com.project.lms.service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.member.MemberInfoEntity;
-import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.vo.LoginVO;
@@ -46,7 +45,7 @@ public class MemberSecurityService {
             return true;
         } else{
             return false;
-    }
+        }
     }
     @Transactional
     public MemberLoginResponseVO securityLogin(LoginVO login) {

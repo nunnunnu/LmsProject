@@ -84,22 +84,21 @@ public class ClassService {
         return result; //결과 반환
     }
     public List<StudentClassGradeVO> changeClassList(){
-		TestInfoEntity test = tesRepo.findTop1ByOrderByTestDateDesc();
-		List<StudentClassGradeVO> list = graRepo.studentClassChange(test);
-        Integer totalStudent = sRepo.countByMiStatus(true);
-        System.out.println(totalStudent);
+		TestInfoEntity test = tesRepo.findTop1ByOrderByTestDateDesc(); //가장 최신 시험 조회
+		List<StudentClassGradeVO> list = graRepo.studentClassChange(test); //학생 별 총점, 기존 반 정보 가져옴
+        Integer totalStudent = sRepo.countByMiStatus(true); //재학중인 학생의 수를 구함. 총점순으로 정렬되어있어서 순위 별 정렬돼있음
         
-        List<ClassInfoEntity> classInfo = cRepo.findAllByOrderByCiRating();
-        Integer percent = (int) Math.ceil((double)totalStudent/classInfo.size());
+        List<ClassInfoEntity> classInfo = cRepo.findAllByOrderByCiRating(); //전체 반 정보를 구함. 등급순으로 정렬.
+        Integer percent = (int) Math.ceil((double)totalStudent/classInfo.size()); //각 반별로 들어갈 인원 수. 현재는 반이 4반이라서 25%씩
 
         for(int i=1;i<=list.size();i++){
-            StudentClassGradeVO s = list.get(i-1);
-            for(int j=1;j<=classInfo.size();j++){
-                if(i<=percent*j && i>=percent*j-1){
-                    s.changeClassAndStatusSetting(classInfo.get(j-1).getCiName());
+            StudentClassGradeVO s = list.get(i-1); //학생 정보를 하나 꺼내서 변수에 저장
+            for(int j=1;j<=classInfo.size();j++){ //학생이 어느 구간에 위치하는지 알아보기위해 각 반별로 조회(순위비교). 등급순으로 정렬되어있어서 앞쪽 인덱스일수록 등급이 높은 반임
+                if(i<=percent*j && i>=percent*j-1){ //해당 학생의 순위가 해당 구간과 일치한다면
+                    s.changeClassAndStatusSetting(classInfo.get(j-1).getCiName()); //해당 반의 정보를 세팅해줌
                 }
             }
         }
-		return list;
+		return list; //반환
     }
 }
