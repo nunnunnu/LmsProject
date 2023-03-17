@@ -12,13 +12,14 @@ import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.repository.custom.GradeInfoRepositoryCustom;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.request.ScoreAvgBySubject2VO;
 import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
-public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long> {
+public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long>, GradeInfoRepositoryCustom {
     List<GradeInfoEntity> findByStudent(MemberInfoEntity student);
 
     GradeInfoEntity findByTest(TestInfoEntity test);
@@ -98,5 +99,4 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
         "where gi.student.miSeq = :seq AND YEAR(ti.testDate) = YEAR(CURRENT_DATE) group by si.subName"
         )
         List<ScoreAvgBySubject2VO> findByAvgBySubject2(@Param("seq") Long seq);
-
 }
