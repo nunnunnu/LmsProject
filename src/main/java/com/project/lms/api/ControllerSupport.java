@@ -12,9 +12,12 @@ import com.project.lms.error.ErrorCode;
 import com.project.lms.error.ErrorResponse;
 import com.project.lms.error.NotValidExceptionResponse;
 import com.project.lms.error.custom.JoinException;
+import com.project.lms.error.custom.NoContentsException;
+import com.project.lms.error.custom.NotConnetClassAndTeacher;
 import com.project.lms.error.custom.NotFoundClassException;
 import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.error.custom.NotFoundSubject;
+import com.project.lms.error.custom.NotFoundTestException;
 import com.project.lms.error.custom.TypeDiscodeException;
 
 @RestControllerAdvice //RestController를 보조해주는 역할
@@ -67,6 +70,34 @@ public class ControllerSupport {
         return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
                         .timestamp(LocalDateTime.now()) //현재시간
                         .code(ErrorCode.SUBJECT_NOT_FOUND) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
+                        .message(ex.getMessage()) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
+                        .status(false) //성공여부 세팅
+                        .build(), HttpStatus.BAD_REQUEST); //에러코드는 400 발생
+    }
+    @ExceptionHandler(value = NotFoundTestException.class) //다른 restController 에서 NotFoundSubject 발생했을때
+    public ResponseEntity<ErrorResponse> notFoundTest(NotFoundTestException ex) {
+
+        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
+                        .timestamp(LocalDateTime.now()) //현재시간
+                        .code(ErrorCode.TEST_NOT_FOUND) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
+                        .message(ex.getMessage()) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
+                        .status(false) //성공여부 세팅
+                        .build(), HttpStatus.BAD_REQUEST); //에러코드는 400 발생
+    }
+    @ExceptionHandler(value = NotConnetClassAndTeacher.class) //다른 restController 에서 NotConnetClassAndTeacher 발생했을때
+    public ResponseEntity<ErrorResponse> notConnect(NotConnetClassAndTeacher ex) {
+        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
+                        .timestamp(LocalDateTime.now()) //현재시간
+                        .code(ErrorCode.NOT_CONNECT_CLASS_AND_TEACHER) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
+                        .message(ex.getMessage()) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
+                        .status(false) //성공여부 세팅
+                        .build(), HttpStatus.BAD_REQUEST); //에러코드는 400 발생
+    }
+    @ExceptionHandler(value = NoContentsException.class) //다른 restController 에서 NotConnetClassAndTeacher 발생했을때
+    public ResponseEntity<ErrorResponse> notContents(NoContentsException ex) {
+        return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
+                        .timestamp(LocalDateTime.now()) //현재시간
+                        .code(ErrorCode.NO_CONTENTS) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
                         .message(ex.getMessage()) //에러 메세지 세팅. enum타입에 적어놓은 에러메세지가 출력됨
                         .status(false) //성공여부 세팅
                         .build(), HttpStatus.BAD_REQUEST); //에러코드는 400 발생

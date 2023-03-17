@@ -19,13 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.error.ErrorResponse;
 import com.project.lms.error.NotValidExceptionResponse;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.service.MemberSecurityService;
 import com.project.lms.service.MemberService;
 import com.project.lms.vo.LoginVO;
+import com.project.lms.vo.MailVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.member.MemberJoinVO;
+import com.project.lms.vo.member.MemberSearchIdVO;
+import com.project.lms.vo.member.MemberSearchPwdVO;
 import com.project.lms.vo.member.RefreshTokenVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +66,11 @@ public class MemberController {
 
         return new ResponseEntity<>(mService.joinMember(data, type, bindingResult), HttpStatus.OK);
     }
-
+    @Operation(summary = "로그인", description ="아이디,비밀번호(id,pwd)을 입력 받아 DB와 일치하는 유저가 있을때 로그인 성공")
+     @ApiResponses(value = {
+        @ApiResponse(responseCode = "400", description = "탈퇴한 회원이거나 사용 불가능한 아이디로 로그인 시 발생하는 오류", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "404", description = "아이디 혹은 비밀번호가 일치하지 않을때 발생하는 오류 ", content = @Content(schema = @Schema(implementation = NotFoundMemberException.class))),
+        @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = MemberLoginResponseVO.class)))})
     @PostMapping("/login")
     public ResponseEntity<MemberLoginResponseVO> postMemberLogin(@RequestBody LoginVO login) {
         MemberLoginResponseVO response = memberSecurityService.securityLogin(login);
@@ -80,4 +88,26 @@ public class MemberController {
         return new ResponseEntity<>(map, (HttpStatus)map.get("code"));
         
     }
+
+    @PostMapping("/id")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "아이디찾기 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "400", description = "일치하는 회원정보가 없으면 오류입니다", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
+    @Operation(summary = "아이디 찾기", description ="이름,생년월일,이메일(name,birth,email)을 입력 받아 일치하는 정보의 아이디 출력")
+    public ResponseEntity<Object> searchMemberId(MemberSearchIdVO data){
+        Map<String, Object> map = memberSecurityService.searchMemberId(data);
+        return new ResponseEntity<Object>(map, (HttpStatus)map.get("code"));
+    }
+    @Operation(summary = "비밀번호 찾기", description ="아이디,이름,이메일(id,name,email)을 입력 받아 일치하는 유저의 등록된 메일로 임시 비밀번호 발급")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "비밀번호 찾기 성공 유저가 등록한 메일로 임시 비밀번호가 발송됩니다.", content = @Content(schema = @Schema(implementation = MailVO.class))),
+        @ApiResponse(responseCode = "400", description = "일치하는 회원정보가 없으면 오류입니다", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
+    @PostMapping("/pwd")
+        public ResponseEntity<MailVO> searchMemberPwd(MemberSearchPwdVO data){
+        MailVO mail = memberSecurityService.searchMemberPwd(data);
+        // System.out.println(mail);
+        memberSecurityService.mailSend(mail);
+        return new ResponseEntity<MailVO>(mail, mail.getCode());
+    }
+    
 }

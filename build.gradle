@@ -1,7 +1,7 @@
 buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
+   ext {
+      queryDslVersion = "5.0.0"
+   }
 }
 plugins {
 	id 'java'
@@ -73,12 +73,15 @@ dependencies {
 	//SMTP
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	//엑셀 다운(POI)
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
 	
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
 //querydsl 추가 시작
 def querydslDir = "$buildDir/generated/querydsl"
 

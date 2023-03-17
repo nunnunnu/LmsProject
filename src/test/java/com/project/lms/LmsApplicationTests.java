@@ -2,12 +2,18 @@ package com.project.lms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.ArgumentMatchers.doubleThat;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +35,8 @@ import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.service.MemberSecurityService;
 import com.project.lms.service.ScoreBySubjectService;
 import com.project.lms.vo.LoginVO;
+import com.project.lms.vo.request.ScoreAvgBySubject2VO;
+import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
@@ -37,7 +45,7 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 class LmsApplicationTests {
-	
+
 	@Autowired
 	GradeInfoRepository gradeInfoRepository;
 
@@ -58,6 +66,7 @@ class LmsApplicationTests {
 	PasswordEncoder passwordEncoder;
 	@Autowired
 	MemberSecurityService memberSecurityService;
+
 	@Test
 	void contextLoads() {
 		TeacherInfo t = new TeacherInfo();
@@ -93,7 +102,7 @@ class LmsApplicationTests {
 			}
 		}
 	}
-	
+
 	@Test
 	@Transactional
 	void PrintVO() {
@@ -141,45 +150,69 @@ class LmsApplicationTests {
 		}
 	}
 
+	@Test
+	void 더블_list_min_값찾기() {
+		Long seq = 2L;
+		ScoreAvgBySubjectVO vo = gradeInfoRepository.findByAvgBySubject(seq);
+
+		// Double[] doubles = {vo.getAvgComprehension(), vo.getAvgGrammar(), vo.getAvgListening(), vo.getAvgVocabulary()};
+		List<Double> doubleList = new LinkedList<>();
+		doubleList.add(vo.getAvgComprehension());
+		doubleList.add(vo.getAvgGrammar());
+		doubleList.add(vo.getAvgListening());
+		doubleList.add(vo.getAvgVocabulary());
+
+		double min = doubleList.stream().mapToDouble(Double::doubleValue).min().getAsDouble();
+		System.out.println(min);
+
+		// double[] doubleArray = Arrays.stream(doubles).mapToDouble(Double::doubleValue).toArray();
+		// DoubleStream doubleStream = DoubleStream.of(doubleArray);
+		// double minValue = doubleStream.min().orElseThrow(NoSuchElementException::new);
+		// Double minValue = DoubleList.stream().mapToDouble(Double::doubleValue).min().orElseThrow(NoSuchElementException::new);
+	}
 
 	@Test
-	void testLogin() {
-		String id = "hyuk1";
-		String pwd  = "asdf123!";
-		
-		MemberInfoEntity loginUser = memberInfoRepository.findByMiId(id);
-
-		Boolean login = null;
-		if(loginUser == null ||!passwordEncoder.matches(pwd, loginUser.getMiPwd())) {
-			login = false;
-		}
-		else{
-			login = true;	
+	void 가장_낮은_평균_찾기() {
+		Long seq = 2L;
+		List<ScoreAvgBySubject2VO> voList = gradeInfoRepository.findByAvgBySubject2(seq);
+		Double min = null;
+		for (ScoreAvgBySubject2VO vo : voList) {
+			min = vo.getAvg();
 		}
 
-			Assertions.assertEquals(login, true, "login은 false가 아닙니다.");
-			
-		}
-		@Test
-		void findid() {
-			String name = "차경준";
-			LocalDate birth = LocalDate.of(1995, 1, 1);
-			String email = "say052@naver.com";
-
-			MemberInfoEntity member = memberInfoRepository.findByMiNameAndMiBirthAndMiEmail(name, birth, email);
-
-			Assertions.assertNotEquals(member, null);
-	
-		}
-		@Test
-		void findpwd() {
-			String id = "user012";
-			String name = "차경준";
-			String email = "say052@naver.com";
-
-			MemberInfoEntity member = memberInfoRepository.findByMiIdAndMiNameAndMiEmail(id, name, email);
-
-			Assertions.assertNotEquals(member, null);
-	
+		Double resultValue = null;
+		for (ScoreAvgBySubject2VO vo1 : voList) {
+			if (vo1.getAvg() < min) {
+				resultValue = vo1.getAvg();
+			}
 		}
 	}
+
+	@Test 
+	void 가장_약한_과목_찾기(){
+		Long seq = 2L;
+		List<ScoreAvgBySubject2VO> voList = gradeInfoRepository.findByAvgBySubject2(seq);
+		Double min = null;
+		for (ScoreAvgBySubject2VO vo : voList) {
+			min = vo.getAvg();
+		}
+
+		Double resultValue = null;
+		for (ScoreAvgBySubject2VO vo1 : voList) {
+			if (vo1.getAvg() < min) {
+				resultValue = vo1.getAvg();
+			}
+		}
+	
+		List<String> WeeknessSubjectList = new LinkedList<>();
+		for (ScoreAvgBySubject2VO vo2 : voList) {
+			if (vo2.getAvg() == resultValue) {
+				WeeknessSubjectList.add(vo2.getSubject());
+			}
+		}
+		System.out.println(WeeknessSubjectList.get(0));
+
+		}	
+
+	}
+	
