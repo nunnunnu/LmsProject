@@ -82,6 +82,7 @@ public class MemberSecurityService {
     public MemberResponseVO updateMember(UpdateMemberVO data, UserDetails userDetails) {
         MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
         String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
+        if(entity==null) { // 멤버 정보가 없을 시 (null)
         System.out.println(data);
         if(entity==null) {
             MemberResponseVO m = MemberResponseVO.builder()
@@ -91,7 +92,7 @@ public class MemberSecurityService {
             .build();
             return m;
         }
-        if(!pwdCheck(data.getMiPwd(), entity.getMiPwd())){
+        if(!pwdCheck(data.getMiPwd(), entity.getMiPwd())){ // 비밀번호 불일치
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("비밀번호가 일치하지않습니다.")
@@ -99,7 +100,7 @@ public class MemberSecurityService {
             .build();
             return m;
         }
-        if(data.getMiPwd().length() > 16 || data.getMiPwd().length() > 8) {
+        if(data.getMiPwd().length() > 16 || data.getMiPwd().length() > 8) { // 비밀번호 길이 제한
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("비밀번호는 8~16자로 입력해주세요.")
@@ -108,7 +109,7 @@ public class MemberSecurityService {
             return m;
         }
         else if (
-            data.getMiPwd().replaceAll(" ", "").length() == 0 ||
+            data.getMiPwd().replaceAll(" ", "").length() == 0 || // 비밀번호 공백문자 사용 제한
             !Pattern.matches(pattern, data.getMiPwd())
             ) {
                 MemberResponseVO m = MemberResponseVO.builder()
@@ -118,7 +119,7 @@ public class MemberSecurityService {
                 .build();
                 return m;  
             }
-        else if(data.getMiPwd() == null || data.getMiPwd().equals("")) {
+        else if(data.getMiPwd() == null || data.getMiPwd().equals("")) { 
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("비밀번호를 입력해주세요")

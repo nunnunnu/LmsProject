@@ -5,6 +5,7 @@ import org.hibernate.annotations.DynamicInsert;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.entity.share.BaseTimeEntity;
+import com.project.lms.vo.feedback.FeedBackDetailVO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
