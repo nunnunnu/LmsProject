@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.lms.error.ErrorResponse;
+import com.project.lms.error.custom.NotFoundFeedback;
 import com.project.lms.service.FeedBackService;
-import com.project.lms.vo.feedback.FeedBackDetailVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.feedback.CommentInsertVO;
 import com.project.lms.vo.feedback.FeedBackResponseVO;
@@ -26,9 +27,13 @@ import com.project.lms.vo.feedback.UpdateFeedBackVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Content;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -61,8 +66,22 @@ public class FeedBackAPIController {
     @PatchMapping("/update/{fiSeq}")
     public ResponseEntity<UpdateFeedBackResponseVO> updateFeedBack(@PathVariable Long fiSeq, @RequestBody UpdateFeedBackVO data, @AuthenticationPrincipal UserDetails userDetails) {
         return new ResponseEntity<>(fService.updateFeedBack(userDetails.getUsername(),fiSeq, data), HttpStatus.OK);
-    @PutMapping("/commet/{seq}")
-    public ResponseEntity<MapVO> putComment (@AuthenticationPrincipal UserDetails user,@PathVariable Long seq, CommentInsertVO data) {
+    }
+
+    @Operation(summary = "피드백 댓글 입력", security = @SecurityRequirement(name = "bearerAuth"))
+     @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "400", description = "게시글이 존재하지 않으면 발생하는 오류입니다.", content = @Content(schema = @Schema(implementation = NotFoundFeedback.class))),
+        @ApiResponse(responseCode = "406", description = "댓글에 내용을 입력하지 않으면 오류 발생.", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "403", description = "직원 및 마스터 관리자가 접근시 발생하는 오류", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "424", description = "작성한 선생님 및 대상 학생이 아닌 사람이 댓글 작성시 발생하는 오류입니다.", content = @Content(schema = @Schema(implementation = MapVO.class)))})
+    @PutMapping("/comment/{seq}")
+    @Secured({"ROLE_TEACHER","ROLE_STUDENT"})
+    public ResponseEntity<MapVO> putComment (@AuthenticationPrincipal UserDetails user,
+    @Parameter(name="seq", description = "댓글을 입력하고자 하는 피드백 글 번호")
+    @PathVariable Long seq, 
+    @Parameter( description = "댓글 내용 입력(comment:댓글 내용)")
+    @RequestBody CommentInsertVO data) {
         MapVO map = fService.addComment(seq, data, user);
         return new ResponseEntity<>(map,map.getCode());
     }

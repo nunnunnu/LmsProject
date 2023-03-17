@@ -204,26 +204,32 @@ public class FeedBackService {
             .status(true).message("피드백 수정을 완료하였습니다.").code(HttpStatus.ACCEPTED)
             .build();
             return u;
-    public MapVO addComment(Long seq, CommentInsertVO data, UserDetails user) {
-        FeedbackInfo feedback = fRepo.findById(seq).orElseThrow(()->new NotFoundFeedback());
-        MemberInfoEntity member = miRepo.findByMiId(user.getUsername());
-        CommentInfoEntity comment = CommentInfoEntity.builder().cmtTitle(data.getComment()).feedback(feedback).member(member).build();
-        if (feedback.getStudent() == member || feedback.getTeacher()==member) {
-            if (data.getComment() ==null || data.getComment() =="") {
-                MapVO map = MapVO.builder().code(HttpStatus.BAD_REQUEST).message("내용을 작성해주세요").status(false).build();
-                return map;
+        }
+        // 댓글작성
+        public MapVO addComment(Long seq, CommentInsertVO data, UserDetails user) {
+            FeedbackInfo feedback = fRepo.findById(seq).orElseThrow(()->new NotFoundFeedback()); // seq로 게시글을 찾고 없으면 오류처리
+            MemberInfoEntity member = miRepo.findByMiId(user.getUsername()); // 로그인한 유저의 아이디로 회원정보를 찾음
+            // if(member.getMiRole().equals("EMPLOYEE")) {
+            //     MapVO map = MapVO.builder().code(HttpStatus.NOT_ACCEPTABLE).message("댓글은 선생님 및 학생만 작성 가능합니다.").status(false).build();
+            //     return map;
+            // }
+            // System.out.println(member.getMiRole()); 
+            CommentInfoEntity comment = CommentInfoEntity.builder().cmtTitle(data.getComment()).feedback(feedback).member(member).build(); // 댓글을 작성하고
+            if (feedback.getStudent() == member || feedback.getTeacher()==member) { // 게시글 작성자 및 담당 학생이 아닌 사람이 댓글 작성시 오류
+                if (data.getComment() ==null || data.getComment() =="") { // 게시글 작성사 및 담담학생이 댓글을 달때
+                    MapVO map = MapVO.builder().code(HttpStatus.NOT_ACCEPTABLE).message("내용을 작성해주세요").status(false).build(); // 내용 미입력시 오류 처리
+                    return map;
+                }
+                else{
+                    ciRepo.save(comment);// 오류가 없을 시에는 댓글 작성후 저장
+                    MapVO map = MapVO.builder().code(HttpStatus.OK).message("댓글이 작성되었습니다.").status(true).build();
+                    return map;
+                }
             }
             else{
-            ciRepo.save(comment);
-            MapVO map = MapVO.builder().code(HttpStatus.OK).message("댓글이 작성되었습니다.").status(true).build();
-            return map;
+                MapVO map = MapVO.builder().code(HttpStatus.FAILED_DEPENDENCY).message("담당 학생 및 선생님만 댓글 작성이 가능합니다.").status(false).build(); // 게시글 작성자 및 담당 학생이 아닌 사람이 댓글 작성시 오류
+                return map;
+            }
+            
         }
-    }
-        else{
-            MapVO map = MapVO.builder().code(HttpStatus.BAD_REQUEST).message("담당 학생 및 선생님만 댓글 작성이 가능합니다.").status(false).build();
-            return map;
-        }
-        
-    }
-}
 }
