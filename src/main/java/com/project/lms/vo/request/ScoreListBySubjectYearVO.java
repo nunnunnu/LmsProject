@@ -8,7 +8,7 @@ public interface ScoreListBySubjectYearVO {
     @Schema(description = "어휘")
     Integer getVocabulary();
     @Schema(description = "문법")
-    Integer getGrammer();
+    Integer getGrammar();
     @Schema(description = "듣기")
     Integer getListening();
     @Schema(description = "시험 명")

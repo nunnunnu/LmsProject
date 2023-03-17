@@ -50,8 +50,10 @@ public class ScoreController {
     @Operation(summary = "이번 년 과목 별 시험 결과 조회 및 시험 통계 메세지 출력", description = "", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
     public ScoreListBySubjectYearResponseVO getYearScoreList2(@AuthenticationPrincipal UserDetails userDetails,
-    @Parameter(description ="조회할 학생의 고유번호") @PathVariable Long student) {
+            @Parameter(description = "조회할 학생의 고유번호") @PathVariable Long student) {
         ScoreListBySubjectYearResponseVO result = scoreBySubjectService.getStuSubjectList2(userDetails, student);
         return result;
     }
+
+    
 }
