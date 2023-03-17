@@ -6,5 +6,7 @@ import com.project.lms.entity.member.StudentInfo;
 
 public interface StudentInfoRepository extends JpaRepository<StudentInfo ,Long> {
     StudentInfo findByMiId(String id);
+
+    Integer countByMiStatus(Boolean status);
     
 }

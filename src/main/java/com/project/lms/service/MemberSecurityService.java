@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.member.MemberInfoEntity;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.vo.LoginVO;
@@ -53,11 +54,11 @@ public class MemberSecurityService {
         MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
         // 찾은 아이디가 없거나(null) 입력한 비밀번호가 일치하지 않을 때 오류 메시지 출력
         if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
-            return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.FORBIDDEN).build();
+            return MemberLoginResponseVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").cod(HttpStatus.NOT_FOUND).build();
         }
         // 일치하는 아이디가 있더라도 사용 불가능한 상태이면 오류 메시지 출력
         else if (!loginUser.isEnabled()) {
-            return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.FORBIDDEN).build();
+            return MemberLoginResponseVO.builder().status(true).message("이용정지된 사용자입니다.").cod(HttpStatus.BAD_REQUEST).build();
         }
         // 입력한 아이디와 비밀번호를 통해서 인증 과정을 거쳐서
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -73,7 +74,7 @@ public class MemberSecurityService {
         redisService.setValues(refreshToken, loginUser.getMiId()); //redis에 refresh토큰 저장
 
         MemberLoginResponseVO response = MemberLoginResponseVO.builder().status(true).message("로그인 성공").token(tokenProvider.
-                        generateToken(authentication)).cod(HttpStatus.OK).build();
+                        generateToken(authentication)).cod(HttpStatus.OK).name(loginUser.getMiName()).role(loginUser.getMiRole()).build();
         return response;
         
     }
@@ -82,6 +83,8 @@ public class MemberSecurityService {
         MemberInfoEntity entity = memberInfoRepository.findByMiId(userDetails.getUsername());
         String pattern = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-z]).{8,16}$";
         if(entity==null) { // 멤버 정보가 없을 시 (null)
+        System.out.println(data);
+        if(entity==null) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("해당 회원이 존재하지 않습니다.")
@@ -165,6 +168,7 @@ public class MemberSecurityService {
     if(User == null) {
       // 찾는 유저정보가 없으면 메시지 출력
      mail.setMsg("등록된 계정이 없습니다.");
+     mail.setCode(HttpStatus.BAD_REQUEST);
      return mail;
     }
     else {
@@ -178,6 +182,7 @@ public class MemberSecurityService {
         // 완료되었다는 메시지 출력하고
         mail.setMsg("임시 비밀번호가 등록된 메일로 발송되었습니다.");
         // 임시 비밀번호를 암호화하여 위에서 찾은 유저의 비밀번호를 임시 비밀번호로 변경해준다
+        mail.setCode(HttpStatus.OK);
       User.setMiPwd(passwordEncoder.encode(str));
       // 변경 후에 저장
       memberInfoRepository.save(User);

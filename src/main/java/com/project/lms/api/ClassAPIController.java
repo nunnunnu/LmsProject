@@ -1,5 +1,19 @@
 package com.project.lms.api;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.lms.error.ErrorResponse;
 import com.project.lms.service.ClassService;
 import com.project.lms.vo.MapVO;
+import com.project.lms.vo.grade.StudentClassGradeVO;
 import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.response.ClassResponseVO;
 
@@ -31,6 +46,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -48,7 +64,7 @@ public class ClassAPIController {
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "403", description = "토큰이 들어오지 않았거나, 회원의 등급이 선생님이 아닐때 접근이 차단됩니다. 토큰을 넣었는데 403에러가뜨면 로그인한 회원의 분류를 확인해주세요", content = @Content(schema = @Schema(implementation = MapVO.class))),
-        @ApiResponse(responseCode = "400", description = "해당 토큰에서 회원을 찾을 수 없습니다. 엑세스토큰을 확인해주세요", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "400", description = "해당 토큰에서 회원을 찾을 수 없습니다. 엑세스토큰을 확인해주세요 or 담당된 반이 없는 선생님의 계정이거나 조회할 컨텐츠가 없습니다.(반에 소속된 학생 데이터가 아직 없음)", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
         @ApiResponse(responseCode = "200", description = "조회성공", content = @Content(array=@ArraySchema(schema = @Schema(implementation = ClassStudentListVO.class))))})
     @Operation(summary = "선생님의 반 소속 학생 조회", description ="일단 회원번호와 이름만 표기되게했습니다. 추가로 필요한정보가 있으면 말씀해주세요", security = @SecurityRequirement(name = "bearerAuth"),
         parameters = {
@@ -71,6 +87,70 @@ public class ClassAPIController {
         Page<ClassStudentListVO> result = cService.classMemberFind(userDetails, page);
         
         return new ResponseEntity<Page<ClassStudentListVO>>(result, HttpStatus.OK);
+    }
+    
+    @GetMapping("/change")
+    @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
+    public ResponseEntity<List<StudentClassGradeVO>> changeClass(){
+        return new ResponseEntity<List<StudentClassGradeVO>>(cService.changeClassList(), HttpStatus.OK);
+    }
+
+    @GetMapping("/excel")
+    public void downloadExcel(HttpServletResponse response) throws IOException {
+
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("sheet1");
+        int rowNo = 0;
+        
+        CellStyle headStyle = workbook.createCellStyle();
+        headStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.PALE_BLUE.getIndex());
+        headStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        Font font = workbook.createFont();
+        headStyle.setBorderTop(BorderStyle.THIN); //테두리 위쪽
+        headStyle.setBorderBottom(BorderStyle.THIN); //테두리 아래쪽
+        headStyle.setBorderLeft(BorderStyle.THIN); //테두리 왼쪽
+        headStyle.setBorderRight(BorderStyle.THIN); //테두리 오른쪽
+        headStyle.setFont(font);
+        
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderTop(BorderStyle.THIN); //테두리 위쪽
+        cellStyle.setBorderBottom(BorderStyle.THIN); //테두리 아래쪽
+        cellStyle.setBorderLeft(BorderStyle.THIN); //테두리 왼쪽
+        cellStyle.setBorderRight(BorderStyle.THIN); //테두리 오른쪽
+
+        Row headerRow = sheet.createRow(rowNo++);
+        headerRow.createCell(0).setCellValue("회원번호");
+        headerRow.createCell(1).setCellValue("이름");
+        headerRow.createCell(2).setCellValue("생년월일");
+        headerRow.createCell(3).setCellValue("합계점수");
+        headerRow.createCell(4).setCellValue("기존 반");
+        headerRow.createCell(5).setCellValue("변경 반");
+        headerRow.createCell(6).setCellValue("상태");
+
+        for(int i=0; i<=6; i++){
+            headerRow.getCell(i).setCellStyle(headStyle);
+        }
+
+        List<StudentClassGradeVO> list = cService.changeClassList();
+        for (StudentClassGradeVO data : list) {
+            Row row = sheet.createRow(rowNo++);
+            row.createCell(0).setCellValue(data.getSeq());
+            row.createCell(1).setCellValue(data.getName());
+            row.createCell(2).setCellValue(data.getBirth());
+            row.createCell(3).setCellValue(data.getTotal());
+            row.createCell(4).setCellValue(data.getOriginClass());
+            row.createCell(5).setCellValue(data.getChangeClass());
+            row.createCell(6).setCellValue(data.getStatus());
+            for(int i=0; i<=6; i++){
+                row.getCell(i).setCellStyle(cellStyle);
+            }
+        }
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=student_class.xls");
+
+        workbook.write(response.getOutputStream());
+        workbook.close();
     }
     
 }

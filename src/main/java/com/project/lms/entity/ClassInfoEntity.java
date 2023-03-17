@@ -24,9 +24,12 @@ public class ClassInfoEntity {
 
     @Column(name = "ci_limit", nullable = false)
     private Integer ciLimit;
-
+    
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "ci_mi_seq", nullable = false)
     private EmployeeInfo employee;
+    
+    @Column(name = "ci_rating", nullable = false)
+    private Integer ciRating;
 
     public Long getCiSeq(){
         return ciSeq;
