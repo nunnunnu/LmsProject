@@ -65,7 +65,7 @@ public class MemberTest {
         employee = new EmployeeInfo(vo);
         eRepo.save(employee);
         
-        classInfo = new ClassInfoEntity(null, "테스트용반", 20, employee);
+        classInfo = new ClassInfoEntity(null, "테스트용반", 20, employee, 0);
         cRepo.save(classInfo);
 
         subject = new SubjectInfoEntity(null, "테스트용 과목");

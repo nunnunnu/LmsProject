@@ -12,11 +12,12 @@ import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.repository.custom.GradeInfoRepositoryCustom;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 
-public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long> {
+public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long>, GradeInfoRepositoryCustom {
     List<GradeInfoEntity> findByStudent(MemberInfoEntity student);
 
     GradeInfoEntity findByTest(TestInfoEntity test);
@@ -72,6 +73,5 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
             + "WHERE DATE_FORMAT(tt.testDate, '%Y%m') = :yearMonth AND grd.student.miSeq IN :seqs " 
             + "GROUP by grd.subject.subSeq")
     List<ScoreAvgListBySubjectVO> avgBySubject(@Param("seqs")List<Long> list, @Param("yearMonth") Integer yearMonth); // 과목별 평균을 찾아 리스트에 담는다.
-
 
 }
