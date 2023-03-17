@@ -2,17 +2,23 @@ package com.project.lms.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.GradeInfoEntity;
+import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.error.custom.NoContentsException;
 import com.project.lms.error.custom.NotFoundMemberException;
+import com.project.lms.error.custom.NotFoundStudent;
+import com.project.lms.error.custom.NotFoundSubject;
+import com.project.lms.error.custom.NotFoundTest;
 import com.project.lms.error.custom.NotFoundTestException;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
@@ -30,9 +36,11 @@ import com.project.lms.repository.ClassInfoRepository;
 import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
 import com.project.lms.repository.GradeInfoRepository;
+import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
+import com.project.lms.vo.GradeVO;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.grade.SameGraderesponse;
 import com.project.lms.vo.grade.StudentSubjectInfo;
@@ -55,7 +63,8 @@ public class ScoreBySubjectService {
 	private final ClassInfoRepository classInfoRepository;
 	private final TeacherInfoRepository teacherInfoRepository;
 	private final ClassTeacherRepository classTeacherRepository;
-	
+	private final SubjectInfoRepository subjectInfoRepository;
+	 
 
 	// 선생님 or 직원의 담당 반 학생 이번 달 시험정보(과목명, 점수) 출력
 	public ScoreListBySubjectResponseVO getStuSubjectList(UserDetails userDetails, Long student) {
@@ -271,5 +280,4 @@ public class ScoreBySubjectService {
         }
 		return result; //result 반환
 	}
-	
 }
