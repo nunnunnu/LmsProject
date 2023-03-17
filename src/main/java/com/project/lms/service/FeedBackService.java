@@ -16,17 +16,24 @@ import org.springframework.stereotype.Service;
 import com.project.lms.entity.ClassInfoEntity;
 import com.project.lms.entity.ClassStudentEntity;
 import com.project.lms.entity.ClassTeacherEntity;
+import com.project.lms.entity.CommentInfoEntity;
 import com.project.lms.entity.feedback.FeedbackInfo;
+import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.error.custom.NotFoundFeedback;
 import com.project.lms.repository.ClassInfoRepository;
 import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.repository.CommentInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.feedback.FeedbackInfoRepository;
+import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.vo.feedback.FeedBackDetailVO;
+import com.project.lms.vo.MapVO;
+import com.project.lms.vo.feedback.CommentInsertVO;
 import com.project.lms.vo.feedback.FeedBackListVO;
 import com.project.lms.vo.feedback.FeedBackResponseVO;
 import com.project.lms.vo.feedback.FeedBackVO;
@@ -45,6 +52,8 @@ public class FeedBackService {
     private final TeacherInfoRepository tRepo;
     private final StudentInfoRepository sRepo;
     private final FeedbackInfoRepository fRepo;
+    private final CommentInfoRepository ciRepo;
+    private final MemberInfoRepository miRepo;
 
 
     // 피드백 리스트
@@ -195,6 +204,26 @@ public class FeedBackService {
             .status(true).message("피드백 수정을 완료하였습니다.").code(HttpStatus.ACCEPTED)
             .build();
             return u;
+    public MapVO addComment(Long seq, CommentInsertVO data, UserDetails user) {
+        FeedbackInfo feedback = fRepo.findById(seq).orElseThrow(()->new NotFoundFeedback());
+        MemberInfoEntity member = miRepo.findByMiId(user.getUsername());
+        CommentInfoEntity comment = CommentInfoEntity.builder().cmtTitle(data.getComment()).feedback(feedback).member(member).build();
+        if (feedback.getStudent() == member || feedback.getTeacher()==member) {
+            if (data.getComment() ==null || data.getComment() =="") {
+                MapVO map = MapVO.builder().code(HttpStatus.BAD_REQUEST).message("내용을 작성해주세요").status(false).build();
+                return map;
+            }
+            else{
+            ciRepo.save(comment);
+            MapVO map = MapVO.builder().code(HttpStatus.OK).message("댓글이 작성되었습니다.").status(true).build();
+            return map;
+        }
+    }
+        else{
+            MapVO map = MapVO.builder().code(HttpStatus.BAD_REQUEST).message("담당 학생 및 선생님만 댓글 작성이 가능합니다.").status(false).build();
+            return map;
+        }
         
     }
+}
 }

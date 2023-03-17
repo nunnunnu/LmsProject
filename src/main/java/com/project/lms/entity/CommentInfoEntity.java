@@ -1,5 +1,6 @@
 package com.project.lms.entity;
 
+import com.project.lms.entity.feedback.FeedbackInfo;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.share.BaseTimeEntity;
 
@@ -13,10 +14,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class CommentInfoEntity extends BaseTimeEntity{
     // @Column(name = "create_dt") private LocalDate createDt;
     // @Column(name = "update_dt") private LocalDate updateDt;
     @Column(name = "cmt_title") private String cmtTitle;
-    @Column(name = "cmt_detail") private String cmtDetail;
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "cmt_fi_seq") private FeedbackInfo feedback;
+    
     
 }

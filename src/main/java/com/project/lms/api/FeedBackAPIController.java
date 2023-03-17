@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.FeedBackService;
 import com.project.lms.vo.feedback.FeedBackDetailVO;
+import com.project.lms.vo.MapVO;
+import com.project.lms.vo.feedback.CommentInsertVO;
 import com.project.lms.vo.feedback.FeedBackResponseVO;
 import com.project.lms.vo.feedback.FeedBackVO;
 import com.project.lms.vo.feedback.ShowFeedBackDetailVO;
@@ -59,5 +61,9 @@ public class FeedBackAPIController {
     @PatchMapping("/update/{fiSeq}")
     public ResponseEntity<UpdateFeedBackResponseVO> updateFeedBack(@PathVariable Long fiSeq, @RequestBody UpdateFeedBackVO data, @AuthenticationPrincipal UserDetails userDetails) {
         return new ResponseEntity<>(fService.updateFeedBack(userDetails.getUsername(),fiSeq, data), HttpStatus.OK);
+    @PutMapping("/commet/{seq}")
+    public ResponseEntity<MapVO> putComment (@AuthenticationPrincipal UserDetails user,@PathVariable Long seq, CommentInsertVO data) {
+        MapVO map = fService.addComment(seq, data, user);
+        return new ResponseEntity<>(map,map.getCode());
     }
 }
