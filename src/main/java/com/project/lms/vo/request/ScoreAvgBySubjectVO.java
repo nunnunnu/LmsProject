@@ -1,18 +1,16 @@
 package com.project.lms.vo.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class ScoreAvgBySubjectVO {
-    @Schema(description = "과목 명")
-    private String subjectName;
-    @Schema(description = "과목 점수")
-    private Double avg; 
+public interface ScoreAvgBySubjectVO {
+    @Schema(description = "독해 평균")
+    Double getAvgComprehension();
+    @Schema(description = "어휘 평균")
+    Double getAvgVocabulary(); 
+    @Schema(description = "문법 평균")
+    Double getAvgGrammar();
+    @Schema(description = "듣기 평균")
+    Double getAvgListening(); 
+ 
+
 }
