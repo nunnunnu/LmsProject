@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 
 public class UpdateFeedBackVO {
     private String title;
-    private String modDt;
+    // private String modDt;
     private String content;
  
     
-    public String getModDt(){
-        return modDt;
-    }
+    // public String getModDt(){
+    //     return modDt;
+    // }
 }

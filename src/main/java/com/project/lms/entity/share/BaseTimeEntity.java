@@ -21,6 +21,6 @@ public class BaseTimeEntity { //모든 entity에서 공통적으로 자주사용
     private LocalDateTime createdDate;
     
     @LastModifiedDate
-    @Column(updatable = false, name="modify_dt")
+    @Column(name="modify_dt")
     private LocalDateTime updatedDate;
 }
