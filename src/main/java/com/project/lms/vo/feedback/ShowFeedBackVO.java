@@ -1,10 +1,7 @@
 package com.project.lms.vo.feedback;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-
-import com.project.lms.entity.feedback.FeedbackInfo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -24,5 +21,5 @@ public class ShowFeedBackVO {
     @Schema (description = "code" , example = "OK.")
     private HttpStatus code;
     
-    private List<FeedBackListVO> list;
+    private Page<FeedBackListVO> list;
 }
