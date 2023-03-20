@@ -21,6 +21,7 @@ import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.vo.GradeVO;
+import com.project.lms.vo.MapVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,9 +33,7 @@ public class GradeService {
     private final TestInfoRepository tesRepo;
     private final TeacherInfoRepository teaRepo;
     private final GradeInfoRepository graRepo;
-    public Map<String, Object> addGradeInfo(GradeVO data) {
-
-        
+    public MapVO addGradeInfo(GradeVO data) {
 		Map<String, Object> map = new LinkedHashMap<>();
 		TeacherInfo tea = teaRepo.findById(data.getTeacher())
 		.orElseThrow(()->new NotFoundMemberException());
@@ -47,9 +46,6 @@ public class GradeService {
 
 		GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getGrade(), tes);
 		graRepo.save(entity);
-		map.put("status",true);
-		map.put("message","성적을 입력하였습니다.");
-		map.put("code",HttpStatus.ACCEPTED);
-		return map;
+		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
 	}
 }
