@@ -18,6 +18,8 @@ import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.repository.ClassStudentRepository;
+import com.project.lms.repository.ClassTeacherRepository;
 import com.project.lms.error.custom.NotFoundFeedback;
 import com.project.lms.repository.ClassInfoRepository;
 import com.project.lms.repository.ClassStudentRepository;
