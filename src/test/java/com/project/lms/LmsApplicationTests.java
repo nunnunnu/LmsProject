@@ -212,7 +212,17 @@ class LmsApplicationTests {
 		}
 		System.out.println(WeeknessSubjectList.get(0));
 
-		}	
+		}
+		
+		@Test
+		void 가장최근테스트정보찾기() {
+			List<TestInfoEntity> tList = testInfoRepository.findAll();
+			Long seq = null;
+			for (TestInfoEntity t : tList) {
+				seq = t.getTestSeq();
+			}
+			System.out.println(seq);
+		}
 
 	}
 	
