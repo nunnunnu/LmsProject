@@ -1,19 +1,14 @@
 package com.project.lms.service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
-import org.springframework.boot.autoconfigure.jdbc.JdbcProperties.Template;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.project.lms.entity.ClassInfoEntity;
 import com.project.lms.entity.ClassStudentEntity;
 import com.project.lms.entity.ClassTeacherEntity;
 import com.project.lms.entity.CommentInfoEntity;
@@ -21,6 +16,10 @@ import com.project.lms.entity.feedback.FeedbackInfo;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.repository.ClassStudentRepository;
+import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.repository.ClassStudentRepository;
+import com.project.lms.repository.ClassTeacherRepository;
 import com.project.lms.error.custom.NotFoundFeedback;
 import com.project.lms.repository.ClassInfoRepository;
 import com.project.lms.repository.ClassStudentRepository;
@@ -57,26 +56,12 @@ public class FeedBackService {
 
 
     // 피드백 리스트
-    public ShowFeedBackVO showFeedBack(String id) {
+    public ShowFeedBackVO showFeedBack(String id, Pageable page) {
         TeacherInfo tInfo = tRepo.findByMiId(id); // 로그인한 선생님의 정보를 찾는다.
-        ClassTeacherEntity ctInfo = ctRepo.findByTeacher(tInfo); // 반 정보를 찾는다. 
-        ClassInfoEntity cEntity = ctInfo.getClassInfo(); // 로그인한 선생님의 반 정보를 classNum에 담는다.
-        List<ClassTeacherEntity> ctList = ctRepo.findByClassInfo(cEntity);
-        List<FeedBackListVO> voList = new LinkedList<>();
-        List<FeedbackInfo> fInfoList = fRepo.findAll();
-        for(ClassTeacherEntity ctEntity : ctList){
-            for(FeedbackInfo fList : fInfoList){
-               if(fList.getTeacher().getMiSeq() == ctEntity.getTeacher().getMiSeq()) {
-                String regDate = fList.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));                
-                    FeedBackListVO voList2 = FeedBackListVO.builder().no(fList.getFiSeq())
-                    .title(fList.getFiTitle())
-                    .regDt(regDate)
-                    .writer(fList.getTeacher().getMiName()).build();
-                    voList.add(voList2);
-                    voList = voList.stream().sorted(Comparator.comparing(FeedBackListVO::getRegDt).reversed()).collect(Collectors.toList());
-               }
-            }
-        }
+        Page<FeedbackInfo> list = fRepo.findByTeacher(tInfo, page);
+
+        Page<FeedBackListVO> voList = list.map((f)-> new FeedBackListVO(f)); // entity 페이지 리스트를 페이지 DTO 형태로 변환하기 위한 람다식
+       
         ShowFeedBackVO sVo = ShowFeedBackVO.builder()
         .status(true)
         .message("피드백 리스트를 조회하였습니다.")
@@ -87,12 +72,21 @@ public class FeedBackService {
     }
 
     // 피드백 상세 조회
-    public ShowFeedBackDetailVO showFeedBackDetail(Long fiSeq) {
+    public ShowFeedBackDetailVO showFeedBackDetail(String id, Long fiSeq) {
+        TeacherInfo tInfo = tRepo.findByMiId(id);
         FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null);
         if(entity==null){
             ShowFeedBackDetailVO fVo = ShowFeedBackDetailVO.builder()
             .status(false)
             .message("존재하지 않는 글 번호입니다.")
+            .code(HttpStatus.NOT_FOUND)
+            .build();
+            return fVo;
+        }
+        if(entity.getTeacher().getMiSeq() != tInfo.getMiSeq()){
+            ShowFeedBackDetailVO fVo = ShowFeedBackDetailVO.builder()
+            .status(false)
+            .message("조회할 수 없는 게시글입니다.")
             .code(HttpStatus.NOT_FOUND)
             .build();
             return fVo;
@@ -156,55 +150,69 @@ public class FeedBackService {
     public UpdateFeedBackResponseVO updateFeedBack(String id, Long fiSeq, UpdateFeedBackVO data){
         TeacherInfo tInfo = tRepo.findByMiId(id); // 선생님 아이디로 정보를 찾는다.
         List<FeedbackInfo> fInfoList = fRepo.findByTeacher(tInfo); // 선생님이 쓴 글들의 정보를 가져온다.
-        Long seq = null;
+        Boolean check = false;
         for(FeedbackInfo f : fInfoList){
-            if(f.getFiSeq() == fiSeq){
-                seq = f.getFiSeq();
+            if(f.getFiSeq() == fiSeq){ 
+                check = true;
             }
         }
         
-        if(data.getTitle()==null || data.getContent()==null) {
+        if(!check){
             return UpdateFeedBackResponseVO.builder()
             .code(HttpStatus.BAD_REQUEST)
-            .message("필수 입력값이 누락되었습니다.")
+            .message("해당 로그인한 사람의 글이 아니거나 잘못된 글 번호입니다.")
+            .status(false)
+            .build(); 
+        }
+        if(data.getTitle()==null && data.getContent()==null) {
+            return UpdateFeedBackResponseVO.builder()
+            .code(HttpStatus.BAD_REQUEST)
+            .message("수정할 내용이 없습니다.")
             .status(false)
             .build();
         }
-      
-
-        // ClassTeacherEntity ctInfo = ctRepo.findByTeacher(tInfo); // 그 정보를 가지고 classTeach 정보를 찾는다.
-        // teacher ctSeq = ctInfo.getClassInfo().getCiSeq(); // 선생님의 반 고유번호를 변수 seq에 담는다.
-        
-        
-       
-        
-        
-        // FeedbackInfo fInfo = fRepo.findById(fiSeq).orElse(null);
-        
-        // if(fInfo == null) {
-        //     UpdateFeedBackResponseVO u = UpdateFeedBackResponseVO.builder()
-        //     .status(false)
-        //     .message("알맞지 않은 글 번호입니다.")
-        //     .code(HttpStatus.FORBIDDEN)
-        //     .build();
-        //     return u; 
-        // }
-        // if(ctSeq != fiSeq) {
-        //     UpdateFeedBackResponseVO u = UpdateFeedBackResponseVO.builder()
-        //     .status(false)
-        //     .message("해당 피드백은 수정할 수 없습니다.")
-        //     .code(HttpStatus.FORBIDDEN)
-        //     .build();
-        //     return u;
-        // }
-       
-            FeedbackInfo entity = new FeedbackInfo(fiSeq, data.getTitle(), null, tInfo, data.getContent(), 1);
-            fRepo.save(entity);
+            FeedbackInfo fInfo1 = fRepo.findById(fiSeq).get();
+            fInfo1.updateData(data.getTitle(), data.getContent());
+            
+            fRepo.save(fInfo1);
             UpdateFeedBackResponseVO u = UpdateFeedBackResponseVO.builder()
             .status(true).message("피드백 수정을 완료하였습니다.").code(HttpStatus.ACCEPTED)
             .build();
             return u;
+    }
+
+    // 피드백 삭제
+    public FeedBackResponseVO deleteFeedBack(String id, Long fiSeq) {
+        TeacherInfo tInfo = tRepo.findByMiId(id);
+        FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null);
+        if(entity==null){
+            FeedBackResponseVO fVo = FeedBackResponseVO.builder()
+            .status(false)
+            .message("존재하지 않는 글 번호입니다.")
+            .code(HttpStatus.NOT_FOUND)
+            .build();
+            return fVo;
         }
+        if(entity.getTeacher().getMiSeq() != tInfo.getMiSeq()){
+            FeedBackResponseVO fVo = FeedBackResponseVO.builder()
+            .status(false)
+            .message("삭제할 수 없는 게시글입니다.")
+            .code(HttpStatus.NOT_FOUND)
+            .build();
+            return fVo;
+        }
+        else{
+            fRepo.delete(entity);
+            FeedBackResponseVO fVo = FeedBackResponseVO.builder()
+            .status(true)
+            .message("게시글이 삭제 되었습니다.")
+            .code(HttpStatus.ACCEPTED)
+            .build();
+            return fVo;
+        }
+
+    }
+        
         // 댓글작성
         public MapVO addComment(Long seq, CommentInsertVO data, UserDetails user) {
             FeedbackInfo feedback = fRepo.findById(seq).orElseThrow(()->new NotFoundFeedback()); // seq로 게시글을 찾고 없으면 오류처리

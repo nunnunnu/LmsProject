@@ -15,6 +15,7 @@ import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.repository.custom.GradeInfoRepositoryCustom;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
+import com.project.lms.vo.request.AvgBySubjectTotalVO;
 import com.project.lms.vo.request.ScoreAvgBySubject2VO;
 import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
@@ -108,4 +109,15 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
         "where gi.student.miSeq = :seq AND YEAR(ti.testDate) = YEAR(CURRENT_DATE) group by si.subName"
         )
         List<ScoreAvgBySubject2VO> findByAvgBySubject2(@Param("seq") Long seq);
+
+    // 최신순 + 과목별 + 평균
+    @Query(value =
+        "SELECT b.subName As subjectName, AVG(a.grade) as totalAvg FROM GradeInfoEntity a, SubjectInfoEntity b "
+        +
+        "Join TestInfoEntity c "
+        +
+        "WHERE c.testSeq =:testSeq AND b.subSeq = a.subject.subSeq "
+        +
+        "group by b.subName ")
+        List<AvgBySubjectTotalVO> findBySubjectTotal(@Param("testSeq") Long testSeq);
 }

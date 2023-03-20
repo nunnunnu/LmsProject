@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.GradeService;
 import com.project.lms.vo.GradeVO;
+import com.project.lms.vo.MapVO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +23,13 @@ import lombok.RequiredArgsConstructor;
 public class GradeAPIController {
     private final GradeService gService;
     @PutMapping("")
-    public ResponseEntity<Object> postCompanyAdd(
+    public ResponseEntity<MapVO> addGradeInfo(
         // @Parameter(description = "점수", example = "100") @RequestParam @Nullable Long grade,
         // @Parameter(description = "과목번호", example = "1") @RequestParam @Nullable Long subject,
         // @Parameter(description = "학생번호", example = "1") @RequestParam @Nullable Long student,
         // @Parameter(description = "선생님번호", example = "1") @RequestParam @Nullable Long teacher,
         // @Parameter(description = "시험번호", example = "1") @RequestParam @Nullable Long test) {
         @RequestBody GradeVO data){
-        Map<String, Object> map = gService.addGradeInfo(data);
-        return new ResponseEntity<>(map, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(gService.addGradeInfo(data), HttpStatus.OK);
     }
 }

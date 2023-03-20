@@ -1,6 +1,7 @@
 package com.project.lms.entity.feedback;
 
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.util.StringUtils;
 
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
@@ -38,5 +39,14 @@ public class FeedbackInfo extends BaseTimeEntity {
     // @Column(name="create_dt") private LocalDate createDt;
     // @Column(name="modify_dt") private LocalDate modifyDt; //baseTimeEntity에서 상속받은 칼럼이 있어서 주석함
     @Column(name="fi_cate") private Integer fiCate;
+
+    public void updateData(String title, String content){
+        if(StringUtils.hasText(title)){
+            this.fiTitle = title;
+        }
+        if(StringUtils.hasText(content)){
+            this.fiContent = content;
+        }
+    }
 
 }

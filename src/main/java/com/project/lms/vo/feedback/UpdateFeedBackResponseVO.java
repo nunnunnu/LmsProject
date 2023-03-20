@@ -20,6 +20,4 @@ public class UpdateFeedBackResponseVO {
     private String message;
     @Schema (description = "code" , example = "OK")
     private HttpStatus code;
-    @Schema (description = "detail" , example = "피드백 상세 정보")
-    private UpdateFeedBackVO update;
 }
