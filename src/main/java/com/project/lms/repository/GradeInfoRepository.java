@@ -19,6 +19,7 @@ import com.project.lms.vo.request.AvgBySubjectTotalVO;
 import com.project.lms.vo.request.ScoreAvgBySubject2VO;
 import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
+import com.project.lms.vo.response.ScoreRankBySubjectVO;
 
 public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long>, GradeInfoRepositoryCustom { //querydsl로 만든 쿼리문을 사영하기 위해 상속받음.
     List<GradeInfoEntity> findByStudent(MemberInfoEntity student);
@@ -77,8 +78,16 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
             + "GROUP by grd.subject.subSeq")
     List<ScoreAvgListBySubjectVO> avgBySubject(@Param("seqs") List<Long> list, @Param("yearMonth") Integer yearMonth); // 과목별 평균을 찾아 리스트에 담는다.
 
+    @Query("SELECT mi.miName AS name, ci.ciName AS className, g.grade AS score, RANK() OVER(ORDER BY g.grade DESC) AS ranking FROM GradeInfoEntity g "
+            + "JOIN MemberInfoEntity mi ON mi.miSeq = g.student.miSeq "
+            + "JOIN ClassStudentEntity cs ON cs.student.miSeq = mi.miSeq "
+            + "JOIN ClassInfoEntity ci ON ci.ciSeq = cs.classInfo.ciSeq "
+            + "WHERE g.subject.subSeq = :seq")
+    List<ScoreRankBySubjectVO> rankBySubject(@Param("seq") Long seq); // 과목별 학생 랭킹을 찾아 리스트에 담는다.
+
+
     //  이건 사용안함.
-   @Query(
+    @Query(
         "SELECT AVG(CASE WHEN si.subName = '독해' THEN gi.grade END) AS avgComprehension, " +
         "AVG(CASE WHEN si.subName = '어휘' THEN gi.grade END) AS avgVocabulary, " +
         "AVG(CASE WHEN si.subName = '문법' THEN gi.grade END) AS avgGrammar, " +
