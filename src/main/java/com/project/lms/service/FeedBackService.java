@@ -6,19 +6,31 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.ClassStudentEntity;
 import com.project.lms.entity.ClassTeacherEntity;
+import com.project.lms.entity.CommentInfoEntity;
 import com.project.lms.entity.feedback.FeedbackInfo;
+import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.error.custom.NotFoundFeedback;
+import com.project.lms.repository.ClassInfoRepository;
+import com.project.lms.repository.ClassStudentRepository;
+import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.repository.CommentInfoRepository;
+import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.feedback.FeedbackInfoRepository;
+import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.vo.feedback.FeedBackDetailVO;
+import com.project.lms.vo.MapVO;
+import com.project.lms.vo.feedback.CommentInsertVO;
 import com.project.lms.vo.feedback.FeedBackListVO;
 import com.project.lms.vo.feedback.FeedBackResponseVO;
 import com.project.lms.vo.feedback.FeedBackVO;
@@ -37,6 +49,8 @@ public class FeedBackService {
     private final TeacherInfoRepository tRepo;
     private final StudentInfoRepository sRepo;
     private final FeedbackInfoRepository fRepo;
+    private final CommentInfoRepository ciRepo;
+    private final MemberInfoRepository miRepo;
 
 
     // 피드백 리스트
@@ -196,4 +210,32 @@ public class FeedBackService {
         }
 
     }
+        
+        // 댓글작성
+        public MapVO addComment(Long seq, CommentInsertVO data, UserDetails user) {
+            FeedbackInfo feedback = fRepo.findById(seq).orElseThrow(()->new NotFoundFeedback()); // seq로 게시글을 찾고 없으면 오류처리
+            MemberInfoEntity member = miRepo.findByMiId(user.getUsername()); // 로그인한 유저의 아이디로 회원정보를 찾음
+            // if(member.getMiRole().equals("EMPLOYEE")) {
+            //     MapVO map = MapVO.builder().code(HttpStatus.NOT_ACCEPTABLE).message("댓글은 선생님 및 학생만 작성 가능합니다.").status(false).build();
+            //     return map;
+            // }
+            // System.out.println(member.getMiRole()); 
+            CommentInfoEntity comment = CommentInfoEntity.builder().cmtTitle(data.getComment()).feedback(feedback).member(member).build(); // 댓글을 작성하고
+            if (feedback.getStudent() == member || feedback.getTeacher()==member) { // 게시글 작성자 및 담당 학생이 아닌 사람이 댓글 작성시 오류
+                if (data.getComment() ==null || data.getComment() =="") { // 게시글 작성사 및 담담학생이 댓글을 달때
+                    MapVO map = MapVO.builder().code(HttpStatus.NOT_ACCEPTABLE).message("내용을 작성해주세요").status(false).build(); // 내용 미입력시 오류 처리
+                    return map;
+                }
+                else{
+                    ciRepo.save(comment);// 오류가 없을 시에는 댓글 작성후 저장
+                    MapVO map = MapVO.builder().code(HttpStatus.OK).message("댓글이 작성되었습니다.").status(true).build();
+                    return map;
+                }
+            }
+            else{
+                MapVO map = MapVO.builder().code(HttpStatus.FAILED_DEPENDENCY).message("담당 학생 및 선생님만 댓글 작성이 가능합니다.").status(false).build(); // 게시글 작성자 및 담당 학생이 아닌 사람이 댓글 작성시 오류
+                return map;
+            }
+            
+        }
 }

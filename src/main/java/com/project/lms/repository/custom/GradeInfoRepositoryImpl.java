@@ -25,33 +25,29 @@ public class GradeInfoRepositoryImpl implements GradeInfoRepositoryCustom {
         this.queryfactory = new JPAQueryFactory(em);
     }
 
-//     select si.mi_seq, mi.mi_name , mi.mi_birth ,
-// 	ifnull((select sum(gi.gi_grade) from grade_info gi where gi.gi_test_seq =5 and gi_mi_seq1 = si.mi_seq  GROUP by gi.gi_mi_seq1),0) as totalSum	
-// from student_info si 
-// join member_info mi on si.mi_seq = mi.mi_seq 
-// order by totalSum desc
     @Override
     public List<StudentClassGradeVO> studentClassChange(TestInfoEntity test) {
         return queryfactory
-                .select(Projections.fields(StudentClassGradeVO.class,
-                                QStudentInfo.studentInfo.miSeq.as("seq"),
-                                QStudentInfo.studentInfo.miName.as("name"),
-                                QStudentInfo.studentInfo.miBirth.as("birth"),
-                                ExpressionUtils.as(JPAExpressions
-                                        .select(QGradeInfoEntity.gradeInfoEntity.grade.sum())
+                .select(Projections.fields( //DTO의 필드명과 일치하는 컬럼을 매핑
+                                StudentClassGradeVO.class, //최종 반환 타입
+                                QStudentInfo.studentInfo.miSeq.as("seq"), //학생번호
+                                QStudentInfo.studentInfo.miName.as("name"), //학생 이름
+                                QStudentInfo.studentInfo.miBirth.as("birth"), //학생 생년월일
+                                ExpressionUtils.as(JPAExpressions //select절 서브쿼리. 
+                                        .select(QGradeInfoEntity.gradeInfoEntity.grade.sum()) //그룹화한 후 점수의 합계
                                         .from(QGradeInfoEntity.gradeInfoEntity)        
-                                        .where(QGradeInfoEntity.gradeInfoEntity.test.eq(test),
-                                            QGradeInfoEntity.gradeInfoEntity.student.miSeq.eq(QStudentInfo.studentInfo.miSeq)
+                                        .where(QGradeInfoEntity.gradeInfoEntity.test.eq(test), //파라미터로 받은 시험정보와 일치
+                                            QGradeInfoEntity.gradeInfoEntity.student.miSeq.eq(QStudentInfo.studentInfo.miSeq) //원 쿼리에서 select절에 반환된 회원정보와 일치하는 정보만 조회
                                         )
-                                        .groupBy(QGradeInfoEntity.gradeInfoEntity.student)
+                                        .groupBy(QGradeInfoEntity.gradeInfoEntity.student) //학생으로 그룹화
                                 , "total") 
                                 ,QClassInfoEntity.classInfoEntity.ciName.as("originClass")
                                 )
                             )
                 .from(QStudentInfo.studentInfo)
-                .join(QClassStudentEntity.classStudentEntity).on(QStudentInfo.studentInfo.miSeq.eq(QClassStudentEntity.classStudentEntity.student.miSeq))
-                .join(QClassInfoEntity.classInfoEntity).on(QClassStudentEntity.classStudentEntity.classInfo.ciSeq.eq(QClassInfoEntity.classInfoEntity.ciSeq))
-                .orderBy(new OrderSpecifier<>(Order.DESC, Expressions.path(Double.class, "total")))
-                .fetch();
+                .join(QClassStudentEntity.classStudentEntity).on(QStudentInfo.studentInfo.miSeq.eq(QClassStudentEntity.classStudentEntity.student.miSeq)) //학생의 기존 반 정보를 가져오기위해 연결테이블 조인
+                .join(QClassInfoEntity.classInfoEntity).on(QClassStudentEntity.classStudentEntity.classInfo.ciSeq.eq(QClassInfoEntity.classInfoEntity.ciSeq)) //반의 이름을 가져오기위해 반테이블 조인
+                .orderBy(new OrderSpecifier<>(Order.DESC, Expressions.path(Double.class, "total"))) //별칭으로 사용한 total으로 정렬하기 위해 사용
+                .fetch(); //리스트로 조회
     }
 }

@@ -3,7 +3,6 @@ package com.project.lms.api;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
@@ -11,9 +10,11 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -87,70 +88,76 @@ public class ClassAPIController {
         Page<ClassStudentListVO> result = cService.classMemberFind(userDetails, page);
         
         return new ResponseEntity<Page<ClassStudentListVO>>(result, HttpStatus.OK);
-    }
-    
-    @GetMapping("/change")
-    @Secured({"ROLE_TEACHER","ROLE_EMPLOYEE"})
-    public ResponseEntity<List<StudentClassGradeVO>> changeClass(){
-        return new ResponseEntity<List<StudentClassGradeVO>>(cService.changeClassList(), HttpStatus.OK);
-    }
+    }    
 
     @GetMapping("/excel")
+    @Operation(summary = "변경 반 엑셀파일 다운로드", description ="모든 회원의 가장 최신 시험의 성적을 조회해서 반을 다시 나눕니다. 엑셀파일로 다운로드 가능합니다. 총점이 0인 학생은 미응시자입니다. 작업을 위해 토큰을 제외했으나 나중에 토큰이 필요하게될수도있습니다.")
     public void downloadExcel(HttpServletResponse response) throws IOException {
+        Workbook workbook = new HSSFWorkbook(); //사용을 위해 POI를 gradle에 의존성 추가함. 엑셀파일 생성
+        Sheet sheet = workbook.createSheet("sheet1"); //시트 생성. 생성될 시트 이름
+        int rowNo = 0; //데이터를 추가할 행 번호. 행이 1 증가하면 다음 행으로 이동했다는 의미임
 
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("sheet1");
-        int rowNo = 0;
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 6)); //0행에서 0행까지, 0열에서 6열까지 병합
         
-        CellStyle headStyle = workbook.createCellStyle();
-        headStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.PALE_BLUE.getIndex());
-        headStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        Font font = workbook.createFont();
+        CellStyle titleStyle = workbook.createCellStyle(); //제목 스타일 설정
+        titleStyle.setAlignment(HorizontalAlignment.CENTER); //가운데정렬
+        Font titleFont = workbook.createFont(); //폰트설정
+        titleFont.setFontHeightInPoints((short) 18); //크기를 18로
+        titleStyle.setFont(titleFont);  //서식에 폰트서식 추가
+
+        CellStyle headStyle = workbook.createCellStyle(); //제목행 스타일 설정
+        headStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.PALE_BLUE.getIndex()); //배경색
+        headStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); //색상 채우기 
+        Font font = workbook.createFont(); //폰트 정보
         headStyle.setBorderTop(BorderStyle.THIN); //테두리 위쪽
         headStyle.setBorderBottom(BorderStyle.THIN); //테두리 아래쪽
         headStyle.setBorderLeft(BorderStyle.THIN); //테두리 왼쪽
         headStyle.setBorderRight(BorderStyle.THIN); //테두리 오른쪽
-        headStyle.setFont(font);
+        headStyle.setFont(font); //폰트 서식 추가
         
-        CellStyle cellStyle = workbook.createCellStyle();
+        CellStyle cellStyle = workbook.createCellStyle(); //본문 스타일 설정
         cellStyle.setBorderTop(BorderStyle.THIN); //테두리 위쪽
         cellStyle.setBorderBottom(BorderStyle.THIN); //테두리 아래쪽
         cellStyle.setBorderLeft(BorderStyle.THIN); //테두리 왼쪽
         cellStyle.setBorderRight(BorderStyle.THIN); //테두리 오른쪽
 
-        Row headerRow = sheet.createRow(rowNo++);
-        headerRow.createCell(0).setCellValue("회원번호");
-        headerRow.createCell(1).setCellValue("이름");
-        headerRow.createCell(2).setCellValue("생년월일");
-        headerRow.createCell(3).setCellValue("합계점수");
-        headerRow.createCell(4).setCellValue("기존 반");
-        headerRow.createCell(5).setCellValue("변경 반");
-        headerRow.createCell(6).setCellValue("상태");
+        Row title = sheet.createRow(rowNo++); //제목 설정후 행 번호 증가
+        title.createCell(0).setCellValue("학생 반 현황"); //제목 입력
+        title.getCell(0).setCellStyle(titleStyle); //행의 스타일 설정
+        
+        Row headerRow = sheet.createRow(rowNo++); //헤더 정보 입력
+        headerRow.createCell(0).setCellValue("회원번호"); //0열에 데이터 입력
+        headerRow.createCell(1).setCellValue("이름"); //1열에 데이터 입력
+        headerRow.createCell(2).setCellValue("생년월일"); //2열에 데이터 입력
+        headerRow.createCell(3).setCellValue("합계점수"); //3열에 데이터 입력
+        headerRow.createCell(4).setCellValue("기존 반"); //4열에 데이터 입력
+        headerRow.createCell(5).setCellValue("변경 반"); //5열에 데이터 입력
+        headerRow.createCell(6).setCellValue("상태"); //6열에 데이터 입력
 
         for(int i=0; i<=6; i++){
-            headerRow.getCell(i).setCellStyle(headStyle);
-        }
+            headerRow.getCell(i).setCellStyle(headStyle); 
+        } //각 헤더에 스타일 적용
 
-        List<StudentClassGradeVO> list = cService.changeClassList();
+        List<StudentClassGradeVO> list = cService.changeClassList(); //본문에 입력할 데이터를 가져옴
         for (StudentClassGradeVO data : list) {
-            Row row = sheet.createRow(rowNo++);
-            row.createCell(0).setCellValue(data.getSeq());
-            row.createCell(1).setCellValue(data.getName());
-            row.createCell(2).setCellValue(data.getBirth());
-            row.createCell(3).setCellValue(data.getTotal());
-            row.createCell(4).setCellValue(data.getOriginClass());
-            row.createCell(5).setCellValue(data.getChangeClass());
-            row.createCell(6).setCellValue(data.getStatus());
+            Row row = sheet.createRow(rowNo++); //본문 설정 후 행 추가. for문을 돌때마다 다음행으로 이동됨
+            row.createCell(0).setCellValue(data.getSeq()); //0열에 데이터 입력
+            row.createCell(1).setCellValue(data.getName()); //1열에 데이터 입력
+            row.createCell(2).setCellValue(data.getBirth().toString()); //2열에 데이터 입력
+            row.createCell(3).setCellValue(data.getTotal()); //3열에 데이터 입력
+            row.createCell(4).setCellValue(data.getOriginClass()); //4열에 데이터 입력
+            row.createCell(5).setCellValue(data.getChangeClass()); //5열에 데이터 입력
+            row.createCell(6).setCellValue(data.getStatus()); //6열에 데이터 입력
             for(int i=0; i<=6; i++){
                 row.getCell(i).setCellStyle(cellStyle);
-            }
+            } //각 본문에 스타일 설정
         }
 
-        response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename=student_class.xls");
+        response.setContentType("ms-vnd/excel"); //반환 타입
+        response.setHeader("Content-Disposition", "attachment;filename=student_class.xls"); //저장 이름 설정
 
-        workbook.write(response.getOutputStream());
-        workbook.close();
+        workbook.write(response.getOutputStream()); //response에 바로 응답. 에러 대응이 어려워서 좋은 코드는 아님
+        workbook.close(); //종료
     }
     
 }

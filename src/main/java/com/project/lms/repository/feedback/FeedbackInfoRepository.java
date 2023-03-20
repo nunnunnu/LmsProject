@@ -13,4 +13,5 @@ public interface FeedbackInfoRepository extends JpaRepository<FeedbackInfo, Long
     List<FeedbackInfo> findByTeacher(TeacherInfo entity);
     Page<FeedbackInfo> findByTeacher(TeacherInfo teacher, Pageable page);
     // FeedbackInfo finByTeacher(TeacherInfo teacher);
+    // FeedbackInfo findByTeacher(TeacherInfo entity);
 }

@@ -5,9 +5,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +23,6 @@ import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MailVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.MemberLoginResponseVO;
-import com.project.lms.vo.member.ClassStudentListVO;
 import com.project.lms.vo.member.MemberJoinVO;
 import com.project.lms.vo.member.MemberSearchIdVO;
 import com.project.lms.vo.member.MemberSearchPwdVO;
@@ -34,7 +30,6 @@ import com.project.lms.vo.member.RefreshTokenVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -79,7 +74,7 @@ public class MemberController {
     
     @GetMapping("/refresh")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "400", description = "로그인 후 급받은 리프레쉬토큰이 아니거나 만료된 리프레쉬 토큰입니다. 에러나면 로그아웃시키고 로그인페이지로 이동시켜주세요 ", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "400", description = "로그인 후 발급받은 리프레쉬토큰이 아니거나 만료된 리프레쉬 토큰입니다. 에러나면 로그아웃시키고 로그인페이지로 이동시켜주세요 ", content = @Content(schema = @Schema(implementation = MapVO.class))),
         @ApiResponse(responseCode = "200", description = "발급 성공", content = @Content(schema = @Schema(implementation = MapVO.class)))})
     @Operation(summary = "토큰 재발급", description ="로그인할때 받은 리프레쉬 토큰으로 엑세스 토큰을 재발급 받는 기능입니다. 엑세스 토큰이 만료되었을때 재발급받아주세요. 만약 여기서도 에러가 뜬다면 로그아웃처리해주시면 됩니다")
     public ResponseEntity<Object> accessToken(@RequestBody RefreshTokenVO refresh){
