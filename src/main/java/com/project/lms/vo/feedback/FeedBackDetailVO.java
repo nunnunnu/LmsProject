@@ -1,6 +1,10 @@
 package com.project.lms.vo.feedback;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
+
+import com.project.lms.entity.CommentInfoEntity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -18,6 +22,7 @@ public class FeedBackDetailVO {
     private String regDt;
     private String title;
     private String content;
+    private List<CommentInsertVO> comment;
     
     public String getRegDt(){
         return regDt;
