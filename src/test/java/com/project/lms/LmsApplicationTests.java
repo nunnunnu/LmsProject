@@ -15,9 +15,13 @@ import java.util.stream.Stream;
 
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +31,7 @@ import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
+import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
@@ -222,6 +227,20 @@ class LmsApplicationTests {
 				seq = t.getTestSeq();
 			}
 			System.out.println(seq);
+		}
+
+		@Test
+		void 마스터계정_제외한_멤버조회() {
+			Pageable page = null;
+			Page<MemberInfoEntity> memberList = memberInfoRepository.findByMiRoleNot(Role.MASTER, page);
+			System.out.println(memberList.getTotalElements());
+		}
+		@Test
+		void 키워드_포함한_멤버_조회() {
+			Pageable page = null;
+			String keyword = "이";
+			Page<MemberInfoEntity> memberList = memberInfoRepository.findByMiNameContaining(keyword, page);
+			System.out.println(memberList.getTotalElements());
 		}
 
 	}

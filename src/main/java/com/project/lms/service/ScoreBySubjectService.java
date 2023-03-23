@@ -16,11 +16,16 @@ import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.error.custom.NoContentsException;
+import com.project.lms.error.custom.NotFoundClassException;
+import com.project.lms.error.custom.NotFoundEmployeeClass;
 import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.error.custom.NotFoundStudent;
+import com.project.lms.error.custom.NotFoundStudentClass;
 import com.project.lms.error.custom.NotFoundSubject;
+import com.project.lms.error.custom.NotFoundTeacherClass;
 import com.project.lms.error.custom.NotFoundTest;
 import com.project.lms.error.custom.NotFoundTestException;
+import com.project.lms.error.custom.NotMyClassStudent;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
@@ -70,12 +75,12 @@ public class ScoreBySubjectService {
 
 	// 선생님 or 직원의 담당 반 학생 이번 달 시험정보(과목명, 점수) 출력
 	public ScoreListBySubjectResponseVO getStuSubjectList(UserDetails userDetails, Long student) {
-		StudentInfo sInfo = studentInfoRepository.findById(student).orElse(null);
-		if (sInfo == null) { // 학생 정보가 없다면
-			ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO("번호가 존재하지 않거나, 잘못된 학생 고유번호입니다.",
-					false, HttpStatus.BAD_REQUEST, null);
-			return result; // 메세지와 코드, 상태값을 반환함.           
-		}
+		StudentInfo sInfo = studentInfoRepository.findById(student).orElseThrow(() -> new NotFoundStudent());
+		// if (sInfo == null) { // 학생 정보가 없다면
+		// 	ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO("번호가 존재하지 않거나, 잘못된 학생 고유번호입니다.",
+		// 			false, HttpStatus.BAD_REQUEST, null);
+		// 	return result; // 메세지와 코드, 상태값을 반환함.           
+		// }
 		MemberInfoEntity mInfo = memberInfoRepository.findByMiId(userDetails.getUsername());
 
 		if (mInfo.getMiRole().toString().equals("EMPLOYEE")) { // 권한이 "EMPLOYEE"와 같다면
@@ -83,35 +88,42 @@ public class ScoreBySubjectService {
 			MemberInfoEntity eInfo = memberInfoRepository.findByMiId(eId); // 정보를 가져온다.
 			ClassInfoEntity cInfo = classInfoRepository.findByEmployee(eInfo); // 반 정보를 가져온다.
 			if (cInfo == null) { // 직원의 반 정보가 없으면
-				ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO("담당하고 있는 반이 없습니다.", false,
-						HttpStatus.BAD_REQUEST, null); // 메세지와 코드, 상태값을 반환함.
-				return result;
+					throw new NotFoundEmployeeClass();
+				// ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO("담당하고 있는 반이 없습니다.", false,
+				// 		HttpStatus.BAD_REQUEST, null); // 메세지와 코드, 상태값을 반환함.
+				// return result;
 			}
 			ClassStudentEntity csInfo = classStudentRepository.findByStudent(sInfo);
-			if (csInfo == null || cInfo.getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원의 반 번호가 같지 않으면
-				ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO(
-						"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false,
-						HttpStatus.BAD_REQUEST, null); // 메세지와 코드, 상태값을 반환함.
-				return result;
-			}
+			if (csInfo == null)
+				throw new NotFoundStudentClass();
+			else if (cInfo.getCiSeq() != csInfo.getClassInfo().getCiSeq())
+				throw new NotMyClassStudent();
+			// if (csInfo == null || cInfo.getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원의 반 번호가 같지 않으면
+			// 	ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO(
+			// 			"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false,
+			// 			HttpStatus.BAD_REQUEST, null); // 메세지와 코드, 상태값을 반환함.
+			// 	return result;
+			// }
 		}
 
 		else if (mInfo.getMiRole().toString().equals("TEACHER")) { // 권한이 "TEACHER"와 같다면
 			String tId = userDetails.getUsername(); // 해당 토큰의 아이디를 변수 tId에 넣음.
 			TeacherInfo tInfo = teacherInfoRepository.findByMiId(tId); // 아이디를 가지고 로그인한 선생님의 정보를 찾음. 
 			ClassTeacherEntity cmInfo = classTeacherRepository.findByTeacher(tInfo); // 해당 선생님의 반 정보를 찾음.
-			if (cmInfo == null) {
-				ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO("담당하고 있는 반이 없습니다.", false,
-						HttpStatus.BAD_REQUEST, null); // 메세지와 코드, 상태값을 반환함.
-				return result;
+			if (cmInfo == null) { // 선생님의 반 정보가 없다면
+				throw new NotFoundTeacherClass();
+				// ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("담당하고 있는 반이 없습니다.",
+				// 		false, HttpStatus.BAD_REQUEST, null, null, null);
+				// return result; // 메세지와 코드, 상태값을 반환함.           
 			}
 			ClassStudentEntity csInfo = classStudentRepository.findByStudent(sInfo); // 학생 고유번호를 갖고 학생 정보를 찾음.
-			if (csInfo == null || cmInfo.getClassInfo().getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 선생님의 반 번호가 같지 않으면
-				ScoreListBySubjectResponseVO result = new ScoreListBySubjectResponseVO(
-						"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false,
-						HttpStatus.BAD_REQUEST, null); // 메세지와 코드, 상태값을 반환함.
-				return result;
-			}
+			// if (csInfo == null || cmInfo.getClassInfo().getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원 or 선생님의 반 번호가 같지 않으면
+			// 	ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
+			// 			"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
+			// 	return result;
+			// }
+			if (csInfo == null) throw new NotFoundStudentClass();
+			else if(cmInfo.getClassInfo().getCiSeq() != csInfo.getClassInfo().getCiSeq()) throw new NotMyClassStudent();
 		}
 		ScoreListBySubjectResponseVO result = getSubjectList(sInfo.getMiId());
 		return result;
@@ -149,7 +161,9 @@ public class ScoreBySubjectService {
 
 	// 올해 시험 정보(과목 명, 점수) & 성적 통계 메세지 출력
 	public ScoreListBySubjectYearResponseVO getSubjectList2(String id) {
+		System.err.println("aaaaaaaaaaaaaaaaaaaa"+id);
 		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id); // 토큰을 가진 학생의 정보를 가져온다.
+		System.out.println("sssssssss"+memEntity);
 		Long seq = memEntity.getMiSeq(); // 학생의 고유번호를 변수 seq로 받는다.
 		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(seq); // 이번년 과목별 성적을 list로 받는다.
 		List<Object> explanationList1 = new LinkedList<>(); // 성적 통계 설명을 넣을 list를 생성한다.
@@ -192,46 +206,57 @@ public class ScoreBySubjectService {
 	
 	// 선생님 or 직원의 담당 반 학생  올해 시험 정보(과목 명, 점수) & 성적 통계 메세지 출력
 	public ScoreListBySubjectYearResponseVO getStuSubjectList2(UserDetails userDetails, Long student) {
-		StudentInfo sInfo = studentInfoRepository.findById(student).orElse(null);
-		if (sInfo == null) { // 학생 정보가 없다면
-			ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
-					"번호가 존재하지 않거나, 잘못된 학생 고유번호입니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
-			return result; // 메세지와 코드, 상태값을 반환함.           
-		}
+		StudentInfo sInfo = studentInfoRepository.findById(student).orElseThrow(() -> new NotFoundStudent());
+		// if (sInfo == null) { // 학생 정보가 없다면
+		// 	ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
+		// 			"번호가 존재하지 않거나, 잘못된 학생 고유번호입니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
+		// 	return result; // 메세지와 코드, 상태값을 반환함.           
+		// }
 		MemberInfoEntity mInfo = memberInfoRepository.findByMiId(userDetails.getUsername()); // 로그인한 사람의 정보를 가져온다.
+		// if (mInfo == null) {
+		// 	throw new NotFoundMemberException();
+		// }
 
 		if (mInfo.getMiRole().toString().equals("EMPLOYEE")) { // 권한이 "EMPLOYEE"와 같다면
 			String eId = userDetails.getUsername(); // 아이디를 찾고
 			MemberInfoEntity eInfo = memberInfoRepository.findByMiId(eId); // 해당 로그인한 사람의 정보를 찾아서
 			ClassInfoEntity cInfo = classInfoRepository.findByEmployee(eInfo); // 반 정보를 찾는다.
 			if (cInfo == null) { // 반 정보가 없으면 
-				ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("담당하고 있는 반이 없습니다.",
-						false, HttpStatus.BAD_REQUEST, null, null, null);
-				return result;
+				throw new NotFoundEmployeeClass();
+				// ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("담당하고 있는 반이 없습니다.",
+				// 		false, HttpStatus.BAD_REQUEST, null, null, null);
+				// return result;
 			}
 			ClassStudentEntity csInfo = classStudentRepository.findByStudent(sInfo); // 학생의 반 정보를 찾는다.
-			if (csInfo == null || cInfo.getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원 or 선생님의 반 번호가 같지 않으면
-				ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
-						"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
-				return result;
-			}
+			// if (csInfo == null || cInfo.getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원 or 선생님의 반 번호가 같지 않으면
+			// 	ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
+			// 			"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
+			// 	return result;
+			// }
+			if (csInfo == null)
+				throw new NotFoundStudentClass();
+			else if (cInfo.getCiSeq() != csInfo.getClassInfo().getCiSeq())
+				throw new NotMyClassStudent();
 		}
-
+		
 		else if (mInfo.getMiRole().toString().equals("TEACHER")) { // 권한이 "TEACHER"와 같다면
 			String tId = userDetails.getUsername(); // 해당 토큰의 아이디를 변수 tId에 넣음.
 			TeacherInfo tInfo = teacherInfoRepository.findByMiId(tId); // 아이디를 가지고 로그인한 직원 or 선생님의 정보를 찾음. 
 			ClassTeacherEntity cmInfo = classTeacherRepository.findByTeacher(tInfo); // 해당 직원 or 선생님의 반 정보를 찾음.
 			if (cmInfo == null) { // 선생님의 반 정보가 없다면
-				ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("담당하고 있는 반이 없습니다.",
-						false, HttpStatus.BAD_REQUEST, null, null, null);
-				return result; // 메세지와 코드, 상태값을 반환함.           
+				throw new NotFoundTeacherClass();
+				// ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO("담당하고 있는 반이 없습니다.",
+				// 		false, HttpStatus.BAD_REQUEST, null, null, null);
+				// return result; // 메세지와 코드, 상태값을 반환함.           
 			}
 			ClassStudentEntity csInfo = classStudentRepository.findByStudent(sInfo); // 학생 고유번호를 갖고 학생 정보를 찾음.
-			if (csInfo == null || cmInfo.getClassInfo().getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원 or 선생님의 반 번호가 같지 않으면
-				ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
-						"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
-				return result;
-			}
+			// if (csInfo == null || cmInfo.getClassInfo().getCiSeq() != csInfo.getClassInfo().getCiSeq()) { // 만약 해당 학생의 반 번호와 로그인한 직원 or 선생님의 반 번호가 같지 않으면
+			// 	ScoreListBySubjectYearResponseVO result = new ScoreListBySubjectYearResponseVO(
+			// 			"담당 반의 학생이 아니거나 해당 학생의 반 정보를 찾을 수 없습니다.", false, HttpStatus.BAD_REQUEST, null, null, null);
+			// 	return result;
+			// }
+			if (csInfo == null) throw new NotFoundStudentClass();
+			else if(cmInfo.getClassInfo().getCiSeq() != csInfo.getClassInfo().getCiSeq()) throw new NotMyClassStudent();
 		}
 		ScoreListBySubjectYearResponseVO result = getSubjectList2(sInfo.getMiId()); // 학생의 올해 시험 과목 별 점수 조회 리스트 가져오기
 		return result;
