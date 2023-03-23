@@ -1,7 +1,11 @@
 package com.project.lms.api;
 
+import java.time.YearMonth;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.ScoreStatsService;
+import com.project.lms.vo.ScoreAllListBySubjectVO;
 import com.project.lms.vo.ScoreAvgStatsListByClassVO;
+import com.project.lms.vo.ScoreListByYearMonthVO;
 import com.project.lms.vo.response.ScoreRankBySubjectVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,11 +29,24 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/stats")
 @RequiredArgsConstructor
-@Tag(name = "통계 API", description = "통계 조회 API (반별+과목별 평균 / 과목별 랭킹)")
+@Tag(name = "성적 조회 및 통계 API", description = "학생의 성적을 조회하거나 통계(반별+과목별 평균 / 과목별 랭킹)")
 public class ScoreStatsAPIController {
     private final ScoreStatsService scoreStatsService;
+    
 
-    @Operation(summary = "반 별 과목 평균 조회", description = "반 별로 과목별 평균을 조회할 수 있습니다.")
+    @Operation(summary = "연월별 학생 성적 조회", description = "연월별(시험별)로 학생들의 성적을 조회합니다.")
+    @GetMapping("/list")
+    public ResponseEntity<List<ScoreAllListBySubjectVO>> getScoreListByYearMonth(
+        @Parameter(description = "조회하려는 연월", example = "202303") @RequestParam("yearMonth") YearMonth yearMonth,
+        @Parameter(hidden = true) @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+        @AuthenticationPrincipal UserDetails userDetails
+    ){
+        System.out.println(yearMonth);
+        return new ResponseEntity<>(scoreStatsService.ScoreList(yearMonth, userDetails, pageable),HttpStatus.OK); //scoreStatsService의 ClassScoreStats를 호출한다.
+    }
+
+
+    @Operation(summary = "반 별 과목 평균 조회", description = "반 별로 과목별 평균을 조회합니다.")
     @GetMapping("/avg")
     public ResponseEntity<List<ScoreAvgStatsListByClassVO>> getScoreStatsByClass(
         @Parameter(description = "조회하려는 연월", example = "202303") @RequestParam("yearMonth") Integer yearMonth,

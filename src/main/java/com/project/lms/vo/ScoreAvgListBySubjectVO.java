@@ -6,5 +6,5 @@ public interface ScoreAvgListBySubjectVO {
     @Schema(description = "과목 명") 
     String getSubject();
     @Schema(description = "평균 점수")
-    Integer getAvg();
+    Double getAvg();
 }

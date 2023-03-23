@@ -1,18 +1,26 @@
 package com.project.lms.service;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lms.entity.ClassInfoEntity;
+import com.project.lms.entity.SubjectInfoEntity;
+import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.ClassInfoRepository;
 import com.project.lms.repository.GradeInfoRepository;
+import com.project.lms.repository.SubjectInfoRepository;
+import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
+import com.project.lms.vo.ScoreAllListBySubjectVO;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.ScoreAvgStatsListByClassVO;
 import com.project.lms.vo.response.ScoreRankBySubjectVO;
@@ -26,6 +34,24 @@ public class ScoreStatsService {
     private final TeacherInfoRepository teacherInfoRepository;
     private final GradeInfoRepository gradeInfoRepository;
     private final ClassInfoRepository classInfoRepository;
+    private final TestInfoRepository tRepo;
+    private final SubjectInfoRepository subRepo;
+
+    // 연월별 학생 성적 조회
+    public List<ScoreAllListBySubjectVO> ScoreList(YearMonth yearMonth, UserDetails userDetails, Pageable pageable) {
+        LocalDate frist = LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1);
+        LocalDate last = frist.withDayOfMonth(frist.lengthOfMonth());
+
+        TestInfoEntity test = tRepo.findByTestDateBetween(frist, last);
+        SubjectInfoEntity reading = subRepo.findBySubSeq(1l);
+        SubjectInfoEntity vocabulary = subRepo.findBySubSeq(2l);
+        SubjectInfoEntity grammar = subRepo.findBySubSeq(3l);
+        SubjectInfoEntity listening = subRepo.findBySubSeq(4l);
+
+        List<ScoreAllListBySubjectVO> resultList = gradeInfoRepository.scoreBySubject(test, reading, vocabulary, grammar, listening); // 최종 결과를 담을 리스트를 만든다.
+        return resultList; // 결과값을 내보낸다.
+    }
+    
 
     // 반별 + 연월별 + 과목별 평균
     public List<ScoreAvgStatsListByClassVO> ClassScoreStats(Integer yearMonth, UserDetails userDetails) {
@@ -50,4 +76,5 @@ public class ScoreStatsService {
         List<ScoreRankBySubjectVO> result = gradeInfoRepository.rankBySubject(subjectSeq); // 과목별로 학생 랭크를 조회해서 리스트에 담는다.
         return result;
     }
+
 }
