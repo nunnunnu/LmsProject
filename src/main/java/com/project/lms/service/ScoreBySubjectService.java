@@ -270,7 +270,9 @@ public class ScoreBySubjectService {
 		//찾을 수 없다면 NotFoundTestException 발생. ControllerSupport에서 오류 처리됨
 
 		//같은 점수의 회원 조회
+		System.out.println("sss");
 		List<SameGrade> list = gradeInfoRepository.sameGrade(test);
+		System.out.println(list.size());
 
 		if (list.size() == 0 || (list.size() == 1 && list.get(0).getTotalSum() == null)) {
 			throw new NoContentsException(); //동점자가 없을 경우
