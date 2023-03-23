@@ -72,7 +72,7 @@ public class MemberController {
         return new ResponseEntity<>(response,response.getCod());
     }
     
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "400", description = "로그인 후 발급받은 리프레쉬토큰이 아니거나 만료된 리프레쉬 토큰입니다. 에러나면 로그아웃시키고 로그인페이지로 이동시켜주세요 ", content = @Content(schema = @Schema(implementation = MapVO.class))),
         @ApiResponse(responseCode = "200", description = "발급 성공", content = @Content(schema = @Schema(implementation = MapVO.class)))})

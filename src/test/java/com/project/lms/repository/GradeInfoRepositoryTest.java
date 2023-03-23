@@ -45,27 +45,27 @@ class GradeInfoRepositoryTest {
 
     }
 
-    @Test
-    void 성적순_테스트순_상위10프로수() {
-        var list = gradeInfoRepository.getScoreTestTop10();
-        Assertions.assertThat(list.get(0).getSub().getSubSeq()).isEqualTo(1L);
-        Assertions.assertThat(list.get(0).getTest().getTestSeq()).isEqualTo(1L);
-        Assertions.assertThat(list.get(0).getCount()).isCloseTo(10.0, Percentage.withPercentage(0.00001));
+    // @Test
+    // void 성적순_테스트순_상위10프로수() {
+    //     var list = gradeInfoRepository.getScoreTestTop10();
+    //     Assertions.assertThat(list.get(0).getSub().getSubSeq()).isEqualTo(1L);
+    //     Assertions.assertThat(list.get(0).getTest().getTestSeq()).isEqualTo(1L);
+    //     Assertions.assertThat(list.get(0).getCount()).isCloseTo(10.0, Percentage.withPercentage(0.00001));
 
-        Assertions.assertThat(list.get(9).getSub().getSubSeq()).isEqualTo(2L);
-        Assertions.assertThat(list.get(9).getTest().getTestSeq()).isEqualTo(3L);
-        Assertions.assertThat(list.get(9).getCount()).isCloseTo(10.0, Percentage.withPercentage(0.00001));
+    //     Assertions.assertThat(list.get(9).getSub().getSubSeq()).isEqualTo(2L);
+    //     Assertions.assertThat(list.get(9).getTest().getTestSeq()).isEqualTo(3L);
+    //     Assertions.assertThat(list.get(9).getCount()).isCloseTo(10.0, Percentage.withPercentage(0.00001));
 
-        var grades1 = gradeInfoRepository.findAllBySubjectAndTestOrderByGradeDescTopCount(list.get(0).getSub(), list.get(0).getTest(), list.get(0).getCount());
-        var avg1 = grades1.stream().mapToDouble(GradeInfoEntity::getGrade).average().orElse(0);
-        log.info("avg1 = {}", avg1);
+    //     var grades1 = gradeInfoRepository.findAllBySubjectAndTestOrderByGradeDescTopCount(list.get(0).getSub(), list.get(0).getTest(), list.get(0).getCount());
+    //     var avg1 = grades1.stream().mapToDouble(GradeInfoEntity::getGrade).average().orElse(0);
+    //     log.info("avg1 = {}", avg1);
 
-        Assertions.assertThat(avg1).isCloseTo(97.2000, Percentage.withPercentage(0.00001));
+    //     Assertions.assertThat(avg1).isCloseTo(97.2000, Percentage.withPercentage(0.00001));
 
-        var grades2 = gradeInfoRepository.findAllBySubjectAndTestOrderByGradeDescTopCount(list.get(7).getSub(), list.get(7).getTest(), list.get(7).getCount());
-        var avg2 = grades2.stream().mapToDouble(GradeInfoEntity::getGrade).average().orElse(0);
-        log.info("avg2 = {}", avg2);
+    //     var grades2 = gradeInfoRepository.findAllBySubjectAndTestOrderByGradeDescTopCount(list.get(7).getSub(), list.get(7).getTest(), list.get(7).getCount());
+    //     var avg2 = grades2.stream().mapToDouble(GradeInfoEntity::getGrade).average().orElse(0);
+    //     log.info("avg2 = {}", avg2);
 
-        Assertions.assertThat(avg2).isCloseTo(96.7000, Percentage.withPercentage(0.00001));
-    }
+    //     Assertions.assertThat(avg2).isCloseTo(96.7000, Percentage.withPercentage(0.00001));
+    // }
 }

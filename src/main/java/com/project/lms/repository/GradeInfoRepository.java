@@ -2,6 +2,7 @@ package com.project.lms.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,7 @@ import com.project.lms.repository.custom.GradeInfoRepositoryCustom;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.grade.ScoreTestTop10VO;
+import com.project.lms.vo.grade.ScoreTop10VO;
 import com.project.lms.vo.request.AvgBySubjectTotalVO;
 import com.project.lms.vo.request.ScoreAvgBySubject2VO;
 import com.project.lms.vo.request.ScoreAvgBySubjectVO;
@@ -133,10 +135,10 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     List<GradeInfoEntity> findAllBySubjectOrderByGradeDesc(SubjectInfoEntity subject);
     
     //시험별 +과목별 상위 10% 
-    @Query("select a.subject as sub, a.test as test , COUNT(a) * 0.1 as count from GradeInfoEntity a "
+    @Query("select a.subject as sub, a.test as test , COUNT(a)/0.1 as count from GradeInfoEntity a "
     +
     "group by a.subject, a.test ")
-    List<ScoreTestTop10VO> getScoreTestTop10();
+    List<ScoreTestTop10VO> getScoreTestTop10(@Param("top") Integer top);
     //가장 최신 + 과목별 + 상위 10% 평균
     @Query("select a from GradeInfoEntity a where a.subject = :subject and a.test = :test order by a.grade desc limit :count")
     List<GradeInfoEntity> findAllBySubjectAndTestOrderByGradeDescTopCount(
@@ -145,4 +147,17 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
         @Param("count") double count 
     );
 
+    //해당시험 총 응시자 수
+    @Query("SELECT count(DISTINCT g.student) from GradeInfoEntity g where g.test = :test ")
+    Integer countTestStudent(@Param("test") TestInfoEntity test);
+
+    //상위 10% 학생을 구하기 위한 쿼리문
+    // Select  gi_mi_seq1  from grade_info gi where gi_test_seq =6 group by gi_mi_seq1 order by sum(gi.gi_grade) desc limit 10[위 쿼리문의 총 응시자수 /10한 값]
+    // @Query("SELECT g.student FROM GradeInfoEntity g JOIN FETCH g.student WHERE g.test = :test GROUP BY g.student ORDER BY SUM(g.grade) DESC limit :cut")
+    // List<StudentInfo> findTop10List(@Param("test") TestInfoEntity test, @Param("cut") Integer cut);
+
+    //상위 10% 학생의 평균 점수 조회
+    // select avg(gi_grade), gi_sub_seq  from grade_info gi where gi_test_seq = 6 and gi_mi_seq1 in (19,28,49,110,16,106,63,88,86,44) group by gi_sub_seq 
+    @Query("select avg(g.grade) as grade, g.subject as subject from GradeInfoEntity g where g.test = :test and g.student in (:students) group by g.subject")
+    List<ScoreTop10VO> avgTop10(@Param("test") TestInfoEntity test, @Param("students") List<StudentInfo> studentInfos);
 }

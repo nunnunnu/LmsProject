@@ -1,6 +1,8 @@
 package com.project.lms.api;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.lms.error.ErrorResponse;
 import com.project.lms.error.custom.NotFoundFeedback;
 import com.project.lms.service.FeedBackService;
 import com.project.lms.vo.MapVO;
@@ -29,13 +30,14 @@ import com.project.lms.vo.feedback.UpdateFeedBackVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import io.swagger.v3.oas.annotations.media.Content;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -44,9 +46,21 @@ import io.swagger.v3.oas.annotations.media.Content;
 public class FeedBackAPIController {
     private final FeedBackService fService;
 
-    @Operation(summary = "피드백 조회", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "피드백 조회", security = @SecurityRequirement(name = "bearerAuth"),
+    parameters = {
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "페이지번호(0부터 시작), 입력안하면 0페이지 조회"
+                            , name = "page"
+                            , content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))),
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "입력안해도됨. 기본 한 페이지 당 10개 씩"
+                            , name = "size"),
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "입력안해도됨. 기본 최신순정렬"
+                            , name = "sort")
+    })
     @GetMapping("/list")
-    public ResponseEntity<ShowFeedBackVO> showFeedBack(@AuthenticationPrincipal UserDetails userDetails, Pageable page) {
+    public ResponseEntity<ShowFeedBackVO> showFeedBack(@AuthenticationPrincipal UserDetails userDetails, @Parameter(hidden=true) @PageableDefault(size=10, sort="createdDate",direction = Sort.Direction.DESC) Pageable page) {
         return new ResponseEntity<>(fService.showFeedBack(userDetails.getUsername(), page), HttpStatus.OK);
     }
 
