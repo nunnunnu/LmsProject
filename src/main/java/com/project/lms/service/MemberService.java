@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -34,7 +35,9 @@ import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.security.config.WebSecurityConfig;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.validator.SignUpFormValidator;
+import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MapVO;
+import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.MemberJoinVO;
 
 import lombok.RequiredArgsConstructor;
@@ -55,6 +58,8 @@ public class MemberService {
     private final RedisService redisService;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authBulider;
+    private final MemberInfoRepository memberInfoRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public MapVO joinMember(MemberJoinVO data, String type, BindingResult bindingResult){
         signUpFormValidator.validate(data, bindingResult); //MemberJoinVO 설정해놓은 유효성 검사로 인해 오류가 있는지 검사.
@@ -136,4 +141,22 @@ public class MemberService {
         map.put("token", accessToken);
         return map;
     }
+    public MapVO dropMember(LoginVO login) {
+        MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
+        // 찾은 아이디가 없거나(null) 입력한 비밀번호가 일치하지 않을 때 오류 메시지 출력
+        if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
+            return MapVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").code(HttpStatus.NOT_FOUND).build();
+        }
+        // 일치하는 아이디가 있더라도 사용 불가능한 상태이면 오류 메시지 출력
+        else if (!loginUser.isEnabled()) {
+            return MapVO.builder().status(true).message("이용정지된 사용자입니다.").code(HttpStatus.BAD_REQUEST).build();
+        }
+        
+        loginUser.setMiStatus(false);
+        System.out.println(loginUser.getMiStatus());
+        memberInfoRepository.save(loginUser);
+        return MapVO.builder().status(true).message("탈퇴를 성공하였습니다.").code(HttpStatus.ACCEPTED).build();
+    }
 }
+
+
