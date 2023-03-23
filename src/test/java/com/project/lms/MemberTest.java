@@ -1,9 +1,11 @@
 package com.project.lms;
 
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lms.entity.ClassInfoEntity;
+import com.project.lms.entity.ClassStudentEntity;
+import com.project.lms.entity.ClassTeacherEntity;
+import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.SubjectInfoEntity;
+import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.EmployeeInfo;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
@@ -23,7 +29,11 @@ import com.project.lms.entity.member.enumfile.Department;
 import com.project.lms.entity.member.enumfile.Position;
 import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.repository.ClassInfoRepository;
+import com.project.lms.repository.ClassStudentRepository;
+import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.SubjectInfoRepository;
+import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.EmployeeInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
@@ -44,6 +54,10 @@ public class MemberTest {
     @Autowired TeacherInfoRepository tRepo;
     @Autowired ClassInfoRepository cRepo;
     @Autowired SubjectInfoRepository subRepo;
+    @Autowired TestInfoRepository testRepo;
+    @Autowired ClassTeacherRepository ctRepo;
+    @Autowired ClassStudentRepository csRepo;
+    @Autowired GradeInfoRepository gRepo;
 
     private ClassInfoEntity classInfo;
     private EmployeeInfo employee;
@@ -169,7 +183,7 @@ public class MemberTest {
         }
     }
 
-    	@Test
+    @Test
 	void testLogin() {
 		String id = "hyuk1";
 		String pwd  = "asdf123!";
@@ -220,4 +234,32 @@ public class MemberTest {
 			Assertions.assertNotEquals(member, null);
 	
 		}
+
+        @Test
+        void 성적입력예시(){
+            List<StudentInfo> students = sRepo.findAll();
+            List<SubjectInfoEntity> subjects = subRepo.findAll();
+            List<TestInfoEntity> tests = testRepo.findAll();
+            List<GradeInfoEntity> grades = new ArrayList<>();
+            for(TestInfoEntity t : tests){
+                System.out.println(students.size());
+                for(StudentInfo s : students){
+                    for(SubjectInfoEntity sub : subjects){
+                        System.out.println("aaaa");
+                        ClassStudentEntity cs = csRepo.findByStudent(s);
+                        List<ClassTeacherEntity> ct = ctRepo.findByClassInfo(cs.getClassInfo());
+                        System.out.println("vvvvv");
+                        List<TeacherInfo> teachers = ct.stream().map((tea)->tea.getTeacher()).toList();
+                        for(TeacherInfo teacher : teachers){
+                            if(teacher != null && teacher.getSubject().getSubSeq() == sub.getSubSeq()){
+                                Integer random = (int)(Math.random()*100)+1;
+                                GradeInfoEntity grade = new GradeInfoEntity(null, sub, s, teacher, random, t);
+                                grades.add(grade);
+                            }
+                        }
+                    }
+                }
+            }
+            // gRepo.saveAll(grades);
+        }
 }
