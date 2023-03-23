@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.project.lms.entity.GradeInfoEntity;
+import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
@@ -15,6 +16,7 @@ import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.repository.custom.GradeInfoRepositoryCustom;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
+import com.project.lms.vo.grade.ScoreTestTop10VO;
 import com.project.lms.vo.request.AvgBySubjectTotalVO;
 import com.project.lms.vo.request.ScoreAvgBySubject2VO;
 import com.project.lms.vo.request.ScoreAvgBySubjectVO;
@@ -123,4 +125,22 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
         +
         "group by b.subName ")
         List<AvgBySubjectTotalVO> findBySubjectTotal(@Param("testSeq") Long testSeq);
+
+    //과목별 성적 내림차순으로 리스트 출력(사용안함)
+    @Query("select g from GradeInfoEntity g where g.subject = :subject order by g.grade desc")
+    List<GradeInfoEntity> findAllBySubjectOrderByGradeDesc(SubjectInfoEntity subject);
+    
+    //시험별 +과목별 상위 10% 
+    @Query("select a.subject as sub, a.test as test , COUNT(a) * 0.1 as count from GradeInfoEntity a "
+    +
+    "group by a.subject, a.test ")
+    List<ScoreTestTop10VO> getScoreTestTop10();
+    //가장 최신 + 과목별 + 상위 10% 평균
+    @Query("select a from GradeInfoEntity a where a.subject = :subject and a.test = :test order by a.grade desc limit :count")
+    List<GradeInfoEntity> findAllBySubjectAndTestOrderByGradeDescTopCount(
+        @Param("subject") SubjectInfoEntity subject,
+        @Param("test") TestInfoEntity test,
+        @Param("count") double count 
+    );
+
 }

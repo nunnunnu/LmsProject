@@ -1,5 +1,7 @@
 package com.project.lms.api;
 
+import java.util.List;
+
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.ScoreAvgTotalService;
+import com.project.lms.vo.grade.ScoreTestTop10VO;
 import com.project.lms.vo.response.AvgListBuSubjectResponseVO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,4 +29,10 @@ public class ScoreAvgTotalControllaer {
         AvgListBuSubjectResponseVO result = sTotalService.getSubjectTotalList(userDetails);
         return result;
     }
+    @GetMapping("/top10")
+    @Secured("ROLE_TEACHER")
+    public List<ScoreTestTop10VO> getScoreTestTop10() {
+        return sTotalService.getScoreTestTop10();
+    }
+
 }
