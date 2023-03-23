@@ -1,6 +1,7 @@
 package com.project.lms.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -73,8 +74,22 @@ public class FeedBackService {
 
     // 피드백 상세 조회
     public ShowFeedBackDetailVO showFeedBackDetail(String id, Long fiSeq) {
+
         TeacherInfo tInfo = tRepo.findByMiId(id); // 선생님 아이디로 정보를 찾는다.
         FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null); // 조회할 글 번호
+
+        TeacherInfo tInfo = tRepo.findByMiId(id);
+        FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null);
+        List<CommentInfoEntity> comment = ciRepo.findByFeedback(entity);
+
+        List<CommentInsertVO> clist = new ArrayList<>();
+   
+        for(CommentInfoEntity c : comment) {
+        CommentInsertVO com = CommentInsertVO.builder().name(c.getMember().getMiName()).comment(c.getCmtTitle()).build();
+        clist.add(com);
+        }
+
+
         if(entity==null){
             ShowFeedBackDetailVO fVo = ShowFeedBackDetailVO.builder()
             .status(false)
@@ -91,8 +106,15 @@ public class FeedBackService {
             .build();
             return fVo;
         }
+
             String regDate = entity.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); //포맷터를 사용
             FeedBackDetailVO vo = FeedBackDetailVO.builder().title(entity.getFiTitle()).regDt(regDate).content(entity.getFiContent()).writer(entity.getTeacher().getMiName()).build();
+
+
+            String regDate = entity.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            FeedBackDetailVO vo = FeedBackDetailVO.builder().comment(clist).title(entity.getFiTitle()).regDt(regDate).content(entity.getFiContent())
+           .writer(entity.getTeacher().getMiName()).build();
+
             ShowFeedBackDetailVO fvo = ShowFeedBackDetailVO.builder()
             .status(true)
             .message("피드백 상세 조회를 하였습니다.")

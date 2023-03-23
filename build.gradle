@@ -75,6 +75,9 @@ dependencies {
 
 	//엑셀 다운(POI)
 	implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
+
+	testRuntimeOnly 'com.h2database:h2:'
+
 	
 }
 
