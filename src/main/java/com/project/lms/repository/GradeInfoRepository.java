@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.project.lms.entity.GradeInfoEntity;
+import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.repository.custom.GradeInfoRepositoryCustom;
+import com.project.lms.vo.ScoreAllListBySubjectVO;
 import com.project.lms.vo.ScoreAvgListBySubjectVO;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.request.AvgBySubjectTotalVO;
@@ -68,6 +70,8 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     List<GradeInfoEntity> findByTestAndStudent(TestInfoEntity test, StudentInfo student);
 
 
+
+
     @Query("SELECT si.miSeq FROM ClassStudentEntity cst join cst.classInfo ci join cst.student si WHERE ci.ciSeq = :classSeq")
     List<Long> findByCsSeq(@Param("classSeq") Long classSeq); // 조회하려는 반의 학생 시퀀스를 모두 리스트에 담는다.
 
@@ -85,6 +89,29 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
             + "WHERE g.subject.subSeq = :seq")
     List<ScoreRankBySubjectVO> rankBySubject(@Param("seq") Long seq); // 과목별 학생 랭킹을 찾아 리스트에 담는다.
 
+    // @Query("SELECT mi.miSeq FROM MemberInfoEntity mi WHERE mi.miRole = :role")
+    // List<Long> findByMiRole(@Param("role") Role role); // 학생 시퀀스를 모두 리스트에 담는다.
+
+    // @Query("SELECT sub.subName AS subject, grd.grade AS score FROM GradeInfoEntity grd "
+    //         + "JOIN SubjectInfoEntity sub ON grd.subject.subSeq = sub.subSeq "
+    //         + "JOIN TestInfoEntity tt ON tt.testSeq = grd.test.testSeq "
+    //         + "WHERE DATE_FORMAT(tt.testDate, '%Y%m') = :yearMonth AND grd.student.miSeq IN :seqs " 
+    //         + "GROUP by grd.subject.subSeq")
+    // List<ScoreListBySubjectVO> scoreBySubject(@Param("seqs") List<Long> list, @Param("yearMonth") Integer yearMonth); 
+
+
+    // @Query("SELECT si.miSeq as seq,si.miName as name, ci.ciName as className, "
+    //             // + "(SELECT gi.grade from GradeInfoEntity gi WHERE gi.test = :test AND gi.student.miSeq = si.miSeq AND gi.subject.subSeq=1L) AS reading, "
+    //             // + "(SELECT gi.grade from GradeInfoEntity gi WHERE gi.test = :test AND gi.student.miSeq = si.miSeq AND gi.subject.subSeq=2L) AS vocabulary, "
+    //             // + "(SELECT gi.grade from GradeInfoEntity gi WHERE gi.test = :test AND gi.student.miSeq = si.miSeq AND gi.subject.subSeq=3L) AS grammar, "
+    //             + "(SELECT gi.grade FROM GradeInfoEntity gi join fetch gi.student WHERE gi.test = :test and gi.student.miSeq = si.miSeq AND gi.subject=:sub) AS listening "
+    //         + "FROM StudentInfo si "
+    //         // + "join MemberInfoEntity mi on mi.miSeq = si.miSeq " 
+    //         + "LEFT OUTER JOIN GradeInfoEntity gi ON gi.student.miSeq = si.miSeq "
+    //         + "JOIN ClassStudentEntity cs ON cs.student.miSeq = si.miSeq "
+    //         + "JOIN ClassInfoEntity ci ON ci.ciSeq = cs.classInfo.ciSeq")
+    // List<ScoreAllListBySubjectVO> scoreBySubject(@Param("test") TestInfoEntity test, @Param("sub") SubjectInfoEntity sub);
+        
 
     //  이건 사용안함.
     @Query(
