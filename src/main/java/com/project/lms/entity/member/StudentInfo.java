@@ -24,6 +24,8 @@ public class StudentInfo extends MemberInfoEntity {
     @Column(name="si_grade") private Integer siGrade; //학년
     @Column(name="si_shcool") private String siShcool; //학교
 
+
+    
     public StudentInfo(MemberJoinVO data){
         super(data, Role.STUDENT); //상속받은 MemberInfoEntity의 생성자를 사용한다는 의미
         this.siGrade = data.getGrade();
