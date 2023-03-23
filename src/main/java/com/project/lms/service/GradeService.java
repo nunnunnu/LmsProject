@@ -34,7 +34,6 @@ public class GradeService {
     private final TeacherInfoRepository teaRepo;
     private final GradeInfoRepository graRepo;
     public MapVO addGradeInfo(GradeVO data) {
-		Map<String, Object> map = new LinkedHashMap<>();
 		TeacherInfo tea = teaRepo.findById(data.getTeacher())
 		.orElseThrow(()->new NotFoundMemberException());
 		SubjectInfoEntity sub = subRepo.findById(data.getSubject())

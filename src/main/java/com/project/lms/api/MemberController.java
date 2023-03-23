@@ -105,4 +105,15 @@ public class MemberController {
         return new ResponseEntity<MailVO>(mail, mail.getCode());
     }
     
+
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "탈퇴 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "406", description = "탈퇴 실패", content = @Content(schema = @Schema(implementation = NotValidExceptionResponse.class)))})
+    @Operation(summary = "회원 탈퇴", description ="")
+    @GetMapping("/drop")
+    public ResponseEntity<MapVO> dropMember(
+            @RequestBody @Valid LoginVO data //VO에 건 유효성 검사를 위해 @Valid 어노테이션을 사용
+        ){
+            return new ResponseEntity<>(mService.dropMember(data), HttpStatus.OK);
+    }
 }

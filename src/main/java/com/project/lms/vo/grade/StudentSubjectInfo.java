@@ -16,7 +16,9 @@ public class StudentSubjectInfo {
 
     public StudentSubjectInfo(List<GradeInfoEntity> list, StudentInfo studetn){
         for(GradeInfoEntity g : list){
-            this.info.put(g.getSubject().getSubName(), g.getGrade());
+            if(g.getStudent().getMiSeq()== studetn.getMiSeq()){
+                this.info.put(g.getSubject().getSubName(), g.getGrade());
+            }
         }
         this.name = studetn.getMiName();
     }
