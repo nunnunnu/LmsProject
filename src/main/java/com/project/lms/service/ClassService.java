@@ -45,17 +45,17 @@ public class ClassService {
 
 
     public ClassResponseVO updateClass(Long stuSeq, Long classSeq) {
-        StudentInfo s = sRepo.findById(stuSeq).orElse(null);
+        StudentInfo s = sRepo.findById(stuSeq).orElse(null); // 학생 번호를 찾음
         if(s==null){
-            throw new NotFoundMemberException();
+            throw new NotFoundMemberException(); // 존재하지 않다면 NotFoundMemberException 발생
         }
-        ClassInfoEntity clas = cRepo.findById(classSeq).orElse(null);
+        ClassInfoEntity clas = cRepo.findById(classSeq).orElse(null); // 반 번호를 찾음
         if(clas == null){
-            throw new NotFoundClassException();
+            throw new NotFoundClassException(); // 존재하지 않다면 NotFoundClassException 발생
         }
-        ClassStudentEntity studentClass = csRepo.findByStudent(s);
-        studentClass.changeClass(clas);
-        csRepo.save(studentClass);
+        ClassStudentEntity studentClass = csRepo.findByStudent(s); // 찾은 학생으로 연결 테이블 조회
+        studentClass.changeClass(clas); // 반 변경
+        csRepo.save(studentClass); // 저장
 
         return ClassResponseVO.builder().code(HttpStatus.OK).message("반변경이 완료되었습니다.").status(true).build();
     }
