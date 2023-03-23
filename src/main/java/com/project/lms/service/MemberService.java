@@ -22,6 +22,7 @@ import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.error.custom.NotFoundClassException;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.error.custom.NotFoundSubject;
 import com.project.lms.error.custom.TypeDiscodeException;
 import com.project.lms.repository.ClassInfoRepository;
@@ -141,20 +142,14 @@ public class MemberService {
         map.put("token", accessToken);
         return map;
     }
-    public MapVO dropMember(LoginVO login) {
-        MemberInfoEntity loginUser = memberInfoRepository.findByMiId(login.getId());
-        // 찾은 아이디가 없거나(null) 입력한 비밀번호가 일치하지 않을 때 오류 메시지 출력
-        if(loginUser == null || !passwordEncoder.matches(login.getPwd(), loginUser.getMiPwd())){
-            return MapVO.builder().status(false).message("아이디 또는 비밀번호 오류입니다.").code(HttpStatus.NOT_FOUND).build();
+    public MapVO dropMember(Long seq) {
+        MemberInfoEntity member = memberInfoRepository.findById(seq)
+        .orElseThrow(()->new NotFoundMemberException());
+        if (member.getMiStatus() == false) {
+            return MapVO.builder().status(false).message("이미 탈퇴 상태 입니다.").code(HttpStatus.BAD_REQUEST).build();
         }
-        // 일치하는 아이디가 있더라도 사용 불가능한 상태이면 오류 메시지 출력
-        else if (!loginUser.isEnabled()) {
-            return MapVO.builder().status(true).message("이용정지된 사용자입니다.").code(HttpStatus.BAD_REQUEST).build();
-        }
-        
-        loginUser.setMiStatus(false);
-        System.out.println(loginUser.getMiStatus());
-        memberInfoRepository.save(loginUser);
+        member.setMiStatus(false);
+        memberInfoRepository.save(member);
         return MapVO.builder().status(true).message("탈퇴를 성공하였습니다.").code(HttpStatus.ACCEPTED).build();
     }
 }
