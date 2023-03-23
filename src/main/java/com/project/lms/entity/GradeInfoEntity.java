@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Table(name = "grade_info", indexes = @Index(name="idx_mi_seq1_grade", columnList = "gi_mi_seq1, gi_grade"))
+@Table(name = "grade_info")
 public class GradeInfoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

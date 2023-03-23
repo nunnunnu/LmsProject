@@ -70,6 +70,8 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     @EntityGraph(attributePaths = {"subject"})
     List<GradeInfoEntity> findByTestAndStudent(TestInfoEntity test, StudentInfo student);
 
+    @Query("select g from GradeInfoEntity g join fetch g.subject join fetch g.student where g.test =:test and g.student.miSeq in (:seqs)")
+    List<GradeInfoEntity> findStudentAndTest(@Param("test") TestInfoEntity test, @Param("seqs") long[] seqs);
 
     @Query("SELECT si.miSeq FROM ClassStudentEntity cst join cst.classInfo ci join cst.student si WHERE ci.ciSeq = :classSeq")
     List<Long> findByCsSeq(@Param("classSeq") Long classSeq); // 조회하려는 반의 학생 시퀀스를 모두 리스트에 담는다.
