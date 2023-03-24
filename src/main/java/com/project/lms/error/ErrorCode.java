@@ -11,7 +11,11 @@ public enum ErrorCode {
     TEST_NOT_FOUND(400, "TEST001", "시험정보를 찾을 수 없습니다.(시험 번호 오류)"),
     JOIN_FAILED(400, "M003", "회원가입오류"),
     STUDENT_NOT_FOUND(400,"ST001","학생을 찾을 수 없음"),
-    FEEDBACK_NOT_FOUND(400,"FN001","게시글이 존재하지 않습니다");
+    FEEDBACK_NOT_FOUND(400,"FN001","게시글이 존재하지 않습니다"),
+    EMPLOYEE_CLASS_NOT_FOUND(400, "E001", "직원의 담당 반이 없습니다."),
+    STUDENT_CLASS_NOT_FOUND(400, "SC001", "학생의 반 정보가 없습니다."),
+    STUDENT_NOT_MYCLASS(400, "SN001", "담당한 반의 학생이 아닙니다. (해당 학생을 조회할 권한이 없음)"),
+    TEACHER_CLASS_NOT_FOUND(400, "TC001", "선생의 담당 반이 없습니다.");
 
     private final String code;
     private final String message;
