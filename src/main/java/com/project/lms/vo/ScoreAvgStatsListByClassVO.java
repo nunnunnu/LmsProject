@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ScoreAvgStatsListByClassVO{
     @Schema(description = "과목별 평균 점수 리스트")
-    // private List<ScoreAvgListBySubjectVO> scoreList = new ArrayList<>();
-    private Map<String, Integer> scoreList;
+    private Map<String, Double> scoreList;
     @Schema(description = "반 이름")
     private String className;
 
