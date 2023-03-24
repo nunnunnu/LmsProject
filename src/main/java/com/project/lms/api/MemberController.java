@@ -124,4 +124,17 @@ public class MemberController {
 
     }
     
+
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "탈퇴 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
+        @ApiResponse(responseCode = "406", description = "탈퇴 실패", content = @Content(schema = @Schema(implementation = NotValidExceptionResponse.class)))})
+        
+    @Operation(summary = "회원 탈퇴", description ="")
+    @GetMapping("/drop")
+    @Secured("ROLE_MASTER")
+    public ResponseEntity<MapVO> dropMember(
+        Long seq
+        ){
+            return new ResponseEntity<>(mService.dropMember(seq), HttpStatus.OK);
+    }
 }

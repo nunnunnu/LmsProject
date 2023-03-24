@@ -228,6 +228,7 @@ class LmsApplicationTests {
 			}
 			System.out.println(seq);
 		}
+		
 
 		@Test
 		void 마스터계정_제외한_멤버조회() {

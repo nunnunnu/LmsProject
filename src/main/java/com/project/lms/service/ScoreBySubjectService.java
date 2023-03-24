@@ -2,19 +2,23 @@ package com.project.lms.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.project.lms.entity.ClassInfoEntity;
+import com.project.lms.entity.ClassStudentEntity;
+import com.project.lms.entity.ClassTeacherEntity;
 import com.project.lms.entity.GradeInfoEntity;
-import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
+import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.error.custom.NoContentsException;
 import com.project.lms.error.custom.NotFoundClassException;
 import com.project.lms.error.custom.NotFoundEmployeeClass;
@@ -38,6 +42,7 @@ import com.project.lms.entity.ClassInfoEntity;
 import com.project.lms.entity.ClassStudentEntity;
 import com.project.lms.entity.ClassTeacherEntity;
 import com.project.lms.entity.GradeInfoEntity;
+import com.project.lms.error.custom.NotFoundTestException;
 import com.project.lms.repository.ClassInfoRepository;
 import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
@@ -46,13 +51,11 @@ import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
-import com.project.lms.vo.GradeVO;
+import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.vo.grade.SameGrade;
 import com.project.lms.vo.grade.SameGraderesponse;
 import com.project.lms.vo.grade.StudentSubjectInfo;
-import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.vo.request.ScoreAvgBySubject2VO;
-import com.project.lms.vo.request.ScoreAvgBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectVO;
 import com.project.lms.vo.request.ScoreListBySubjectYearVO;
 import com.project.lms.vo.response.ScoreListBySubjectResponseVO;
@@ -304,15 +307,36 @@ public class ScoreBySubjectService {
 
 		SameGraderesponse same = null; //리스트에 담을 객체 미리 생성
 		for (SameGrade s : list) { //같은 점수의 회원을 for문을 돌려 데이터 가공
-			String[] seqs = s.getStudent().split(","); //Group_concat으로 쉼표로 이어져 나온 회원번호를 분리해서 배열로 만듦
+			String[] Stringseqs = s.getStudent().split(","); //Group_concat으로 쉼표로 이어져 나온 회원번호를 분리해서 배열로 만듦
+			long[] seqs = Arrays.stream(Stringseqs).mapToLong(Long::parseLong).toArray();
 			//같은 점수끼리 묶어져있기때문에 같은 점수인 회원만 비교 가능
 			if (s.getTotalSum() != null) {
 				same = new SameGraderesponse(s.getTotalSum()); //객체에 동점 점수 세팅
-				for (String seq : seqs) { //배열로 만든 회원번호를 for문을 돌려 각각 조회함
-					StudentInfo student = studentInfoRepository.findById(Long.parseLong(seq))
-							.orElseThrow(() -> new NotFoundMemberException()); //회원번호로 학생정보 조회
-					List<GradeInfoEntity> entities = gradeInfoRepository.findByTestAndStudent(test, student); //해당 회원의 과목 정보 조회
-					same.addStudentInfo(new StudentSubjectInfo(entities, student)); //list에 담을 객체 안의 list에 add함.
+				List<GradeInfoEntity> entities = gradeInfoRepository.findStudentAndTest(test, seqs); //같은 점수를 가진 회원의 과목정보를 모두 불러옴
+				//jpql을 사용해서 해당 시험의 과목이 같은 학생의 과목별 점수를 모두 가지고옴
+				
+				List<StudentInfo> studentsToAdd = new ArrayList<>(); //회원을 저장할 list 생성
+
+				for (GradeInfoEntity gradeEn : entities) { //가져온 점수 정보에서 중복되는 회원을 제거하기위한 for문
+					boolean found = false; //회원이 저장되었는지 확인할 boolean, false일때만 저장함
+					if (studentsToAdd.size() == 0) { //저장된 회원이 없다면 for문을 돌지 못하기때문에 그냥 저장해줌
+						studentsToAdd.add(gradeEn.getStudent());
+						found = true; //이 회원을 저장하면 안돼서 true처리
+					} else {
+						for (StudentInfo stu : studentsToAdd) { //회원 list에서 존재하는 회원인지 확인하기 위해 for문
+							if (stu.getMiSeq() == gradeEn.getStudent().getMiSeq()) { //일치하는 회원이면
+								found = true; //중복회원 처리
+								break; //더이상 for문을 돌지않게 break처리.
+							}
+						}
+					}
+					if (!found) { //studentsToAdd에 일치하는 회원이 없다면
+						studentsToAdd.add(gradeEn.getStudent()); //저장
+					}
+				}
+				for(StudentInfo stu : studentsToAdd){ //저장된 회원으로 for문
+					same.addStudentInfo(new StudentSubjectInfo(entities, stu)); //list에 담을 객체 안의 list에 add함.
+					//생성자에서 일치하는 회원일때만 저장되도록 for문을 돌림
 				}
 				result.add(same); //최종적으로 반환될 result에 세팅한 객체 추가
 			}

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,7 @@ import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.error.custom.NotFoundClassException;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.error.custom.NotFoundSubject;
 import com.project.lms.error.custom.TypeDiscodeException;
 import com.project.lms.repository.ClassInfoRepository;
@@ -38,7 +40,9 @@ import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.security.config.WebSecurityConfig;
 import com.project.lms.security.provider.JwtTokenProvider;
 import com.project.lms.validator.SignUpFormValidator;
+import com.project.lms.vo.LoginVO;
 import com.project.lms.vo.MapVO;
+import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.MemberJoinVO;
 import com.project.lms.vo.member.MemberListResponseVO;
 import com.project.lms.vo.member.MemberVO;
@@ -62,6 +66,8 @@ public class MemberService {
     private final RedisService redisService;
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authBulider;
+    private final MemberInfoRepository memberInfoRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public MapVO joinMember(MemberJoinVO data, String type, BindingResult bindingResult) {
         signUpFormValidator.validate(data, bindingResult); //MemberJoinVO 설정해놓은 유효성 검사로 인해 오류가 있는지 검사.
@@ -176,4 +182,16 @@ public class MemberService {
       
         return result;
     }
+    public MapVO dropMember(Long seq) {
+        MemberInfoEntity member = memberInfoRepository.findById(seq)
+        .orElseThrow(()->new NotFoundMemberException());
+        if (member.getMiStatus() == false) {
+            return MapVO.builder().status(false).message("이미 탈퇴 상태 입니다.").code(HttpStatus.BAD_REQUEST).build();
+        }
+        member.setMiStatus(false);
+        memberInfoRepository.save(member);
+        return MapVO.builder().status(true).message("탈퇴를 성공하였습니다.").code(HttpStatus.ACCEPTED).build();
+    }
 }
+
+

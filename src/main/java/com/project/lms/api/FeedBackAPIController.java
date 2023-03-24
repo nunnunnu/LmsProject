@@ -46,12 +46,14 @@ public class FeedBackAPIController {
 
     @Operation(summary = "피드백 조회", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/list")
+    @Secured({"ROLE_TEACHER","ROLE_STUDENT"})
     public ResponseEntity<ShowFeedBackVO> showFeedBack(@AuthenticationPrincipal UserDetails userDetails, Pageable page) {
         return new ResponseEntity<>(fService.showFeedBack(userDetails.getUsername(), page), HttpStatus.OK);
     }
 
     @Operation(summary = "피드백 상세 조회", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/{fiSeq}")
+    @Secured({"ROLE_TEACHER","ROLE_STUDENT"})
     public ResponseEntity<ShowFeedBackDetailVO> showFeedBackDetail(@Parameter(name = "fiSeq", description = "상세 조회할 글 번호")
     @AuthenticationPrincipal UserDetails userDetails, @PathVariable Long fiSeq) {
         return new ResponseEntity<>(fService.showFeedBackDetail(userDetails.getUsername(), fiSeq), HttpStatus.OK);
@@ -67,12 +69,14 @@ public class FeedBackAPIController {
 
     @Operation(summary = "피드백 수정", security = @SecurityRequirement(name = "bearerAuth"))
     @PatchMapping("/update/{fiSeq}")
+    @Secured("ROLE_TEACHER")
     public ResponseEntity<UpdateFeedBackResponseVO> updateFeedBack(@PathVariable Long fiSeq, @RequestBody UpdateFeedBackVO data, @AuthenticationPrincipal UserDetails userDetails) {
         return new ResponseEntity<>(fService.updateFeedBack(userDetails.getUsername(),fiSeq, data), HttpStatus.OK);
     }
 
     @Operation(summary = "피드백 삭제", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/delete/{fiSeq}")
+    @Secured("ROLE_TEACHER")
     public ResponseEntity<FeedBackResponseVO> deleteFeedBack(@PathVariable Long fiSeq, @AuthenticationPrincipal UserDetails userDetails) {
         return new ResponseEntity<>(fService.deleteFeedBack(userDetails.getUsername(), fiSeq),HttpStatus.OK);
     }
