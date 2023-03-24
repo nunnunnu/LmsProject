@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -109,11 +110,13 @@ public class MemberController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "탈퇴 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
         @ApiResponse(responseCode = "406", description = "탈퇴 실패", content = @Content(schema = @Schema(implementation = NotValidExceptionResponse.class)))})
+        
     @Operation(summary = "회원 탈퇴", description ="")
     @GetMapping("/drop")
+    @Secured("ROLE_MASTER")
     public ResponseEntity<MapVO> dropMember(
-            @RequestBody @Valid LoginVO data //VO에 건 유효성 검사를 위해 @Valid 어노테이션을 사용
+        Long seq
         ){
-            return new ResponseEntity<>(mService.dropMember(data), HttpStatus.OK);
+            return new ResponseEntity<>(mService.dropMember(seq), HttpStatus.OK);
     }
 }
