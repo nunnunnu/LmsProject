@@ -170,8 +170,7 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     List<GradeInfoEntity> findAllBySubjectAndTestOrderByGradeDescTopCount(
         @Param("subject") SubjectInfoEntity subject,
         @Param("test") TestInfoEntity test,
-        @Param("count") double count 
-    );
+        @Param("count") double count );
 
     //해당시험 총 응시자 수
     @Query("SELECT count(DISTINCT g.student) from GradeInfoEntity g where g.test = :test ")

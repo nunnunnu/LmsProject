@@ -17,7 +17,6 @@ import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
-import com.project.lms.vo.grade.ScoreTestTop10VO;
 import com.project.lms.vo.grade.ScoreTop10Response;
 import com.project.lms.vo.grade.ScoreTop10VO;
 import com.project.lms.vo.request.AvgBySubjectTotalVO;
@@ -48,22 +47,22 @@ public class ScoreAvgTotalService {
     }
 
     public List<ScoreTop10Response> getScoreTestTop10() {
-        TestInfoEntity test = tRepository.findTop1ByOrderByTestDateDesc();
-        Integer totalStudent = gRepository.countTestStudent(test);
+        TestInfoEntity test = tRepository.findTop1ByOrderByTestDateDesc();// TestInfoEntity에서 testSeq가 가장 최신인 정보를 가져온다.
+        Integer totalStudent = gRepository.countTestStudent(test);// GradeInfoRepository에서 해당 시험에 참가한 학생 수를 가져와서 totalStudent 변수에 저장한다.
         System.out.println(totalStudent/10);
-        List<StudentInfo> studentInfos = stuRepo.findTop10List(test, totalStudent/10);
+        List<StudentInfo> studentInfos = stuRepo.findTop10List(test, totalStudent/10);// 시험에서 상위 10% 학생의 정보를 가져와 list 형태로 저장한다.
         // System.out.println(grades.size());
 
-        List<ScoreTop10VO> list = gRepository.avgTop10(test, studentInfos);
+        List<ScoreTop10VO> list = gRepository.avgTop10(test, studentInfos);// GradeInfoRepository에서 해당 시험에서 상위 10% 학생들의 평균 성적을 가져와서 list 변수에 저장한다.
 
-        List<ScoreTop10Response> result = new ArrayList<>();
-        ScoreTop10Response vo = new ScoreTop10Response();
-        vo.setTestName(test.getTestName());
-        Map<String, Double> map = new LinkedHashMap<>();
+        List<ScoreTop10Response> result = new ArrayList<>(); // ScoreTop10Response 클래스의 객체들을 담을 수 있는 빈 리스트를 생성,
+        ScoreTop10Response vo = new ScoreTop10Response();// ScoreTop10Response 객체를 생성하고
+        vo.setTestName(test.getTestName());// 해당 시험의 이름을 설정한 후,
+        Map<String, Double> map = new LinkedHashMap<>();// , Map에 과목별로 상위 10%의 평균 성적을 저장합니다.
         for(ScoreTop10VO sub : list){
             vo.getMap().put(sub.getSubject().getSubName(), sub.getGrade());    
         }
-        result.add(vo);
+        result.add(vo);//result 리스트에 ScoreTop10Response 객체를 추가하고 반환합니다.
         // for (ScoreTestTop10VO vo : result) {
         //     double avg = getTop10AverageScoreBySubjectAndTest(vo.getSub(), vo.getTest());
         //     System.out.println(avg);
