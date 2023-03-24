@@ -3,8 +3,13 @@ package com.project.lms.api;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.error.ErrorResponse;
@@ -24,6 +30,7 @@ import com.project.lms.vo.MailVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.MemberJoinVO;
+import com.project.lms.vo.member.MemberListResponseVO;
 import com.project.lms.vo.member.MemberSearchIdVO;
 import com.project.lms.vo.member.MemberSearchPwdVO;
 import com.project.lms.vo.member.RefreshTokenVO;
@@ -35,6 +42,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -98,22 +106,35 @@ public class MemberController {
         @ApiResponse(responseCode = "200", description = "비밀번호 찾기 성공 유저가 등록한 메일로 임시 비밀번호가 발송됩니다.", content = @Content(schema = @Schema(implementation = MailVO.class))),
         @ApiResponse(responseCode = "400", description = "일치하는 회원정보가 없으면 오류입니다", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @PostMapping("/pwd")
-        public ResponseEntity<MailVO> searchMemberPwd(MemberSearchPwdVO data){
+    public ResponseEntity<MailVO> searchMemberPwd(MemberSearchPwdVO data) {
         MailVO mail = memberSecurityService.searchMemberPwd(data);
         // System.out.println(mail);
         memberSecurityService.mailSend(mail);
         return new ResponseEntity<MailVO>(mail, mail.getCode());
+    }
+
+    @GetMapping("/list")
+    @Secured("ROLE_MASTER")
+      @Operation(summary = "마스터를 제외한 모든 회원 찾기", description ="마스터를 제외한 모든 회원을 조회합니다. 타입으로 정렬합니다.(student => teacher")
+    public MemberListResponseVO getMemberList(
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = "miRole", direction = Direction.ASC) Pageable page,
+               @Parameter(description = "검색할 키워드(없으면 모든 회원 조회)") @Nullable @RequestParam String keyword) {
+        MemberListResponseVO result = mService.getMemberList(page, keyword);
+        return result;
+
     }
     
 
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "탈퇴 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
         @ApiResponse(responseCode = "406", description = "탈퇴 실패", content = @Content(schema = @Schema(implementation = NotValidExceptionResponse.class)))})
+        
     @Operation(summary = "회원 탈퇴", description ="")
     @GetMapping("/drop")
+    @Secured("ROLE_MASTER")
     public ResponseEntity<MapVO> dropMember(
-            @RequestBody @Valid LoginVO data //VO에 건 유효성 검사를 위해 @Valid 어노테이션을 사용
+        Long seq
         ){
-            return new ResponseEntity<>(mService.dropMember(data), HttpStatus.OK);
+            return new ResponseEntity<>(mService.dropMember(seq), HttpStatus.OK);
     }
 }

@@ -125,7 +125,7 @@ public class MemberSecurityService {
             return m;
         }
         else{
-            entity.updatePwd(passwordEncoder.encode(data.getChangeMiPwd()));
+            entity.updatePwd(passwordEncoder.encode(data.getChangeMiPwd())); // 수정 완료
             memberInfoRepository.save(entity);
             MemberResponseVO m = MemberResponseVO.builder()
             .status(true).message("회원 수정이 완료되었습니다.")

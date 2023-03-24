@@ -1,9 +1,13 @@
 package com.project.lms.api;
 
+import org.hibernate.annotations.Parameter;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.MemberSecurityService;
 import com.project.lms.vo.MemberResponseVO;
+import com.project.lms.vo.member.MemberListResponseVO;
 import com.project.lms.vo.member.UpdateMemberVO;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +34,7 @@ public class MemberInfoAPIController {
     public ResponseEntity<MemberResponseVO> updateMember(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody UpdateMemberVO data) {
-                
+
         return new ResponseEntity<>(memberInfoService.updateMember(data, userDetails), HttpStatus.OK);
     }
 }
