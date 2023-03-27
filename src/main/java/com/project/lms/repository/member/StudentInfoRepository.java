@@ -25,5 +25,4 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo ,Long> 
     List<StudentInfo> findTop10List(@Param("test") TestInfoEntity test, @Param("cut") Integer cut);
 
     Page<StudentInfo> findByMiNameContaining(String name, Pageable pageable);
-    List<StudentInfo> findTop10List(@Param("test") TestInfoEntity test, @Param("cut") Integer cut);// test에 대한 학생들의 총점을 계산하여, 총점이 높은 순으로 상위 10개의 학생정보(StudentInfo)를 조회
 }

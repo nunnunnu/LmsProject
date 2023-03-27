@@ -54,7 +54,7 @@ public class GradeService {
 		TestInfoEntity tes = tesRepo.findById(data.getTest())
 		.orElseThrow(()->new NotFoundTest());
 
-		GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getAddGradeVO(), tes);
+		GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getGrade(), tes);
 		graRepo.save(entity);
 		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
 	}
