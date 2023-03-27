@@ -38,8 +38,8 @@ public class ScoreStatsService {
     private final SubjectInfoRepository subRepo;
 
     // 연월별 학생 성적 조회
-    public List<ScoreAllListBySubjectVO> ScoreList(YearMonth yearMonth, UserDetails userDetails, Pageable pageable) {
-        LocalDate frist = LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1);
+    public List<ScoreAllListBySubjectVO> ScoreList(String yearMonth, UserDetails userDetails, Pageable pageable) {
+        LocalDate frist = LocalDate.of(Integer.parseInt(yearMonth.substring(0, 4)), Integer.parseInt(yearMonth.substring(4, 6)), 1);
         LocalDate last = frist.withDayOfMonth(frist.lengthOfMonth());
 
         TestInfoEntity test = tRepo.findByTestDateBetween(frist, last);

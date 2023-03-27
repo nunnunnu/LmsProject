@@ -48,20 +48,20 @@ public class GradeService {
     private final GradeInfoRepository graRepo;
 	private final GradeJdbcRepository gradeJdbcRepository;
 
-    public MapVO addGradeInfo(GradeVO data) {
-		TeacherInfo tea = teaRepo.findById(data.getTeacher())
-		.orElseThrow(()->new NotFoundMemberException());
-		SubjectInfoEntity sub = subRepo.findById(data.getSubject())
-		.orElseThrow(()->new NotFoundSubject());
-		StudentInfo stu = stuRepo.findById(data.getStudent())
-		.orElseThrow(()->new NotFoundStudent());
-		TestInfoEntity tes = tesRepo.findById(data.getTest())
-		.orElseThrow(()->new NotFoundTest());
+    // public MapVO addGradeInfo(GradeVO data) {
+	// 	TeacherInfo tea = teaRepo.findById(data.getTeacher())
+	// 	.orElseThrow(()->new NotFoundMemberException());
+	// 	SubjectInfoEntity sub = subRepo.findById(data.getSubject())
+	// 	.orElseThrow(()->new NotFoundSubject());
+	// 	StudentInfo stu = stuRepo.findById(data.getStudent())
+	// 	.orElseThrow(()->new NotFoundStudent());
+	// 	TestInfoEntity tes = tesRepo.findById(data.getTest())
+	// 	.orElseThrow(()->new NotFoundTest());
 
-		GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getAddGradeVO(), tes);
-		graRepo.save(entity);
-		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
-	}
+	// 	GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getAddGradeVO(), tes);
+	// 	graRepo.save(entity);
+	// 	return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
+	// }
 
 	@Transactional
 	    public MapVO putGradeInfo(AddGradeVO data,UserDetails details) {
@@ -90,7 +90,7 @@ public class GradeService {
 		List<GradeInfoEntity> result = new ArrayList<>();
 		for(int i = 0; i<data.getAddGradeVO().size(); i++ ){
 			StudentInfo stu = stuRepo.findById(data.getAddGradeVO().get(i).getSeq()).orElse(null);
-			
+
 			GradeInfoEntity entity = new GradeInfoEntity(null, reading, stu, tea, data.getAddGradeVO().get(i).getReading(), tes);
 			GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stu, tea, data.getAddGradeVO().get(i).getVocabulary(), tes);
 			GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stu, tea, data.getAddGradeVO().get(i).getGrammar(), tes);

@@ -165,9 +165,7 @@ public class ScoreBySubjectService {
 
 	// 올해 시험 정보(과목 명, 점수) & 성적 통계 메세지 출력
 	public ScoreListBySubjectYearResponseVO getSubjectList2(String id) {
-		System.err.println("aaaaaaaaaaaaaaaaaaaa"+id);
 		MemberInfoEntity memEntity = memberInfoRepository.findByMiId(id); // 토큰을 가진 학생의 정보를 가져온다.
-		System.out.println("sssssssss"+memEntity);
 		Long seq = memEntity.getMiSeq(); // 학생의 고유번호를 변수 seq로 받는다.
 		List<ScoreListBySubjectYearVO> voList = gradeInfoRepository.findByYearScoreList(seq); // 이번년 과목별 성적을 list로 받는다.
 		List<Object> explanationList1 = new LinkedList<>(); // 성적 통계 설명을 넣을 list를 생성한다.
