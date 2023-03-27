@@ -1,10 +1,8 @@
 package com.project.lms.api;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -37,10 +35,12 @@ import com.project.lms.vo.member.RefreshTokenVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
@@ -115,7 +115,20 @@ public class MemberController {
 
     @GetMapping("/list")
     @Secured("ROLE_MASTER")
-      @Operation(summary = "마스터를 제외한 모든 회원 찾기", description ="마스터를 제외한 모든 회원을 조회합니다. 타입으로 정렬합니다.(student => teacher")
+      @Operation(summary = "마스터를 제외한 모든 회원 찾기", description ="마스터를 제외한 모든 회원을 조회합니다. 타입으로 정렬합니다.(student => teacher)", security = @SecurityRequirement(name = "bearerAuth"),
+      parameters = {
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "페이지번호(0부터 시작), 입력안하면 0페이지 조회"
+                            , name = "page"
+                            , content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))),
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "입력안해도됨. 기본 한 페이지 당 10개 씩"
+                            , name = "size"),
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "입력안해도됨. 기본 권한 순 정렬"
+                            , name = "sort")
+        })
+      
     public MemberListResponseVO getMemberList(
             @Parameter(hidden = true) @PageableDefault(size = 10, sort = "miRole", direction = Direction.ASC) Pageable page,
                @Parameter(description = "검색할 키워드(없으면 모든 회원 조회)") @Nullable @RequestParam String keyword) {
