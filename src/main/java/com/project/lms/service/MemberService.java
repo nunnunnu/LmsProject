@@ -46,6 +46,8 @@ import com.project.lms.vo.MemberLoginResponseVO;
 import com.project.lms.vo.member.MemberJoinVO;
 import com.project.lms.vo.member.MemberListResponseVO;
 import com.project.lms.vo.member.MemberVO;
+import com.project.lms.vo.member.StudentListResponseVO;
+import com.project.lms.vo.member.StudentVO;
 
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -170,7 +172,6 @@ public class MemberService {
                     memberList.getNumber(), true, HttpStatus.OK, mList);
         }
         else if (!(keyword == null)) { // keyword가 null이 아니라면?
-            System.out.println(keywordcontainsList.getContent().size());
             for (MemberInfoEntity m : keywordcontainsList) { // 이름에 keyword가 포함된 정보만 출력
                 memberVo = new MemberVO(m.getMiSeq(), m.getMiRole().toString(), m.getMiName(), m.getMiBirth(),
                         m.getMiEmail(), m.getMiRegDt());
@@ -182,15 +183,49 @@ public class MemberService {
       
         return result;
     }
+
     public MapVO dropMember(Long seq) {
         MemberInfoEntity member = memberInfoRepository.findById(seq)
-        .orElseThrow(()->new NotFoundMemberException());
+                .orElseThrow(() -> new NotFoundMemberException());
         if (member.getMiStatus() == false) {
             return MapVO.builder().status(false).message("이미 탈퇴 상태 입니다.").code(HttpStatus.BAD_REQUEST).build();
         }
         member.setMiStatus(false);
         memberInfoRepository.save(member);
         return MapVO.builder().status(true).message("탈퇴를 성공하였습니다.").code(HttpStatus.ACCEPTED).build();
+    }
+    
+    // 전체 학생 조회 
+      public StudentListResponseVO getStudentList(Pageable page, String keyword) {
+        Page<StudentInfo> studentList = sRepo.findAll(page);
+        StudentVO studentVo = new StudentVO(); // 초기화
+        List<StudentVO> sList = new LinkedList<>(); // 초기화
+     
+        Page<StudentInfo> keywordcontainsList = sRepo.findByMiNameContaining(keyword, page); // 이름에 keyword 가 포함된 정보 추출하기
+        StudentListResponseVO result = new StudentListResponseVO(); // 초기화
+        ClassStudentEntity cEntity = new ClassStudentEntity();
+        if (keyword == null) { // keyword 가 null이라면?
+            for (StudentInfo m : studentList) { 
+                cEntity = csRepo.findByStudent(m);
+                studentVo = new StudentVO(m.getMiSeq(), m.getMiName(), cEntity.getClassInfo().getCiName(),
+                        m.getMiBirth(), m.getMiEmail(), m.getMiRegDt());
+                sList.add(studentVo);
+            }
+            result = new StudentListResponseVO("학생 리스트 정보 출력", studentList.getTotalPages(),
+                    studentList.getNumber(), true, HttpStatus.OK, sList);
+        }
+        else if (!(keyword == null)) { // keyword가 null이 아니라면?
+                for (StudentInfo m : keywordcontainsList) { // 이름에 keyword가 포함된 정보만 출력
+                cEntity = csRepo.findByStudent(m);
+                studentVo = new StudentVO(m.getMiSeq(), m.getMiName(), cEntity.getClassInfo().getCiName(),
+                        m.getMiBirth(), m.getMiEmail(), m.getMiRegDt());
+                sList.add(studentVo);
+            }
+            result = new StudentListResponseVO("학생 리스트 정보 출력", keywordcontainsList.getTotalPages(),
+                    keywordcontainsList.getNumber(), true, HttpStatus.OK, sList);
+        }
+      
+        return result;
     }
 }
 

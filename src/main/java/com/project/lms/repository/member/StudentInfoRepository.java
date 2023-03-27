@@ -2,6 +2,8 @@ package com.project.lms.repository.member;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +23,6 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo ,Long> 
     // select gi.gi_mi_seq1  from student_info si join grade_info gi on gi.gi_mi_seq1 = si.mi_seq where gi.gi_test_seq =6 group by gi_mi_seq1 order by sum(gi.gi_grade) DESC limit 10
     @Query("SELECT s FROM StudentInfo s JOIN GradeInfoEntity g on g.student = s.miSeq WHERE g.test = :test GROUP BY s ORDER BY SUM(g.grade) DESC limit :cut")
     List<StudentInfo> findTop10List(@Param("test") TestInfoEntity test, @Param("cut") Integer cut);
-    
+
+    Page<StudentInfo> findByMiNameContaining(String name, Pageable pageable);
 }

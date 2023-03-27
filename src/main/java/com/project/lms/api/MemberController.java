@@ -34,9 +34,11 @@ import com.project.lms.vo.member.MemberListResponseVO;
 import com.project.lms.vo.member.MemberSearchIdVO;
 import com.project.lms.vo.member.MemberSearchPwdVO;
 import com.project.lms.vo.member.RefreshTokenVO;
+import com.project.lms.vo.member.StudentListResponseVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,6 +47,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/api/member")
@@ -128,13 +131,37 @@ public class MemberController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "탈퇴 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
         @ApiResponse(responseCode = "406", description = "탈퇴 실패", content = @Content(schema = @Schema(implementation = NotValidExceptionResponse.class)))})
-        
     @Operation(summary = "회원 탈퇴", description ="")
     @GetMapping("/drop")
     @Secured("ROLE_MASTER")
     public ResponseEntity<MapVO> dropMember(
         Long seq
-        ){
-            return new ResponseEntity<>(mService.dropMember(seq), HttpStatus.OK);
+    ) {
+        return new ResponseEntity<>(mService.dropMember(seq), HttpStatus.OK);
     }
+
+
+    @GetMapping("/stu/list")
+    @Secured("ROLE_MASTER")
+      @Operation(summary = "모든 학생 조회", description ="모든 학생 정보를 조회합니다. 학생 고유번호로 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"),
+       parameters = {
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "페이지번호(0부터 시작), 입력안하면 0페이지 조회"
+                            , name = "page"
+                            , content = @Content(schema = @Schema(type = "integer", defaultValue = "0"))),
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "입력안해도됨. 기본 한 페이지 당 10개 씩"
+                            , name = "size"),
+        @Parameter(in = ParameterIn.QUERY
+                            , description = "입력안해도됨. 고유번호 순 정렬"
+                            , name = "sort")
+                         })
+    public StudentListResponseVO getStudentList(
+            @Parameter(hidden = true) @PageableDefault(size = 10, sort = "miSeq", direction = Direction.ASC) Pageable page,
+               @Parameter(description = "검색할 키워드(없으면 모든 회원 조회)") @Nullable @RequestParam String keyword) {
+        StudentListResponseVO result = mService.getStudentList(page, keyword);
+        return result;
+
+    }
+    
 }
