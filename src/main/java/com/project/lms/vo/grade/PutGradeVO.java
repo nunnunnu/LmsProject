@@ -13,11 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PutGradeVO {
-
-    private String yearmonth;
-    private  List<Long> Seq = new ArrayList<>();
-    // listening
-    // reading
-    // grammar
-    // vocabulary
+  private Long seq; 
+    private Integer listening;
+    private Integer reading;
+    private Integer grammar;
+    private Integer vocabulary;
+   
 }
