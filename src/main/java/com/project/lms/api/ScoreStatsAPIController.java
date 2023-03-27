@@ -37,7 +37,7 @@ public class ScoreStatsAPIController {
     @Operation(summary = "연월별 학생 성적 조회", description = "연월별(시험별)로 학생들의 성적을 조회합니다.")
     @GetMapping("/list")
     public ResponseEntity<List<ScoreAllListBySubjectVO>> getScoreListByYearMonth(
-        @Parameter(description = "조회하려는 연월", example = "202303") @RequestParam("yearMonth") YearMonth yearMonth,
+        @Parameter(description = "조회하려는 연월", example = "2023-03") @RequestParam("yearMonth") YearMonth yearMonth,
         @Parameter(hidden = true) @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
         @AuthenticationPrincipal UserDetails userDetails
     ){

@@ -59,6 +59,8 @@ public class GradeInfoRepositoryImpl implements GradeInfoRepositoryCustom {
                 .orderBy(new OrderSpecifier<>(Order.DESC, Expressions.path(Double.class, "total"))) //별칭으로 사용한 total으로 정렬하기 위해 사용
                 .fetch(); //리스트로 조회
     }
+
+    
     @Override
     public List<ScoreAllListBySubjectVO> scoreBySubject(TestInfoEntity test, SubjectInfoEntity reading, SubjectInfoEntity vocabulary, SubjectInfoEntity grammar, SubjectInfoEntity listening) {
         return queryfactory.select(Projections.fields(ScoreAllListBySubjectVO.class, 

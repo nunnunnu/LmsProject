@@ -37,16 +37,16 @@ public class ScoreStatsService {
     private final TestInfoRepository tRepo;
     private final SubjectInfoRepository subRepo;
 
-    // 연월별 학생 성적 조회
+    // 연월별(시험별) 학생 성적 조회
     public List<ScoreAllListBySubjectVO> ScoreList(YearMonth yearMonth, UserDetails userDetails, Pageable pageable) {
-        LocalDate frist = LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1);
-        LocalDate last = frist.withDayOfMonth(frist.lengthOfMonth());
+        LocalDate frist = LocalDate.of(yearMonth.getYear(), yearMonth.getMonth(), 1); // 입력받은 yearMonth 의 시작일을 저장하고
+        LocalDate last = frist.withDayOfMonth(frist.lengthOfMonth()); // 입력받은 yearMonth 의 종료일을 저장하고
 
-        TestInfoEntity test = tRepo.findByTestDateBetween(frist, last);
-        SubjectInfoEntity reading = subRepo.findBySubSeq(1l);
-        SubjectInfoEntity vocabulary = subRepo.findBySubSeq(2l);
-        SubjectInfoEntity grammar = subRepo.findBySubSeq(3l);
-        SubjectInfoEntity listening = subRepo.findBySubSeq(4l);
+        TestInfoEntity test = tRepo.findByTestDateBetween(frist, last); // 시작일과 종료일 사이에 있는 시험을 불러온다.
+        SubjectInfoEntity reading = subRepo.findBySubName("독해"); // 독해 과목을 reading 에 저장한다
+        SubjectInfoEntity vocabulary = subRepo.findBySubName("어휘"); // 어휘 과목을 vocabulary 에 저장한다
+        SubjectInfoEntity grammar = subRepo.findBySubName("문법"); // 문법 과목을 grammar 에 저장한다
+        SubjectInfoEntity listening = subRepo.findBySubName("듣기"); // 듣기 과목을 listening 에 저장한다
 
         List<ScoreAllListBySubjectVO> resultList = gradeInfoRepository.scoreBySubject(test, reading, vocabulary, grammar, listening); // 최종 결과를 담을 리스트를 만든다.
         return resultList; // 결과값을 내보낸다.
