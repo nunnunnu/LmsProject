@@ -1,14 +1,21 @@
 package com.project.lms.service;
 
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.SubjectInfoEntity;
 import com.project.lms.entity.TestInfoEntity;
+import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 import com.project.lms.error.custom.NotFoundMemberException;
@@ -18,16 +25,20 @@ import com.project.lms.error.custom.NotFoundTest;
 import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
+import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
 import com.project.lms.vo.GradeVO;
 import com.project.lms.vo.MapVO;
+import com.project.lms.vo.grade.AddGradeVO;
+import com.project.lms.vo.grade.PutGradeVO;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class GradeService {
+	private final MemberInfoRepository mRepo;
     private final SubjectInfoRepository subRepo;        
     private final StudentInfoRepository stuRepo;
     private final TestInfoRepository tesRepo;
@@ -47,4 +58,47 @@ public class GradeService {
 		graRepo.save(entity);
 		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
 	}
+
+	    public MapVO putGradeInfo(PutGradeVO data, AddGradeVO grade,UserDetails details) {
+		List <MemberInfoEntity> member = new ArrayList<>();
+		TeacherInfo tea = teaRepo.findByMiId(details.getUsername());
+		YearMonth year = YearMonth.parse(data.getYearmonth());//해당 월의 첫째 날
+		LocalDate first = year.atDay(1);  //해당 월의 마지막 날
+		LocalDate last = year.atEndOfMonth();  
+		TestInfoEntity tes = tesRepo.findbyStartAndEnd(first, last);
+
+		List<SubjectInfoEntity> subject= subRepo.findAll();
+
+		// if(grade.getListening().equals("listening")){
+		// 	SubjectInfoEntity listening = subject.get(3);
+		// }else if(grade.getReading().equals("reading")) {
+		// 	SubjectInfoEntity reading = subject.get(0);
+		// }else if(grade.getGrammar().equals("grammar")) {
+		// 	SubjectInfoEntity grammar = subject.get(2);
+		// }else if(grade.getVocabulary().equals("vocabulary")) {
+		// 	SubjectInfoEntity vocabulary = subject.get(1);
+		// }
+		SubjectInfoEntity reading = subject.get(0);
+		SubjectInfoEntity vocabulary = subject.get(1);
+		SubjectInfoEntity grammar = subject.get(2);
+		SubjectInfoEntity listening = subject.get(3);
+
+		List<GradeInfoEntity> result = new ArrayList<>();
+
+		for(Long i : data.getSeq()){
+        GradeInfoEntity entity = new GradeInfoEntity(null, reading, stuRepo.findById(i).get(), tea, grade.getReading(), tes);
+        GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stuRepo.findById(i).get(), tea, grade.getVocabulary(), tes);
+        GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stuRepo.findById(i).get(), tea, grade.getGrammar(), tes);
+        GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stuRepo.findById(i).get(), tea, grade.getListening(), tes);
+		result.add(entity);
+		result.add(entity2);
+		result.add(entity3);
+		result.add(entity4);
+		}
+		graRepo.saveAll(result);
+		
+		// GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getGrade(), tes);
+		// graRepo.save(entity);
+		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build();
+}
 }

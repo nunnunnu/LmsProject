@@ -1,4 +1,5 @@
 package com.project.lms.entity;
+import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
 

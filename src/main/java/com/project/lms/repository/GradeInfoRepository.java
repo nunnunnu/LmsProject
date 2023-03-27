@@ -2,7 +2,6 @@ package com.project.lms.repository;
 
 import java.util.List;
 
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -65,11 +64,10 @@ public interface GradeInfoRepository extends JpaRepository<GradeInfoEntity, Long
     ScoreAvgListBySubjectVO avgBySubject(@Param("teacher") TeacherInfo teacher);
 
     @Query("select (select sum(g.grade) from GradeInfoEntity g where g.test = :test and g.student = g2.student) as totalSum, Group_concat(Distinct g2.student) as student "
-        +"from GradeInfoEntity g2 "
-        +"where g2.test = :test "
-        +"group by totalSum "
+        +"from GradeInfoEntity g2 group by totalSum "
         +"having count(DISTINCT g2.student) >=2"
     )
+    
     List<SameGrade> sameGrade(@Param("test") TestInfoEntity test);
     
     @EntityGraph(attributePaths = {"subject"})
