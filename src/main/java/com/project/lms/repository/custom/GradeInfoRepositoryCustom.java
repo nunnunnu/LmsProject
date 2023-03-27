@@ -7,7 +7,6 @@ import com.project.lms.entity.TestInfoEntity;
 import com.project.lms.vo.ScoreAllListBySubjectVO;
 import com.project.lms.vo.grade.StudentClassGradeVO;
 
-import io.lettuce.core.dynamic.annotation.Param;
 
 public interface GradeInfoRepositoryCustom {
     List<StudentClassGradeVO> studentClassChange(TestInfoEntity test);

@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SubjectInfoRepository extends JpaRepository<SubjectInfoEntity,Long> {
     SubjectInfoEntity findBySubSeq(Long subSeq);
+    SubjectInfoEntity findBySubName(String subName);
 }
