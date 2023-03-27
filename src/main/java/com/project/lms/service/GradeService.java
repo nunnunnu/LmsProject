@@ -11,6 +11,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.project.lms.entity.GradeInfoEntity;
 import com.project.lms.entity.SubjectInfoEntity;
@@ -25,6 +26,7 @@ import com.project.lms.error.custom.NotFoundTest;
 import com.project.lms.repository.GradeInfoRepository;
 import com.project.lms.repository.SubjectInfoRepository;
 import com.project.lms.repository.TestInfoRepository;
+import com.project.lms.repository.custom.GradeJdbcRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
@@ -44,6 +46,8 @@ public class GradeService {
     private final TestInfoRepository tesRepo;
     private final TeacherInfoRepository teaRepo;
     private final GradeInfoRepository graRepo;
+	private final GradeJdbcRepository gradeJdbcRepository;
+
     public MapVO addGradeInfo(GradeVO data) {
 		TeacherInfo tea = teaRepo.findById(data.getTeacher())
 		.orElseThrow(()->new NotFoundMemberException());
@@ -59,6 +63,7 @@ public class GradeService {
 		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
 	}
 
+	@Transactional
 	    public MapVO putGradeInfo(AddGradeVO data,UserDetails details) {
 		TeacherInfo tea = teaRepo.findByMiId(details.getUsername());
 		YearMonth year = data.getYearmonth();//해당 월의 첫째 날
@@ -83,22 +88,20 @@ public class GradeService {
 		SubjectInfoEntity listening = subject.get(3);
 
 		List<GradeInfoEntity> result = new ArrayList<>();
-			System.out.println(data.getAddGradeVO().size());
 		for(int i = 0; i<data.getAddGradeVO().size(); i++ ){
 			StudentInfo stu = stuRepo.findById(data.getAddGradeVO().get(i).getSeq()).orElse(null);
-        GradeInfoEntity entity = new GradeInfoEntity(null, reading, stu, tea, data.getAddGradeVO().get(i).getReading(), tes);
-        GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stu, tea, data.getAddGradeVO().get(i).getVocabulary(), tes);
-        GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stu, tea, data.getAddGradeVO().get(i).getGrammar(), tes);
-        GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stu, tea, data.getAddGradeVO().get(i).getListening(), tes);
-		result.add(entity);
-		result.add(entity2);
-		result.add(entity3);
-		result.add(entity4);
+			
+			GradeInfoEntity entity = new GradeInfoEntity(null, reading, stu, tea, data.getAddGradeVO().get(i).getReading(), tes);
+			GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stu, tea, data.getAddGradeVO().get(i).getVocabulary(), tes);
+			GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stu, tea, data.getAddGradeVO().get(i).getGrammar(), tes);
+			GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stu, tea, data.getAddGradeVO().get(i).getListening(), tes);
+			result.add(entity);
+			result.add(entity2);
+			result.add(entity3);
+			result.add(entity4);
 		}
-		graRepo.saveAll(result);
+		gradeJdbcRepository.saveAll(result);
 		
-		// GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getAddGradeVO(), tes);
-		// graRepo.save(entity);
 		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build();
 }
 }
