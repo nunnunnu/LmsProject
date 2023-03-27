@@ -108,7 +108,7 @@ public class ControllerSupport {
                         .status(false) //성공여부 세팅
                         .build(), HttpStatus.BAD_REQUEST); //에러코드는 400 발생
     }
-    @ExceptionHandler(value = NotFoundFeedback.class) //다른 restController 에서 NotConnetClassAndTeacher 발생했을때
+    @ExceptionHandler(value = NotFoundFeedback.class) //다른 restController 에서 NotFoundFeedback 발생했을때
     public ResponseEntity<ErrorResponse> notFeedback(NotFoundFeedback ex) {
         return new ResponseEntity<ErrorResponse>(ErrorResponse.builder()
                 .timestamp(LocalDateTime.now()) //현재시간

@@ -78,8 +78,6 @@ public class FeedBackService {
         TeacherInfo tInfo = tRepo.findByMiId(id); // 선생님 아이디로 정보를 찾는다.
         FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null); // 조회할 글 번호
 
-        TeacherInfo tInfo = tRepo.findByMiId(id);
-        FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null);
         List<CommentInfoEntity> comment = ciRepo.findByFeedback(entity);
 
         List<CommentInsertVO> clist = new ArrayList<>();
@@ -106,10 +104,6 @@ public class FeedBackService {
             .build();
             return fVo;
         }
-
-            String regDate = entity.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); //포맷터를 사용
-            FeedBackDetailVO vo = FeedBackDetailVO.builder().title(entity.getFiTitle()).regDt(regDate).content(entity.getFiContent()).writer(entity.getTeacher().getMiName()).build();
-
 
             String regDate = entity.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             FeedBackDetailVO vo = FeedBackDetailVO.builder().comment(clist).title(entity.getFiTitle()).regDt(regDate).content(entity.getFiContent())

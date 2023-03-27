@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 public interface SameGrade {
     Integer getTotalSum();
     String getStudent();
+    
 }

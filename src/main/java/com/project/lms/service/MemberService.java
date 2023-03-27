@@ -168,7 +168,7 @@ public class MemberService {
                         m.getMiEmail(), m.getMiRegDt());
                 mList.add(memberVo);
             }
-           result = new MemberListResponseVO("조회 성공", memberList.getTotalPages()-1,
+           result = new MemberListResponseVO("조회 성공", memberList.getTotalPages(),
                     memberList.getNumber(), true, HttpStatus.OK, mList);
         }
         else if (!(keyword == null)) { // keyword가 null이 아니라면?
@@ -177,7 +177,7 @@ public class MemberService {
                         m.getMiEmail(), m.getMiRegDt());
                 mList.add(memberVo);
             }
-            result = new MemberListResponseVO("조회 성공", keywordcontainsList.getTotalPages()-1,
+            result = new MemberListResponseVO("조회 성공", keywordcontainsList.getTotalPages(),
                     keywordcontainsList.getNumber(), true, HttpStatus.OK, mList);
         }
       
