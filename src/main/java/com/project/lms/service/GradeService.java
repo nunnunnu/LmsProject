@@ -54,15 +54,14 @@ public class GradeService {
 		TestInfoEntity tes = tesRepo.findById(data.getTest())
 		.orElseThrow(()->new NotFoundTest());
 
-		GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getGrade(), tes);
+		GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getAddGradeVO(), tes);
 		graRepo.save(entity);
 		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
 	}
 
-	    public MapVO putGradeInfo(PutGradeVO data, AddGradeVO grade,UserDetails details) {
-		List <MemberInfoEntity> member = new ArrayList<>();
+	    public MapVO putGradeInfo(AddGradeVO data,UserDetails details) {
 		TeacherInfo tea = teaRepo.findByMiId(details.getUsername());
-		YearMonth year = YearMonth.parse(data.getYearmonth());//해당 월의 첫째 날
+		YearMonth year = data.getYearmonth();//해당 월의 첫째 날
 		LocalDate first = year.atDay(1);  //해당 월의 마지막 날
 		LocalDate last = year.atEndOfMonth();  
 		TestInfoEntity tes = tesRepo.findbyStartAndEnd(first, last);
@@ -84,12 +83,13 @@ public class GradeService {
 		SubjectInfoEntity listening = subject.get(3);
 
 		List<GradeInfoEntity> result = new ArrayList<>();
-
-		for(Long i : data.getSeq()){
-        GradeInfoEntity entity = new GradeInfoEntity(null, reading, stuRepo.findById(i).get(), tea, grade.getReading(), tes);
-        GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stuRepo.findById(i).get(), tea, grade.getVocabulary(), tes);
-        GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stuRepo.findById(i).get(), tea, grade.getGrammar(), tes);
-        GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stuRepo.findById(i).get(), tea, grade.getListening(), tes);
+			System.out.println(data.getAddGradeVO().size());
+		for(int i = 0; i<data.getAddGradeVO().size(); i++ ){
+			StudentInfo stu = stuRepo.findById(data.getAddGradeVO().get(i).getSeq()).orElse(null);
+        GradeInfoEntity entity = new GradeInfoEntity(null, reading, stu, tea, data.getAddGradeVO().get(i).getReading(), tes);
+        GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stu, tea, data.getAddGradeVO().get(i).getVocabulary(), tes);
+        GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stu, tea, data.getAddGradeVO().get(i).getGrammar(), tes);
+        GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stu, tea, data.getAddGradeVO().get(i).getListening(), tes);
 		result.add(entity);
 		result.add(entity2);
 		result.add(entity3);
@@ -97,7 +97,7 @@ public class GradeService {
 		}
 		graRepo.saveAll(result);
 		
-		// GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getGrade(), tes);
+		// GradeInfoEntity entity = new GradeInfoEntity(null, sub, stu, tea, data.getAddGradeVO(), tes);
 		// graRepo.save(entity);
 		return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build();
 }

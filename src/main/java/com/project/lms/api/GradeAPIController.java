@@ -1,9 +1,10 @@
 package com.project.lms.api;
 
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.lms.service.GradeService;
 import com.project.lms.vo.GradeVO;
 import com.project.lms.vo.MapVO;
+import com.project.lms.vo.grade.AddGradeVO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +33,11 @@ public class GradeAPIController {
         // @Parameter(description = "시험번호", example = "1") @RequestParam @Nullable Long test) {
         @RequestBody GradeVO data){
         return new ResponseEntity<>(gService.addGradeInfo(data), HttpStatus.OK);
+    }
+    @PutMapping("/put")
+    @Secured("ROLE_TEACHER")
+    public ResponseEntity<MapVO> putGradeInfo(
+        @RequestBody AddGradeVO data, @AuthenticationPrincipal UserDetails user){
+        return new ResponseEntity<>(gService.putGradeInfo(data, user), HttpStatus.OK);
     }
 }
