@@ -157,22 +157,24 @@ public class MemberService {
 
     // 전체 회원 조회 
     public MemberListResponseVO getMemberList(Pageable page, String keyword) {
-        Page<MemberInfoEntity> memberList = mRepo.findByMiRoleNot(Role.MASTER, page); // Role이 Master 아닌 정보만 추출하기
         MemberVO memberVo = new MemberVO(); // 초기화
         List<MemberVO> mList = new LinkedList<>(); // 초기화
-        Page<MemberInfoEntity> keywordcontainsList = mRepo.findByMiNameContaining(keyword, page); // 이름에 keyword 가 포함된 정보 추출하기
         MemberListResponseVO result = new MemberListResponseVO(); // 초기화
         if (keyword == null) { // keyword 가 null이라면?
+            Page<MemberInfoEntity> memberList = mRepo.findByMiRoleNotAndMiStatus(Role.MASTER, true, page); // Role이 Master 아닌 정보만 추출하기
             for (MemberInfoEntity m : memberList) { // 마스터를 제외한 모든 정보 출력
+                System.out.println("ssssssss"+m.getMiStatus());
                 memberVo = new MemberVO(m.getMiSeq(), m.getMiRole().toString(), m.getMiName(), m.getMiBirth(),
-                        m.getMiEmail(), m.getMiRegDt());
+                m.getMiEmail(), m.getMiRegDt());
                 mList.add(memberVo);
             }
-           result = new MemberListResponseVO("조회 성공", memberList.getTotalPages(),
-                    memberList.getNumber(), true, HttpStatus.OK, mList);
+            result = new MemberListResponseVO("조회 성공", memberList.getTotalPages(),
+            memberList.getNumber(), true, HttpStatus.OK, mList);
         }
         else if (!(keyword == null)) { // keyword가 null이 아니라면?
+            Page<MemberInfoEntity> keywordcontainsList = mRepo.findByMiNameContainingAndMiStatus(keyword, true, page); // 이름에 keyword 가 포함된 정보 추출하기
             for (MemberInfoEntity m : keywordcontainsList) { // 이름에 keyword가 포함된 정보만 출력
+                System.out.println("ssssssss"+m.getMiStatus());
                 memberVo = new MemberVO(m.getMiSeq(), m.getMiRole().toString(), m.getMiName(), m.getMiBirth(),
                         m.getMiEmail(), m.getMiRegDt());
                 mList.add(memberVo);
@@ -196,25 +198,25 @@ public class MemberService {
     }
     
     // 전체 학생 조회 
-      public StudentListResponseVO getStudentList(Pageable page, String keyword) {
-        Page<StudentInfo> studentList = sRepo.findAll(page);
-        StudentVO studentVo = new StudentVO(); // 초기화
-        List<StudentVO> sList = new LinkedList<>(); // 초기화
-     
-        Page<StudentInfo> keywordcontainsList = sRepo.findByMiNameContaining(keyword, page); // 이름에 keyword 가 포함된 정보 추출하기
-        StudentListResponseVO result = new StudentListResponseVO(); // 초기화
-        ClassStudentEntity cEntity = new ClassStudentEntity();
-        if (keyword == null) { // keyword 가 null이라면?
+    public StudentListResponseVO getStudentList(Pageable page, String keyword) {
+          StudentVO studentVo = new StudentVO(); // 초기화
+          List<StudentVO> sList = new LinkedList<>(); // 초기화
+        
+          StudentListResponseVO result = new StudentListResponseVO(); // 초기화
+            ClassStudentEntity cEntity = new ClassStudentEntity();
+          if (keyword == null) { // keyword 가 null이라면?
+            Page<StudentInfo> studentList = sRepo.findByMiStatus(true, page); 
             for (StudentInfo m : studentList) { 
                 cEntity = csRepo.findByStudent(m);
                 studentVo = new StudentVO(m.getMiSeq(), m.getMiName(), cEntity.getClassInfo().getCiName(),
-                        m.getMiBirth(), m.getMiEmail(), m.getMiRegDt());
+                m.getMiBirth(), m.getMiEmail(), m.getMiRegDt());
                 sList.add(studentVo);
             }
             result = new StudentListResponseVO("학생 리스트 정보 출력", studentList.getTotalPages(),
-                    studentList.getNumber(), true, HttpStatus.OK, sList);
+            studentList.getNumber(), true, HttpStatus.OK, sList);
         }
-        else if (!(keyword == null)) { // keyword가 null이 아니라면?
+        else if (!(keyword == null)) { // keyword가 null이 아니라면? ""
+            Page<StudentInfo> keywordcontainsList = sRepo.findByMiNameContainingAndMiStatus(keyword, true, page); // 이름에 keyword 가 포함된 정보 추출하기
                 for (StudentInfo m : keywordcontainsList) { // 이름에 keyword가 포함된 정보만 출력
                 cEntity = csRepo.findByStudent(m);
                 studentVo = new StudentVO(m.getMiSeq(), m.getMiName(), cEntity.getClassInfo().getCiName(),

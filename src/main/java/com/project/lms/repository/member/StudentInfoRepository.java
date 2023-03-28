@@ -24,5 +24,7 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo ,Long> 
     @Query("SELECT s FROM StudentInfo s JOIN GradeInfoEntity g on g.student = s.miSeq WHERE g.test = :test GROUP BY s ORDER BY SUM(g.grade) DESC limit :cut")
     List<StudentInfo> findTop10List(@Param("test") TestInfoEntity test, @Param("cut") Integer cut); // test에 대한 학생들의 총점을 계산하여, 총점이 높은 순으로 상위 10개의 학생정보(StudentInfo)를 조회
 
-    Page<StudentInfo> findByMiNameContaining(String name, Pageable pageable);
+    Page<StudentInfo> findByMiNameContainingAndMiStatus(String name, Boolean status, Pageable pageable);
+
+    Page<StudentInfo> findByMiStatus(Boolean status, Pageable page);
 }
