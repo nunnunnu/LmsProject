@@ -63,6 +63,7 @@ public class GradeService {
 	// 	return MapVO.builder().message("성적 입력 완료").code(HttpStatus.ACCEPTED).status(true).build(); 
 	// }
 
+
 	@Transactional
 	    public MapVO putGradeInfo(AddGradeVO data,UserDetails details) {
 		TeacherInfo tea = teaRepo.findByMiId(details.getUsername());

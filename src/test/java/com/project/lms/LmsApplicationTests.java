@@ -233,14 +233,14 @@ class LmsApplicationTests {
 		@Test
 		void 마스터계정_제외한_멤버조회() {
 			Pageable page = null;
-			Page<MemberInfoEntity> memberList = memberInfoRepository.findByMiRoleNot(Role.MASTER, page);
+			Page<MemberInfoEntity> memberList = memberInfoRepository.findByMiRoleNotAndMiStatus(Role.MASTER, true, page);
 			System.out.println(memberList.getTotalElements());
 		}
 		@Test
 		void 키워드_포함한_멤버_조회() {
 			Pageable page = null;
 			String keyword = "이";
-			Page<MemberInfoEntity> memberList = memberInfoRepository.findByMiNameContaining(keyword, page);
+			Page<MemberInfoEntity> memberList = memberInfoRepository.findByMiNameContainingAndMiStatus(keyword, true, page);
 			System.out.println(memberList.getTotalElements());
 		}
 
