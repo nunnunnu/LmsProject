@@ -18,7 +18,7 @@ public interface MemberInfoRepository extends JpaRepository<MemberInfoEntity, Lo
     Boolean existsByMiId(String userId); //DB에 아이디가 있는지 검사. count보다 성능이좋음
     MemberInfoEntity findByMiSeq(Long miSeq);
 
-    Page<MemberInfoEntity> findByMiRoleNot(Role mi_role, Pageable pageable);
+    Page<MemberInfoEntity> findByMiRoleNotAndMiStatus(Role mi_role, Boolean status, Pageable pageable);
 
-    Page<MemberInfoEntity> findByMiNameContaining(String name, Pageable pageable);
+    Page<MemberInfoEntity> findByMiNameContainingAndMiStatus(String name, Boolean status,  Pageable pageable);
 }

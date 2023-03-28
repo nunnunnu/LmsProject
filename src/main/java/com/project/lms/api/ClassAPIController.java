@@ -56,7 +56,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(description = "반 변경 API입니다.", name = "반")
 public class ClassAPIController {
     private final ClassService cService;
-    @Operation(summary = "반 변경")
+    @Operation(summary = "반 변경", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping(value = "/{stuSeq}/{classSeq}")
     public ResponseEntity<ClassResponseVO> updateClass(@Parameter(name = "stuSeq", description = "학생 번호")@PathVariable Long stuSeq, 
     @Parameter(name = "classSeq", description = "변경할 반 번호") @PathVariable Long classSeq) {

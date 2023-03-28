@@ -1,11 +1,12 @@
 package com.project.lms.api;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.lms.service.ScoreStatsService;
 import com.project.lms.vo.ScoreAllListBySubjectVO;
 import com.project.lms.vo.ScoreAvgStatsListByClassVO;
-import com.project.lms.vo.ScoreListByYearMonthVO;
 import com.project.lms.vo.response.ScoreRankBySubjectVO;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -34,19 +35,18 @@ public class ScoreStatsAPIController {
     private final ScoreStatsService scoreStatsService;
     
 
-    @Operation(summary = "연월별 학생 성적 조회", description = "연월별(시험별)로 학생들의 성적을 조회합니다.")
+    @Operation(summary = "연월별 학생 성적 조회", description = "연월별(시험별)로 학생들의 성적을 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/list")
     public ResponseEntity<List<ScoreAllListBySubjectVO>> getScoreListByYearMonth(
-        @Parameter(description = "조회하려는 연월", example = "2023-03") @RequestParam("yearMonth") YearMonth yearMonth,
+        @Parameter(description = "조회하려는 연월", example = "2023-03") @RequestParam("yearMonth") String yearMonth,
         @Parameter(hidden = true) @PageableDefault(size=10, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
         @AuthenticationPrincipal UserDetails userDetails
     ){
-        System.out.println(yearMonth);
         return new ResponseEntity<>(scoreStatsService.ScoreList(yearMonth, userDetails, pageable),HttpStatus.OK); //scoreStatsService의 ClassScoreStats를 호출한다.
     }
 
 
-    @Operation(summary = "반 별 과목 평균 조회", description = "반 별로 과목별 평균을 조회합니다.")
+    @Operation(summary = "반 별 과목 평균 조회", description = "반 별로 과목별 평균을 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/avg")
     public ResponseEntity<List<ScoreAvgStatsListByClassVO>> getScoreStatsByClass(
         @Parameter(description = "조회하려는 연월", example = "202303") @RequestParam("yearMonth") Integer yearMonth,
@@ -56,7 +56,7 @@ public class ScoreStatsAPIController {
     }
 
 
-    @Operation(summary = "과목별 점수 높은 순/낮은순 학생 조회", description = "과목별 점수 높은 순과 낮은 순으로 학생을 조회합니다.")
+    @Operation(summary = "과목별 점수 높은 순/낮은순 학생 조회", description = "과목별 점수 높은 순과 낮은 순으로 학생을 조회합니다.", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/rank")
     public ResponseEntity<List<ScoreRankBySubjectVO>> getScoreRankBySubject(
         @Parameter(description = "조회하려는 과목 식별 번호", example = "1") @RequestParam("subjectSeq") Long subjectSeq,
