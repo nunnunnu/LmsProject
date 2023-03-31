@@ -163,7 +163,6 @@ public class MemberService {
         if (keyword == null) { // keyword 가 null이라면?
             Page<MemberInfoEntity> memberList = mRepo.findByMiRoleNotAndMiStatus(Role.MASTER, true, page); // Role이 Master 아닌 정보만 추출하기
             for (MemberInfoEntity m : memberList) { // 마스터를 제외한 모든 정보 출력
-                System.out.println("ssssssss"+m.getMiStatus());
                 memberVo = new MemberVO(m.getMiSeq(), m.getMiRole().toString(), m.getMiName(), m.getMiBirth(),
                 m.getMiEmail(), m.getMiRegDt());
                 mList.add(memberVo);
@@ -174,7 +173,6 @@ public class MemberService {
         else if (!(keyword == null)) { // keyword가 null이 아니라면?
             Page<MemberInfoEntity> keywordcontainsList = mRepo.findByMiNameContainingAndMiStatus(keyword, true, page); // 이름에 keyword 가 포함된 정보 추출하기
             for (MemberInfoEntity m : keywordcontainsList) { // 이름에 keyword가 포함된 정보만 출력
-                System.out.println("ssssssss"+m.getMiStatus());
                 memberVo = new MemberVO(m.getMiSeq(), m.getMiRole().toString(), m.getMiName(), m.getMiBirth(),
                         m.getMiEmail(), m.getMiRegDt());
                 mList.add(memberVo);

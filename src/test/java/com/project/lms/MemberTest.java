@@ -237,29 +237,29 @@ public class MemberTest {
 
         @Test
         void 성적입력예시(){
-            List<StudentInfo> students = sRepo.findAll();
-            List<SubjectInfoEntity> subjects = subRepo.findAll();
-            List<TestInfoEntity> tests = testRepo.findAll();
-            List<GradeInfoEntity> grades = new ArrayList<>();
-            for(TestInfoEntity t : tests){
-                System.out.println(students.size());
-                for(StudentInfo s : students){
-                    for(SubjectInfoEntity sub : subjects){
-                        System.out.println("aaaa");
-                        ClassStudentEntity cs = csRepo.findByStudent(s);
-                        List<ClassTeacherEntity> ct = ctRepo.findByClassInfo(cs.getClassInfo());
-                        System.out.println("vvvvv");
-                        List<TeacherInfo> teachers = ct.stream().map((tea)->tea.getTeacher()).toList();
-                        for(TeacherInfo teacher : teachers){
-                            if(teacher != null && teacher.getSubject().getSubSeq() == sub.getSubSeq()){
-                                Integer random = (int)(Math.random()*100)+1;
-                                GradeInfoEntity grade = new GradeInfoEntity(null, sub, s, teacher, random, t);
-                                grades.add(grade);
-                            }
-                        }
-                    }
-                }
-            }
+            // List<StudentInfo> students = sRepo.findAll();
+            // List<SubjectInfoEntity> subjects = subRepo.findAll();
+            // List<TestInfoEntity> tests = testRepo.findAll();
+            // List<GradeInfoEntity> grades = new ArrayList<>();
+            // for(TestInfoEntity t : tests){
+            //     System.out.println(students.size());
+            //     for(StudentInfo s : students){
+            //         for(SubjectInfoEntity sub : subjects){
+            //             System.out.println("aaaa");
+            //             ClassStudentEntity cs = csRepo.findByStudent(s);
+            //             List<ClassTeacherEntity> ct = ctRepo.findByClassInfo(cs.getClassInfo());
+            //             System.out.println("vvvvv");
+            //             List<TeacherInfo> teachers = ct.stream().map((tea)->tea.getTeacher()).toList();
+            //             for(TeacherInfo teacher : teachers){
+            //                 if(teacher != null && teacher.getSubject().getSubSeq() == sub.getSubSeq()){
+            //                     Integer random = (int)(Math.random()*100)+1;
+            //                     GradeInfoEntity grade = new GradeInfoEntity(null, sub, s, teacher, random, t);
+            //                     grades.add(grade);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
             // gRepo.saveAll(grades);
         }
 }
