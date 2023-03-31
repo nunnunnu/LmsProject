@@ -65,7 +65,7 @@ public class FeedBackAPIController {
     @Secured({"ROLE_TEACHER","ROLE_STUDENT"})
    public ResponseEntity<ShowFeedBackVO> showFeedBack(@AuthenticationPrincipal UserDetails userDetails, @Parameter(hidden=true) @PageableDefault(size=10, sort="createdDate",direction = Sort.Direction.DESC) Pageable page) {
 
-        return new ResponseEntity<>(fService.showFeedBack(userDetails.getUsername(), page), HttpStatus.OK);
+        return new ResponseEntity<>(fService.showFeedBack(userDetails, page), HttpStatus.OK);
     }
 
     @Operation(summary = "피드백 상세 조회", security = @SecurityRequirement(name = "bearerAuth"))
