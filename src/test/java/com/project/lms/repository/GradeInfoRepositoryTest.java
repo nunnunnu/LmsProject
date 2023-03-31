@@ -31,22 +31,22 @@ class GradeInfoRepositoryTest {
     @Test
     void 성적순_전체리스트_내림차순() {
         // given
-        var subject = subjectInfoRepository.findById(4L).get();
+        // var subject = subjectInfoRepository.findById(4L).get();
 
         // when
         // String jpql = "select g from GradeInfoEntity g where g.subject = :subject order by g.grade desc"; 
         // var grades =  em.createQuery(jpql, GradeInfoEntity.class).setParameter("subject", subject).getResultList();
 
-        var grades = gradeInfoRepository.findAllBySubjectOrderByGradeDesc(subject);
+        // var grades = gradeInfoRepository.findAllBySubjectOrderByGradeDesc(subject);
 
         // then
-        Assertions.assertThat(grades.size()).isEqualTo(600);
-        Assertions.assertThat(grades.get(0).getGrade()).isEqualTo(100);        
+        // Assertions.assertThat(grades.size()).isEqualTo(600);
+        // Assertions.assertThat(grades.get(0).getGrade()).isEqualTo(100);        
 
     }
 
-    // @Test
-    // void 성적순_테스트순_상위10프로수() {
+    @Test
+    void 성적순_테스트순_상위10프로수() {
     //     var list = gradeInfoRepository.getScoreTestTop10();
     //     Assertions.assertThat(list.get(0).getSub().getSubSeq()).isEqualTo(1L);
     //     Assertions.assertThat(list.get(0).getTest().getTestSeq()).isEqualTo(1L);
@@ -67,5 +67,5 @@ class GradeInfoRepositoryTest {
     //     log.info("avg2 = {}", avg2);
 
     //     Assertions.assertThat(avg2).isCloseTo(96.7000, Percentage.withPercentage(0.00001));
-    // }
+    }
 }

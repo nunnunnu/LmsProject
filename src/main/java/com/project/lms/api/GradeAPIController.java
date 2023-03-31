@@ -11,15 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.lms.service.GradeService;
-import com.project.lms.vo.GradeVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.grade.AddGradeVO;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -39,6 +35,7 @@ public class GradeAPIController {
     //     return new ResponseEntity<>(gService.addGradeInfo(data), HttpStatus.OK);
     // }
     @PutMapping("/put")
+    @Operation(summary = "전체 성적 입력", security = @SecurityRequirement(name = "bearerAuth"))
     @Secured("ROLE_TEACHER")
     public ResponseEntity<MapVO> putGradeInfo(
         @RequestBody AddGradeVO data, @AuthenticationPrincipal UserDetails user){
