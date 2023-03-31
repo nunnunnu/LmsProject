@@ -17,23 +17,19 @@ import com.project.lms.entity.feedback.FeedbackInfo;
 import com.project.lms.entity.member.MemberInfoEntity;
 import com.project.lms.entity.member.StudentInfo;
 import com.project.lms.entity.member.TeacherInfo;
-import com.project.lms.repository.ClassStudentRepository;
-import com.project.lms.repository.ClassTeacherRepository;
-import com.project.lms.repository.ClassStudentRepository;
-import com.project.lms.repository.ClassTeacherRepository;
+import com.project.lms.entity.member.enumfile.Role;
 import com.project.lms.error.custom.NotFoundFeedback;
-import com.project.lms.repository.ClassInfoRepository;
+import com.project.lms.error.custom.NotFoundMemberException;
 import com.project.lms.repository.ClassStudentRepository;
 import com.project.lms.repository.ClassTeacherRepository;
 import com.project.lms.repository.CommentInfoRepository;
-import com.project.lms.repository.TestInfoRepository;
 import com.project.lms.repository.feedback.FeedbackInfoRepository;
 import com.project.lms.repository.member.MemberInfoRepository;
 import com.project.lms.repository.member.StudentInfoRepository;
 import com.project.lms.repository.member.TeacherInfoRepository;
-import com.project.lms.vo.feedback.FeedBackDetailVO;
 import com.project.lms.vo.MapVO;
 import com.project.lms.vo.feedback.CommentInsertVO;
+import com.project.lms.vo.feedback.FeedBackDetailVO;
 import com.project.lms.vo.feedback.FeedBackListVO;
 import com.project.lms.vo.feedback.FeedBackResponseVO;
 import com.project.lms.vo.feedback.FeedBackVO;
@@ -57,12 +53,19 @@ public class FeedBackService {
 
 
     // 피드백 리스트
-    public ShowFeedBackVO showFeedBack(String id, Pageable page) {
-        TeacherInfo tInfo = tRepo.findByMiId(id); // 로그인한 선생님의 정보를 찾는다.
-        Page<FeedbackInfo> list = fRepo.findByTeacher(tInfo, page);
-
+    public ShowFeedBackVO showFeedBack(UserDetails user, Pageable page) {   
+        System.out.println(user.getUsername());
+        MemberInfoEntity tInfo = miRepo.findByMiId(user.getUsername()); // 로그인한 선생님의 정보를 찾는다.
+        Page<FeedbackInfo> list;
+        if(tInfo.getMiRole().toString().equals(Role.TEACHER.toString())){
+            list = fRepo.findByTeacher(tInfo, page);
+        }else if(tInfo.getMiRole().toString().equals(Role.STUDENT.toString())){
+            list = fRepo.findByStudent(tInfo, page);
+        }else{
+            throw new NotFoundMemberException();
+        }
         Page<FeedBackListVO> voList = list.map((f)-> new FeedBackListVO(f)); // entity 페이지 리스트를 페이지 DTO 형태로 변환하기 위한 람다식
-       
+        
         ShowFeedBackVO sVo = ShowFeedBackVO.builder()
         .status(true)
         .message("피드백 리스트를 조회하였습니다.")
