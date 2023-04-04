@@ -75,7 +75,7 @@ public class FeedBackService {
     // 피드백 상세 조회
     public ShowFeedBackDetailVO showFeedBackDetail(String id, Long fiSeq) {
 
-        TeacherInfo tInfo = tRepo.findByMiId(id); // 선생님 아이디로 정보를 찾는다.
+        MemberInfoEntity tInfo = miRepo.findByMiId(id); // 선생님 아이디로 정보를 찾는다.
         FeedbackInfo entity = fRepo.findById(fiSeq).orElse(null); // 조회할 글 번호
 
         List<CommentInfoEntity> comment = ciRepo.findByFeedback(entity);
@@ -96,7 +96,7 @@ public class FeedBackService {
             .build();
             return fVo;
         }
-        if(entity.getTeacher().getMiSeq() != tInfo.getMiSeq()){ // 정보가 일치하지 않다면
+        if(entity.getTeacher().getMiSeq() != tInfo.getMiSeq() && entity.getStudent().getMiSeq() != tInfo.getMiSeq()){ // 정보가 일치하지 않다면
             ShowFeedBackDetailVO fVo = ShowFeedBackDetailVO.builder()
             .status(false)
             .message("조회할 수 없는 게시글입니다.")
@@ -257,3 +257,5 @@ public class FeedBackService {
             
         }
 }
+
+   

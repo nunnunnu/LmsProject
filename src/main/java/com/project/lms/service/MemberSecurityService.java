@@ -141,6 +141,10 @@ public class MemberSecurityService {
     Map<String ,Object> resultMap = new LinkedHashMap<String, Object>();
     // 사용자 이름, 생일 , 이메일 받아서 리스트에 있는 것과 비교하여 해당 전화번호에 맞는 아이디 찾기
     MemberInfoEntity User = memberInfoRepository.findByMiNameAndMiBirthAndMiEmail(data.getName(), data.getBirth(), data.getEmail());
+    System.out.println(User);
+    System.out.println(data.getEmail());
+    System.out.println(data.getName());
+    System.out.println(data.getBirth());
     // 해당 정보를 통해서 찾는 유저가 없을 때는 메세지 출력
     if(User == null) {
       resultMap.put("status", false);
