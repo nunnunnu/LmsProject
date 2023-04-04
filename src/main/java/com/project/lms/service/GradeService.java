@@ -74,32 +74,36 @@ public class GradeService {
 
 		List<SubjectInfoEntity> subject= subRepo.findAll();
 
-		// if(grade.getListening().equals("listening")){
-		// 	SubjectInfoEntity listening = subject.get(3);
-		// }else if(grade.getReading().equals("reading")) {
-		// 	SubjectInfoEntity reading = subject.get(0);
-		// }else if(grade.getGrammar().equals("grammar")) {
-		// 	SubjectInfoEntity grammar = subject.get(2);
-		// }else if(grade.getVocabulary().equals("vocabulary")) {
-		// 	SubjectInfoEntity vocabulary = subject.get(1);
-		// }
 		SubjectInfoEntity reading = subject.get(0);
 		SubjectInfoEntity vocabulary = subject.get(1);
 		SubjectInfoEntity grammar = subject.get(2);
 		SubjectInfoEntity listening = subject.get(3);
-
 		List<GradeInfoEntity> result = new ArrayList<>();
-		for(int i = 0; i<data.getAddGradeVO().size(); i++ ){
-			StudentInfo stu = stuRepo.findById(data.getAddGradeVO().get(i).getSeq()).orElse(null);
 
-			GradeInfoEntity entity = new GradeInfoEntity(null, reading, stu, tea, data.getAddGradeVO().get(i).getReading(), tes);
-			GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stu, tea, data.getAddGradeVO().get(i).getVocabulary(), tes);
-			GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stu, tea, data.getAddGradeVO().get(i).getGrammar(), tes);
-			GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stu, tea, data.getAddGradeVO().get(i).getListening(), tes);
-			result.add(entity);
-			result.add(entity2);
-			result.add(entity3);
-			result.add(entity4);
+			// if(subject.get(0).getSubName().equals("읽기")){
+			// 	SubjectInfoEntity reading = subject.get(0);
+			// } 
+			// else if(subject.get(1).getSubName().equals("어휘")){
+			// 	SubjectInfoEntity vocabulary = subject.get(1);
+			// }
+			// else if(subject.get(2).getSubName().equals("문법")){
+			// 	SubjectInfoEntity grammar = subject.get(2);
+			// }
+			// else if(subject.get(3).getSubName().equals("문법")) {
+			// 	SubjectInfoEntity listening = subject.get(3);
+			// }
+		
+
+		for(int i = 0; i<data.getAddGradeVO().size(); i++ ){
+		StudentInfo stu = stuRepo.findById(data.getAddGradeVO().get(i).getSeq()).orElse(null);
+        GradeInfoEntity entity = new GradeInfoEntity(null, reading, stu, tea, data.getAddGradeVO().get(i).getReading(), tes);
+        GradeInfoEntity entity2 = new GradeInfoEntity(null, vocabulary, stu, tea, data.getAddGradeVO().get(i).getVocabulary(), tes);
+        GradeInfoEntity entity3 = new GradeInfoEntity(null, grammar, stu, tea, data.getAddGradeVO().get(i).getGrammar(), tes);
+        GradeInfoEntity entity4 = new GradeInfoEntity(null, listening, stu, tea, data.getAddGradeVO().get(i).getListening(), tes);
+		result.add(entity);
+		result.add(entity2);
+		result.add(entity3);
+		result.add(entity4);
 		}
 		gradeJdbcRepository.saveAll(result);
 		
