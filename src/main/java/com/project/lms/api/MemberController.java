@@ -99,7 +99,7 @@ public class MemberController {
         @ApiResponse(responseCode = "200", description = "아이디찾기 성공", content = @Content(schema = @Schema(implementation = MapVO.class))),
         @ApiResponse(responseCode = "400", description = "일치하는 회원정보가 없으면 오류입니다", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
     @Operation(summary = "아이디 찾기", description ="이름,생년월일,이메일(name,birth,email)을 입력 받아 일치하는 정보의 아이디 출력")
-    public ResponseEntity<Object> searchMemberId(MemberSearchIdVO data){
+    public ResponseEntity<Object> searchMemberId(@RequestBody MemberSearchIdVO data){
         Map<String, Object> map = memberSecurityService.searchMemberId(data);
         return new ResponseEntity<Object>(map, (HttpStatus)map.get("code"));
     }

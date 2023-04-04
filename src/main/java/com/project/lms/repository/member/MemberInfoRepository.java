@@ -21,4 +21,5 @@ public interface MemberInfoRepository extends JpaRepository<MemberInfoEntity, Lo
     Page<MemberInfoEntity> findByMiRoleNotAndMiStatus(Role mi_role, Boolean status, Pageable pageable);
 
     Page<MemberInfoEntity> findByMiNameContainingAndMiStatus(String name, Boolean status,  Pageable pageable);
+    boolean existsByMiEmail(String id);
 }
