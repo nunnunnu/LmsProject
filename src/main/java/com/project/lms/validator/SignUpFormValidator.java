@@ -29,6 +29,9 @@ public class SignUpFormValidator implements Validator {
         if (mRepo.existsByMiId(join.getId())) { //이미 가입된 아이디인지 확인
             errors.rejectValue("id", "duplicate.id", "이미 사용중인 아이디입니다."); //사용중인 아이디라면 에러 추가
         }
+        if (mRepo.existsByMiEmail(join.getEmail())) { //이미 가입된 이메일인지 확인
+            errors.rejectValue("email", "duplicate.email", "이미 사용중인 이메일입니다."); //사용중인 이메일이라면 에러 추가
+        }
         if (errors.hasErrors()) { //에러가 하나라도 있으면 
             List<String> errorMessage = new ArrayList<>(); //메세지를 담을 list를 생성
             errors.getFieldErrors().forEach(error -> {
