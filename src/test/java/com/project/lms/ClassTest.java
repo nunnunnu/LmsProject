@@ -112,7 +112,7 @@ public class ClassTest {
         ClassInfoEntity classEntity = classTeacher.getClassInfo();
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        Page<ClassStudentEntity> result = csRepo.findByClassInfo(classEntity, pageRequest);
+        Page<ClassStudentEntity> result = csRepo.findByClassInfo(classEntity,true, pageRequest);
 
         assertThat(result.getContent().size()).isNotEqualTo(0);
     }
