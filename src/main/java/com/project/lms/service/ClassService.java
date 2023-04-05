@@ -72,7 +72,7 @@ public class ClassService {
             throw new NotConnetClassAndTeacher(); //연결 테이블에 정보가 없다면 담당 반이 없는 선생님임. NotConnetClassAndTeacher발생. ControllerSupport에서 처리됨
         }
         
-        Page<ClassStudentEntity> students = csRepo.findByClassInfo(classTeacher.getClassInfo(), page); //연결테이블에서 가져온 반으로 학생-반 연결테이블 조회. 모든 연결 테이블 조회(fetch join)
+        Page<ClassStudentEntity> students = csRepo.findByClassInfo(classTeacher.getClassInfo(), true, page); //연결테이블에서 가져온 반으로 학생-반 연결테이블 조회. 모든 연결 테이블 조회(fetch join)
         
         if(students.getContent().size()==0){
             throw new NoContentsException(); //데이터가 존재하지 않을 경우. NoContentsException. ControllerSupport에서 처리됨
