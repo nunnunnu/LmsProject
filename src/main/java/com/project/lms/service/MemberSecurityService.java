@@ -97,7 +97,7 @@ public class MemberSecurityService {
             .build();
             return m;
         }
-        if(data.getMiPwd().length() > 16 || data.getMiPwd().length() > 8) { // 비밀번호 길이 제한
+        if(data.getChangeMiPwd().length() > 16 || data.getChangeMiPwd().length() < 8) { // 비밀번호 길이 제한
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
             .message("비밀번호는 8~16자로 입력해주세요.")
@@ -105,17 +105,33 @@ public class MemberSecurityService {
             .build();
             return m;
         }
+        else if(data.getChangeMiPwd().equals(data.getMiPwd())){
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(false)
+            .message("현재 비밀번호와 동일한 비밀번호입니다.")
+            .code(HttpStatus.BAD_REQUEST)
+            .build();
+            return m;    
+        }
         else if (
-            data.getMiPwd().replaceAll(" ", "").length() == 0 || // 비밀번호 공백문자 사용 제한
-            !Pattern.matches(pattern, data.getMiPwd())
-            ) {
+            data.getChangeMiPwd().replaceAll(" ", "").length() != data.getChangeMiPwd().length()  // 비밀번호 공백문자 사용 제한
+        ) {
                 MemberResponseVO m = MemberResponseVO.builder()
                 .status(false)
                 .message("비밀번호에 공백문자를 사용할 수 없습니다.")
                 .code(HttpStatus.BAD_REQUEST)
                 .build();
                 return m;
-            }
+        }
+        else if(!Pattern.matches(pattern, data.getChangeMiPwd())){
+            MemberResponseVO m = MemberResponseVO.builder()
+            .status(false)
+            .message("비밀번호는 8 ~ 16자 영문, 숫자, 특수문자를 최소 한가지씩 조합")
+            .code(HttpStatus.BAD_REQUEST)
+            .build();
+            return m;
+
+        }
         else if(data.getMiPwd() == null || data.getMiPwd().equals("")) {
             MemberResponseVO m = MemberResponseVO.builder()
             .status(false)
