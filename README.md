@@ -1,3 +1,5 @@
+[노션으로 보기 (더 상세한 내용을 확인할 수 있습니다)](https://coordinated-sunset-4f9.notion.site/LMS-NCT-61cfe7e7a0ef4a919fc45102cdb1ae9f)
+
 # LMS 시스템 프로젝트 - NCT 학습관리시스템
 
 기간: 2023년 3월 6일 → 2023년 4월 5일
@@ -18,6 +20,25 @@
     api의 성능 향상을 위해 batch insert, 테이블 index등 sql의 튜닝도 도전해보았습니다.
 
 </aside>
+
+## 구현 기능
+
+|이름|기여도|태그|설명|
+|------|-----|-----|---|
+|회원가입|100|회원|각 회원 등급별로(마스터/직원/학생/선생) 가입할 수 있는 기능|
+|토큰 재발급|100|회원|redis에 refresh토큰을 저장해서 재발급|
+|소속 반 학생 조회|100|반|로그인한 선생님의 소속 반에 해당한 학생들의 리스트를 조회|
+|동일점수 학생 알림|100|점수|합계가 같은 학생의 과목별 점수를 조회. 성능 향상을 위해 테이블에 index를 추가함 (반 배정 백업 기능.)|
+|시험 점수를 토대로 반 배정|100|점수|엑셀로 배정된 반을 다운로드 할 수 있도록 API를 구현. 반의 갯수와 학생의 수로 백분율로 계산해서 대략적으로 반을 권고해줌.|
+|상위 10프로 학생의 점수|80|점수|쿼리문을 작성, 로직 작성. 차트에 표현할 데이터를 내보냄|
+|시험 점수 일괄 입력|50|점수|이미 작성된 API의 insert의 응답속도 지연으로 JdbcTemplate을 사용해서 batch insert를 구현|
+|비밀번호 수정|30|회원|유효성 검사 추가, 기존 유효성 검사의 에러 수정|
+|로그인|30|회원|로그인 API에 refresh token을 redis에 저장하는 로직 추가|
+
+### 시연 동영상
+
+[https://youtu.be/lPJy2byc4uU](https://youtu.be/lPJy2byc4uU)
+
 
 ### 개발 문서
 
@@ -40,12 +61,12 @@
     
    ![Untitled (3)](https://user-images.githubusercontent.com/110175918/230353527-dedb62a9-fd20-4322-b0a1-a906b7833756.png)
 
+# 그외 링크
 
 ### PPT 주소
 
 [컬러풀하고 단순 명료한 취미와 관심사 디지털 프레젠테이션 파티용 재미있는 프레젠테이션](https://www.canva.com/design/DAFeoLJAiNU/ZTfasGRXLzHSC37ZdJ_9Pw/edit?utm_content=DAFeoLJAiNU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
-[구현 기능](https://www.notion.so/098eca99fefd48d29c75b0fa20dd07b7)
 
 ### 와이어 프레임
 
@@ -55,16 +76,9 @@
 
 [https://www.figma.com/file/N199vzjaFmtsciywRb3vMY/LMS?node-id=0-1&t=rfOklOLKWJJ3ZRpv-0](https://www.figma.com/file/N199vzjaFmtsciywRb3vMY/LMS?node-id=0-1&t=rfOklOLKWJJ3ZRpv-0)
 
----
-
-### 시연 동영상
-
-[https://youtu.be/lPJy2byc4uU](https://youtu.be/lPJy2byc4uU)
-
----
 
 [회의록](https://www.notion.so/039957de06c649a291e34f0db439b27f)
 
----
 
 [작업일지](https://www.notion.so/fa19995d50b644f3975b0494707c98f0)
+
