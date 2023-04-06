@@ -19,25 +19,27 @@
 
 </aside>
 
-### [개발 문서](https://www.notion.so/LMS-NCT-61cfe7e7a0ef4a919fc45102cdb1ae9f)
+### 개발 문서
 
 [테이블명세서(길이가 길어서 페이지로 분리했습니다.)](https://www.notion.so/ac79a336f0c14872bd48a0819572e9b4)
 
 - 요구사항 정의서
     
-    ![Untitled](LMS%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%84%8C%E1%85%A6%E1%86%A8%E1%84%90%E1%85%B3%20-%20NCT%20%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B3%E1%86%B8%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2061cfe7e7a0ef4a919fc45102cdb1ae9f/Untitled.png)
+![Untitled](https://user-images.githubusercontent.com/110175918/230352957-1c20d526-01c3-4de2-b4b8-4fcfa83d95db.png)
     
 - 요구사항 추적표
     
-    ![Untitled](LMS%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%84%8C%E1%85%A6%E1%86%A8%E1%84%90%E1%85%B3%20-%20NCT%20%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B3%E1%86%B8%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2061cfe7e7a0ef4a919fc45102cdb1ae9f/Untitled%201.png)
+![Untitled (1)](https://user-images.githubusercontent.com/110175918/230353211-92267e49-e197-46be-a67f-59af12db457a.png)
+
     
 - 시험시나리오
     
-    ![Untitled](LMS%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%84%8C%E1%85%A6%E1%86%A8%E1%84%90%E1%85%B3%20-%20NCT%20%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B3%E1%86%B8%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2061cfe7e7a0ef4a919fc45102cdb1ae9f/Untitled%202.png)
-    
+   ![Untitled (2)](https://user-images.githubusercontent.com/110175918/230353403-c8e27ffa-2243-4bd4-82ae-525b845da3a7.png)
+
 - WBS
     
-    ![Untitled](LMS%20%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%20%E1%84%91%E1%85%B3%E1%84%85%E1%85%A9%E1%84%8C%E1%85%A6%E1%86%A8%E1%84%90%E1%85%B3%20-%20NCT%20%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B3%E1%86%B8%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5%E1%84%89%E1%85%B5%E1%84%89%E1%85%B3%E1%84%90%E1%85%A6%E1%86%B7%2061cfe7e7a0ef4a919fc45102cdb1ae9f/Untitled%203.png)
+   ![Untitled (3)](https://user-images.githubusercontent.com/110175918/230353527-dedb62a9-fd20-4322-b0a1-a906b7833756.png)
+
 
 ### PPT 주소
 
