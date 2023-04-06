@@ -35,14 +35,15 @@
 |비밀번호 수정|30|회원|유효성 검사 추가, 기존 유효성 검사의 에러 수정|
 |로그인|30|회원|로그인 API에 refresh token을 redis에 저장하는 로직 추가|
 
-### 시연 동영상
+## 시연 영상
+[![Video Label](http://img.youtube.com/vi/lPJy2byc4uU/0.jpg)]
+(https://youtu.be/lPJy2byc4uU)
 
-[https://youtu.be/lPJy2byc4uU](https://youtu.be/lPJy2byc4uU)
 
 
 ### 개발 문서
 
-[테이블명세서(길이가 길어서 페이지로 분리했습니다.)](https://www.notion.so/ac79a336f0c14872bd48a0819572e9b4)
+[테이블명세서(길이가 길어서 페이지로 분리했습니다.)](https://coordinated-sunset-4f9.notion.site/ac79a336f0c14872bd48a0819572e9b4)
 
 - 요구사항 정의서
     
@@ -77,8 +78,8 @@
 [https://www.figma.com/file/N199vzjaFmtsciywRb3vMY/LMS?node-id=0-1&t=rfOklOLKWJJ3ZRpv-0](https://www.figma.com/file/N199vzjaFmtsciywRb3vMY/LMS?node-id=0-1&t=rfOklOLKWJJ3ZRpv-0)
 
 
-[회의록](https://www.notion.so/039957de06c649a291e34f0db439b27f)
+[회의록](https://coordinated-sunset-4f9.notion.site/039957de06c649a291e34f0db439b27f?v=cfd6cebb463a43b786d9948749f38bca)
 
 
-[작업일지](https://www.notion.so/fa19995d50b644f3975b0494707c98f0)
+[작업일지](https://coordinated-sunset-4f9.notion.site/fa19995d50b644f3975b0494707c98f0?v=6c0d37fbc62745b3a6baf1f30b93736b)
 
