@@ -3,9 +3,13 @@
 # LMS 시스템 프로젝트 - NCT 학습관리시스템
 
 기간: 2023년 3월 6일 → 2023년 4월 5일
+
 사용기술: Gradle, JPA, git, java, mysql, querydsl, redis, spring boot, spring security
+
 작성 날짜: 2023년 4월 5일 오후 5:19
+
 작업인원: 12
+
 태그: 협업 프로젝트
 
 - 총 작업 인원 : 12명 (백엔드 - 7명/ 프론트엔드 - 5명)
